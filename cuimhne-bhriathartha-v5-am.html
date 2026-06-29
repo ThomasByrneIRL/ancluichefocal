@@ -47,7 +47,7 @@
   <p class="subtitle">Mód Ama | 🔊 Fuaim Chonnacht</p>
   <p style="color:#aaa;margin-bottom:2rem;line-height:1.9">
     30 soicind agat.<br>
-    Freagra ceart → <span style="color:#4caf50">+3 soicind</span><br>
+    Freagra ceart → <span style="color:#4caf50">+10 soicind</span><br>
     Freagra mícheart → <span style="color:#e94560">−3 soicind</span><br>
     Maireann an cluiche chomh fada agus is féidir leat.
   </p>
@@ -87,7 +87,7 @@ const DICT = {"cat": ["cat"], "madra": ["dog"], "capall": ["horse"], "bó": ["co
 const WORDS = Object.keys(DICT);
 
 const START_TIME = 30;
-const BONUS = 3;
+const BONUS = 10;
 const PENALTY = 3;
 const MAX_TIME = 60;
 
@@ -200,7 +200,7 @@ function submitAnswer() {
     timeLeft = Math.min(MAX_TIME, timeLeft + BONUS);
     inp.className = 'correct';
     document.getElementById('word-card').className = 'card flash-correct';
-    showDelta('+3s', true);
+    showDelta('+10s', true);
     updateScore();
     updateTimer();
     setTimeout(nextWord, 500);
