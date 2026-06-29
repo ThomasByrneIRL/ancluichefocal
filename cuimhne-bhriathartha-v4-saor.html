@@ -53,7 +53,6 @@
 <div id="game-screen" class="screen">
   <div class="stats">
     <div><span class="stat-label">Ceart ✓</span><span id="score-val">0</span></div>
-    <div><span class="stat-label">Mícheart ✗</span><span id="wrong-val" style="color:#e94560;font-size:2rem;font-weight:bold">0</span></div>
   </div>
   <div class="card" id="word-card">
     <div id="word-display"></div>
@@ -71,7 +70,6 @@
   <h1>Críochnaithe!</h1>
   <div class="result-row">
     <div><span class="stat-label">Ceart</span><span class="result-num correct" id="final-correct">0</span></div>
-    <div><span class="stat-label">Mícheart</span><span class="result-num wrong" id="final-wrong">0</span></div>
     <div><span class="stat-label">Céatadán</span><span class="result-num" id="final-pct" style="color:#53d8fb">0%</span></div>
   </div>
   <button class="big-btn" onclick="initGame()">Arís</button>
@@ -163,7 +161,6 @@ function submitAnswer() {
 
 function updateStats() {
   document.getElementById('score-val').textContent = score;
-  document.getElementById('wrong-val').textContent = wrongCount;
 }
 
 function gameOver() {
