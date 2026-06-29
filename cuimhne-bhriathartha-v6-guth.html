@@ -20,31 +20,30 @@
   .delta { position: absolute; right: 0; top: -1.5rem; font-size: 1.1rem; font-weight: bold; opacity: 0; transition: opacity .1s; pointer-events: none; }
   .delta.show { opacity: 1; }
   .delta.plus { color: #4caf50; }
-  .delta.minus { color: #e94560; }
-  .card { background: #16213e; border-radius: 16px; padding: 2.5rem 2rem 1.5rem; margin-bottom: 1.5rem; min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: background .15s; box-shadow: 0 4px 24px #0005; }
+  .card { background: #16213e; border-radius: 16px; padding: 2.5rem 2rem 1.5rem; margin-bottom: 1.2rem; min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: background .15s; box-shadow: 0 4px 24px #0005; }
   .card.flash-correct { background: #1a3a1a; }
   .card.flash-wrong { background: #3a1a1a; }
   #word-display { font-size: 2.6rem; font-weight: bold; letter-spacing: .04em; margin-bottom: .5rem; }
   #hint-text { font-size: .85rem; color: #ff9966; min-height: 1.2em; margin-top: .3rem; }
-  .input-row { display: flex; gap: .6rem; margin-bottom: .6rem; }
+  .input-row { display: flex; gap: .6rem; margin-bottom: .5rem; }
   #answer-input { flex: 1; padding: .85rem 1rem; border: 2px solid #2a2a4a; border-radius: 10px; background: #16213e; color: #eee; font-size: 1.1rem; outline: none; transition: border-color .2s; }
   #answer-input:focus { border-color: #53d8fb; }
   #answer-input.correct { border-color: #4caf50; }
   #answer-input.wrong { border-color: #e94560; }
-  #submit-btn { padding: .85rem 1.4rem; border: none; border-radius: 10px; background: #0f3460; color: #53d8fb; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: opacity .2s; }
-  #submit-btn:hover { opacity: .85; }
-  #mic-btn { padding: .85rem 1rem; border: none; border-radius: 10px; background: #0f3460; color: #eee; font-size: 1.2rem; cursor: pointer; transition: background .2s, transform .1s; }
-  #mic-btn.listening { background: #e94560; animation: pulse 1s infinite; }
+  #submit-btn { padding: .85rem 1.4rem; border: none; border-radius: 10px; background: #0f3460; color: #53d8fb; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+  #mic-btn { padding: .85rem 1rem; border: none; border-radius: 10px; background: #0f3460; color: #eee; font-size: 1.2rem; cursor: pointer; transition: background .2s, transform .1s; position: relative; }
+  #mic-btn.on { background: #c0392b; animation: pulse 1.2s infinite; }
   #mic-btn.no-support { opacity: .35; cursor: not-allowed; }
-  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
-  #mic-status { font-size: .8rem; color: #aaa; min-height: 1.1em; margin-bottom: .5rem; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  #pass-btn { width: 100%; padding: .7rem; border: 2px solid #2a2a4a; border-radius: 10px; background: transparent; color: #888; font-size: .95rem; cursor: pointer; transition: border-color .2s, color .2s; }
+  #pass-btn:hover { border-color: #555; color: #ccc; }
+  #mic-status { font-size: .8rem; color: #aaa; min-height: 1.1em; margin-bottom: .3rem; }
   #mic-status.active { color: #e94560; }
-  .hint { color: #555; font-size: .8rem; }
-  .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 1rem; transition: opacity .2s; }
-  .big-btn:hover { opacity: .85; }
+  .hint { color: #555; font-size: .75rem; margin-top: .4rem; }
+  .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 1rem; }
   #final-score { font-size: 5rem; font-weight: bold; color: #4caf50; margin: .5rem 0; }
   .best-wrap { color: #53d8fb; font-size: 1rem; margin-bottom: 1.5rem; }
-  .compat-note { font-size: .75rem; color: #666; margin-top: 1.5rem; }
+  .compat-note { font-size: .75rem; color: #555; margin-top: 1.5rem; }
 </style>
 </head>
 <body>
@@ -54,12 +53,12 @@
   <p class="subtitle">Mód Ama + Guth | 🔊 Fuaim Chonnacht</p>
   <p style="color:#aaa;margin-bottom:2rem;line-height:1.9">
     30 soicind agat.<br>
-    Freagra ceart → <span style="color:#4caf50">+10 soicind</span><br>
-    Freagra mícheart → <span style="color:#e94560">−3 soicind</span><br>
-    Clóscríobh nó labhair do fhreagra i mBéarla.
+    Freagra ceart → <span style="color:#4caf50">+12 soicind</span><br>
+    Brúigh 🎤 uair amháin — fanann sé ar siúl.<br>
+    Clóscríobh nó labhair i mBéarla.
   </p>
   <button class="big-btn" onclick="initGame()">Tosaígh</button>
-  <p class="compat-note">Guth: Chrome, Edge, Safari (iOS & Mac). Ní oibríonn sé ar Firefox.</p>
+  <p class="compat-note">Guth: Chrome, Edge, Safari. Ní oibríonn sé ar Firefox.</p>
 </div>
 
 <div id="game-screen" class="screen">
@@ -77,11 +76,12 @@
   </div>
   <div class="input-row">
     <input id="answer-input" type="text" placeholder="Clóscríobh nó labhair..." autocomplete="off" autocorrect="off" spellcheck="false" />
-    <button id="mic-btn" onclick="toggleMic()" title="Labhair do fhreagra">🎤</button>
+    <button id="mic-btn" onclick="toggleMicMode()" title="Cas an micreafón air/as">🎤</button>
     <button id="submit-btn" onclick="submitAnswer()">→</button>
   </div>
   <div id="mic-status"></div>
-  <p class="hint">Iontráil / → le clóscríobh · 🎤 le labhairt</p>
+  <button id="pass-btn" onclick="passWord()">Scip ⏭</button>
+  <p class="hint">Iontráil / → le clóscríobh · 🎤 le labhairt (fanann ar siúl)</p>
 </div>
 
 <div id="over-screen" class="screen">
@@ -97,18 +97,21 @@ const DICT = {"cat": ["cat"], "madra": ["dog"], "capall": ["horse"], "bó": ["co
 const WORDS = Object.keys(DICT);
 
 const START_TIME = 30;
-const BONUS = 10;
-const PENALTY = 3;
-const MAX_TIME = 90;
+const BONUS = 12;
+const MAX_TIME = 120;
 
-let score, timeLeft, locked, currentWord, timerInterval, best;
+let score, timeLeft, locked, currentWord, timerInterval;
 let _ca = null;
 let deltaTimeout = null;
-let listening = false;
+let micMode = false;   // continuous mic on/off
+let recognizing = false;
+let best = 0;
+try { best = parseInt(localStorage.getItem('v6best') || '0'); } catch(e){}
+
+// --- Speech Recognition ---
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
 
-// --- Speech Recognition setup ---
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
   recognition.lang = 'en-IE';
@@ -116,51 +119,55 @@ if (SpeechRecognition) {
   recognition.interimResults = false;
   recognition.maxAlternatives = 5;
 
+  recognition.onstart = function() { recognizing = true; };
+
   recognition.onresult = function(e) {
-    setListening(false);
-    if (locked || timeLeft <= 0) return;
-    // Try all alternatives — take first that matches, else use top result
+    recognizing = false;
+    if (locked || timeLeft <= 0) { if (micMode) restartRec(); return; }
     const alternatives = [];
     for (let i = 0; i < e.results[0].length; i++) {
       alternatives.push(e.results[0][i].transcript.trim());
     }
-    // Check each alternative against dict
     const valid = DICT[currentWord];
     const matched = alternatives.find(alt => checkAnswer(alt, valid));
-    const toSubmit = matched || alternatives[0];
-    document.getElementById('answer-input').value = toSubmit;
+    document.getElementById('answer-input').value = matched || alternatives[0];
     submitAnswer();
+    // restartRec is called inside nextWord() after delay
   };
 
   recognition.onerror = function(e) {
-    setListening(false);
-    if (e.error === 'no-speech') {
-      setMicStatus('Níor airigh mé thú — bain triail eile as.', false);
-    } else if (e.error === 'not-allowed') {
-      setMicStatus('Ní féidir an micreafón a úsáid.', false);
+    recognizing = false;
+    if (e.error === 'no-speech' && micMode) { restartRec(); return; }
+    if (e.error === 'not-allowed') {
+      micMode = false;
       document.getElementById('mic-btn').classList.add('no-support');
-    } else {
-      setMicStatus('', false);
+      setMicStatus('Ní féidir an micreafón a úsáid.', false);
     }
   };
 
   recognition.onend = function() {
-    setListening(false);
+    recognizing = false;
+    // restartRec handles continuation
   };
-} else {
-  // No support — disable mic button after game starts
 }
 
-function setListening(val) {
-  listening = val;
+function restartRec() {
+  if (!micMode || !recognition || recognizing || timeLeft <= 0) return;
+  try { recognition.start(); recognizing = true; } catch(e) {}
+}
+
+function toggleMicMode() {
+  if (!recognition) return;
+  micMode = !micMode;
   const btn = document.getElementById('mic-btn');
-  const status = document.getElementById('mic-status');
-  if (val) {
-    btn.classList.add('listening');
-    setMicStatus('Ag éisteacht...', true);
+  if (micMode) {
+    btn.classList.add('on');
+    setMicStatus('Micreafón ar siúl — labhair do fhreagra', true);
+    restartRec();
   } else {
-    btn.classList.remove('listening');
-    if (status.classList.contains('active')) setMicStatus('', false);
+    btn.classList.remove('on');
+    setMicStatus('', false);
+    if (recognizing) { try { recognition.stop(); } catch(e){} }
   }
 }
 
@@ -168,19 +175,6 @@ function setMicStatus(msg, active) {
   const el = document.getElementById('mic-status');
   el.textContent = msg;
   el.className = active ? 'active' : '';
-}
-
-function toggleMic() {
-  if (!recognition) return;
-  if (locked || timeLeft <= 0) return;
-  if (listening) {
-    recognition.stop();
-    setListening(false);
-  } else {
-    document.getElementById('answer-input').value = '';
-    try { recognition.start(); setListening(true); }
-    catch(e) { setListening(false); }
-  }
 }
 
 // --- Audio ---
@@ -192,7 +186,6 @@ function playPron(word) {
   _ca = a;
 }
 
-// --- Utilities ---
 function sh(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -208,21 +201,26 @@ function pickWord() {
   return queue.pop();
 }
 
-try { best = parseInt(localStorage.getItem('v6best') || '0'); } catch(e) { best = 0; }
-
-// --- Game ---
 function initGame() {
   score = 0; timeLeft = START_TIME; locked = false;
   queue = sh(WORDS);
+  micMode = false;
+  if (recognizing && recognition) { try { recognition.stop(); } catch(e){} }
+  recognizing = false;
+  document.getElementById('mic-btn').className = SpeechRecognition ? 'on' : 'no-support';
   if (timerInterval) clearInterval(timerInterval);
-  if (listening && recognition) { recognition.stop(); setListening(false); }
   updateTimer(); updateScore(); nextWord();
   show('game-screen');
-  if (!SpeechRecognition) {
+  // Auto-start mic mode
+  if (SpeechRecognition) {
+    micMode = true;
+    setMicStatus('Micreafón ar siúl — labhair do fhreagra', true);
+    setTimeout(restartRec, 400);
+  } else {
     document.getElementById('mic-btn').classList.add('no-support');
     setMicStatus('Guth: Chrome/Edge/Safari amháin', false);
+    setTimeout(() => document.getElementById('answer-input').focus(), 100);
   }
-  setTimeout(() => document.getElementById('answer-input').focus(), 100);
   timerInterval = setInterval(tick, 100);
 }
 
@@ -231,7 +229,8 @@ function tick() {
   updateTimer();
   if (timeLeft <= 0) {
     clearInterval(timerInterval);
-    if (listening && recognition) { recognition.stop(); setListening(false); }
+    micMode = false;
+    if (recognizing && recognition) { try { recognition.stop(); } catch(e){} }
     setTimeout(gameOver, 200);
   }
 }
@@ -251,10 +250,10 @@ function updateScore() {
   document.getElementById('score-val').textContent = score;
 }
 
-function showDelta(text, isPlus) {
+function showDelta(text) {
   const el = document.getElementById('delta-display');
   el.textContent = text;
-  el.className = 'delta show ' + (isPlus ? 'plus' : 'minus');
+  el.className = 'delta show plus';
   if (deltaTimeout) clearTimeout(deltaTimeout);
   deltaTimeout = setTimeout(() => { el.className = 'delta'; }, 900);
 }
@@ -267,9 +266,9 @@ function nextWord() {
   document.getElementById('word-card').className = 'card';
   const inp = document.getElementById('answer-input');
   inp.value = ''; inp.className = '';
-  setMicStatus('', false);
   playPron(currentWord);
-  inp.focus();
+  if (!micMode) inp.focus();
+  if (micMode) setTimeout(restartRec, 300);
 }
 
 function checkAnswer(input, validAnswers) {
@@ -284,7 +283,6 @@ function submitAnswer() {
   const val = inp.value.trim();
   if (!val) return;
   locked = true;
-  if (listening && recognition) { recognition.stop(); setListening(false); }
 
   const valid = DICT[currentWord];
   const correct = checkAnswer(val, valid);
@@ -294,19 +292,24 @@ function submitAnswer() {
     timeLeft = Math.min(MAX_TIME, timeLeft + BONUS);
     inp.className = 'correct';
     document.getElementById('word-card').className = 'card flash-correct';
-    showDelta('+10s', true);
+    showDelta('+12s');
     updateScore(); updateTimer();
     setTimeout(nextWord, 500);
   } else {
-    timeLeft = Math.max(0, timeLeft - PENALTY);
     inp.className = 'wrong';
     document.getElementById('word-card').className = 'card flash-wrong';
     document.getElementById('hint-text').textContent = '✓ ' + valid.join(' / ');
-    showDelta('−3s', false);
     updateTimer();
-    if (timeLeft <= 0) { clearInterval(timerInterval); setTimeout(gameOver, 800); }
-    else setTimeout(nextWord, 1200);
+    setTimeout(nextWord, 1200);
   }
+}
+
+function passWord() {
+  if (locked || timeLeft <= 0) return;
+  if (recognizing && recognition) { try { recognition.stop(); } catch(e){} recognizing = false; }
+  document.getElementById('answer-input').value = '';
+  document.getElementById('word-card').className = 'card';
+  nextWord();
 }
 
 function gameOver() {
