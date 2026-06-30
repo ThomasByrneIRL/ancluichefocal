@@ -26,8 +26,9 @@
     border-radius: 12px; background: #16213e; color: #eee;
     font-size: 1.05rem; cursor: pointer; text-align: left;
     transition: border-color .15s, background .15s;
-    line-height: 1.4;
+    line-height: 1.4; letter-spacing: .01em;
   }
+  .choice-btn::first-letter { color: #53d8fb; font-weight: bold; font-size: 1.15rem; }
   .choice-btn:hover:not(:disabled) { border-color: #53d8fb; background: #1a2a4a; }
   .choice-btn.selected-correct { border-color: #4caf50; background: #1a3a1a; color: #4caf50; font-weight: bold; }
   .choice-btn.selected-wrong { border-color: #e94560; background: #3a1a1a; color: #e94560; }
@@ -146,7 +147,8 @@ function nextWord() {
 
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach((b, i) => {
-    b.textContent = choices[i];
+    const arrow = i === 0 ? '↑ ' : '↓ ';
+    b.textContent = arrow + choices[i];
     b.className = 'choice-btn';
     b.disabled = false;
   });
