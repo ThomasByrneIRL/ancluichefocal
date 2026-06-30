@@ -50,7 +50,7 @@
     Feicfidh tú focal Gaeilge.<br>
     Roghnaigh an sainmhíniú ceart.<br>
     100 focal an cluiche.<br>
-    Scór céatadáin ag an deireadh.
+    Scór céatadáin ag an deireadh.<br><span style="color:#555;font-size:.85rem">↑ barr · ↓ bun le roghnú</span>
   </p>
   <button class="big-btn" onclick="initGame()">Tosaígh</button>
 </div>
@@ -204,6 +204,11 @@ function show(id) {
 }
 
 show('start-screen');
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp') pick(0);
+  if (e.key === 'ArrowDown') pick(1);
+});
 </script>
 </body>
 </html>
