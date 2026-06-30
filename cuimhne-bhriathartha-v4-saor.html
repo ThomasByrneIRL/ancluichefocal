@@ -206,8 +206,8 @@ function show(id) {
 show('start-screen');
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp') pick(0);
-  if (e.key === 'ArrowDown') pick(1);
+  if (e.key === 'ArrowUp') { e.preventDefault(); pick(0); }
+  if (e.key === 'ArrowDown') { e.preventDefault(); pick(1); }
 });
 </script>
 </body>
