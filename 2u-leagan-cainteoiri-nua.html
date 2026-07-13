@@ -11,8 +11,10 @@
   h1 { font-size: 2rem; color: #e94560; margin-bottom: .5rem; }
   .subtitle { color: #aaa; margin-bottom: 2rem; font-size: .95rem; }
 
-  /* Survival clock */
-  #survival-clock { font-size: 4rem; font-weight: bold; color: #53d8fb; letter-spacing: .05em; margin-bottom: 1.2rem; font-variant-numeric: tabular-nums; }
+  /* Score display */
+  #score-display { font-size: 4.5rem; font-weight: bold; color: #53d8fb; letter-spacing: .04em; margin-bottom: .2rem; font-variant-numeric: tabular-nums; line-height: 1; }
+  #survival-time { font-size: .9rem; color: #556; margin-bottom: .8rem; font-variant-numeric: tabular-nums; }
+  #pts-flash { font-size: 1.4rem; font-weight: bold; color: #4caf50; height: 1.8rem; margin-bottom: .4rem; transition: opacity .3s; }
 
   /* Per-word countdown bar */
   .word-timer-wrap { margin-bottom: 1.2rem; position: relative; height: 6px; }
@@ -35,8 +37,9 @@
   .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 1rem; }
 
   /* Game over */
-  #over-time { font-size: 4.5rem; font-weight: bold; color: #53d8fb; margin: .5rem 0; letter-spacing: .05em; }
-  .over-label { color: #aaa; font-size: 1rem; margin-bottom: .3rem; }
+  #over-score { font-size: 5rem; font-weight: bold; color: #53d8fb; margin: .3rem 0; letter-spacing: .04em; }
+  #over-time-line { color: #556; font-size: .9rem; margin-bottom: .4rem; }
+  .over-label { color: #aaa; font-size: 1rem; margin-bottom: .1rem; }
   .best-wrap { color: #4caf50; font-size: 1.2rem; font-weight: bold; margin: .8rem 0 1.5rem; }
   #over-correct-word { color: #ff9966; font-size: 1rem; margin-bottom: 1.5rem; }
 </style>
@@ -50,14 +53,18 @@
     Roghnaigh an sainmhíniú ceart.<br>
     <span style="color:#53d8fb">4 soicind</span> an focal.<br>
     Freagra mícheart nó am caite → <span style="color:#e94560">thart!</span><br>
-    An t-am marthanais is faide — sin do scór.<br>
+    Is mó pointí a fhaigheann tú as freagra tapa:<br>
+    <span style="color:#4caf50">3–4s fágtha = 4 pt &nbsp;·&nbsp; 2–3s = 3 pt</span><br>
+    <span style="color:#ffc107">1–2s = 2 pt &nbsp;·&nbsp; 0–1s = 1 pt</span><br>
     <span style="color:#53d8fb">↑ barr &nbsp;·&nbsp; ↓ bun</span> le roghnú
   </p>
   <button class="big-btn" onclick="initGame()">Tosaígh</button>
 </div>
 
 <div id="game-screen" class="screen">
-  <div id="survival-clock">0:00.0</div>
+  <div id="score-display">0</div>
+  <div id="survival-time">⏱ 0:00.0</div>
+  <div id="pts-flash"></div>
   <div class="word-timer-wrap">
     <div id="word-timer-bar"></div>
   </div>
@@ -73,10 +80,11 @@
 
 <div id="over-screen" class="screen">
   <h1>Thart!</h1>
-  <p class="over-label">Am marthanais</p>
-  <div id="over-time">0:00.0</div>
+  <p class="over-label">Pointí</p>
+  <div id="over-score">0</div>
+  <div id="over-time-line">⏱ 0:00.0</div>
   <div id="over-correct-word"></div>
-  <div class="best-wrap">🏆 Taifead: <span id="best-time">0:00.0</span></div>
+  <div class="best-wrap">🏆 Taifead: <span id="best-score">0</span> pt</div>
   <button class="big-btn" onclick="initGame()">Arís</button>
 </div>
 
@@ -6533,11 +6541,29 @@ const WORD_TIME = 4000; // ms per word
 
 let correctIdx, locked, currentWord;
 let survivalStart, survivalElapsed;
+let totalScore = 0, bestScore = 0;
 let wordDeadline, wordTimerRAF, survivalRAF;
-let bestMs = 0;
 let _ca = null;
 
-try { bestMs = parseInt(localStorage.getItem('2u_best_ms') || '0'); } catch(e){}
+try { bestScore = parseInt(localStorage.getItem('2u_best_pts') || '0'); } catch(e){}
+
+function pointsFor(remainingMs) {
+  const s = remainingMs / 1000;
+  if (s >= 3.0) return 4;
+  if (s >= 2.0) return 3;
+  if (s >= 1.0) return 2;
+  if (s >  0.0) return 1;
+  return 0;
+}
+
+let flashTimer = null;
+function showPtsFlash(pts) {
+  const el = document.getElementById('pts-flash');
+  el.textContent = '+' + pts + ' pt' + (pts > 1 ? 's' : '');
+  el.style.opacity = '1';
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 700);
+}
 
 function playPron(word) {
   if (_ca) { _ca.pause(); _ca = null; }
@@ -6581,10 +6607,10 @@ function formatTime(ms) {
   return mins + ':' + String(secs).padStart(2, '0') + '.' + tenths;
 }
 
-// Survival clock (counts up)
+// Secondary survival time (counts up, small display)
 function tickSurvival() {
   survivalElapsed = Date.now() - survivalStart;
-  document.getElementById('survival-clock').textContent = formatTime(survivalElapsed);
+  document.getElementById('survival-time').textContent = '⏱ ' + formatTime(survivalElapsed);
   survivalRAF = requestAnimationFrame(tickSurvival);
 }
 
@@ -6610,9 +6636,14 @@ function initGame() {
   queue = sh(WORDS);
   survivalStart = Date.now();
   survivalElapsed = 0;
+  totalScore = 0;
 
   cancelAnimationFrame(survivalRAF);
   cancelAnimationFrame(wordTimerRAF);
+
+  document.getElementById('score-display').textContent = '0';
+  document.getElementById('pts-flash').textContent = '';
+  document.getElementById('pts-flash').style.opacity = '0';
 
   survivalRAF = requestAnimationFrame(tickSurvival);
   show('game-screen');
@@ -6655,6 +6686,11 @@ function pick(idx) {
   btns.forEach(b => b.disabled = true);
 
   if (idx === correctIdx) {
+    const remaining = Math.max(0, wordDeadline - Date.now());
+    const pts = pointsFor(remaining);
+    totalScore += pts;
+    document.getElementById('score-display').textContent = totalScore;
+    showPtsFlash(pts);
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
     setTimeout(nextWord, 400);
@@ -6670,20 +6706,22 @@ function triggerDeath(reason) {
   cancelAnimationFrame(wordTimerRAF);
   cancelAnimationFrame(survivalRAF);
 
-  const finalMs = survivalElapsed;
+  const finalScore = totalScore;
+  const finalTime = survivalElapsed;
 
   document.getElementById('word-card').className = 'card flash-dead';
   document.getElementById('word-timer-bar').style.width = '0%';
   document.getElementById('word-timer-bar').style.background = '#e94560';
 
   setTimeout(() => {
-    if (finalMs > bestMs) {
-      bestMs = finalMs;
-      try { localStorage.setItem('2u_best_ms', bestMs); } catch(e){}
+    if (finalScore > bestScore) {
+      bestScore = finalScore;
+      try { localStorage.setItem('2u_best_pts', bestScore); } catch(e){}
     }
     const correctAns = DICT[currentWord][0];
-    document.getElementById('over-time').textContent = formatTime(finalMs);
-    document.getElementById('best-time').textContent = formatTime(bestMs);
+    document.getElementById('over-score').textContent = finalScore;
+    document.getElementById('over-time-line').textContent = '⏱ ' + formatTime(finalTime);
+    document.getElementById('best-score').textContent = bestScore;
     document.getElementById('over-correct-word').textContent =
       reason === 'time' ? '⏱ Am caite — ' + currentWord + ' = ' + correctAns
                         : '✗ ' + currentWord + ' = ' + correctAns;
