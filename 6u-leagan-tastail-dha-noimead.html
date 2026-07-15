@@ -83,8 +83,18 @@
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.1s, border-color 0.1s;
-      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
+    .key-hint {
+      font-size: 1.1rem;
+      opacity: 0.5;
+      flex-shrink: 0;
+      width: 1.2em;
+      text-align: center;
+    }
+    .btn-text { flex: 1; text-align: left; }
     .choice-btn:hover:not(:disabled) { background: #1a4f8a; border-color: #53d8fb; }
     .choice-btn.selected-correct { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
     .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
@@ -148,8 +158,8 @@
   <div id="word-card" class="card">—</div>
 
   <div class="choices">
-    <button class="choice-btn" id="choice-a" onclick="pick(0)"></button>
-    <button class="choice-btn" id="choice-b" onclick="pick(1)"></button>
+    <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
+    <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
   </div>
 
   <div id="pts-flash">+1</div>
@@ -19240,7 +19250,7 @@ function nextWord() {
 
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach((b, i) => {
-    b.textContent = opts[i];
+    b.querySelector('.btn-text').textContent = opts[i];
     b.className = 'choice-btn';
     b.disabled = false;
   });
@@ -19312,12 +19322,18 @@ function endGame() {
   show('over-screen');
 }
 
-// Keyboard support
+// Keyboard support below
+
 document.addEventListener('keydown', e => {
-  const gs = document.getElementById('game-screen');
-  if (!gs.classList.contains('active')) return;
-  if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') { e.preventDefault(); pick(0); }
-  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { e.preventDefault(); pick(1); }
+  if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
+});
+
+show('start-screen');
+</script>
+</body>
+</html>
+== 'S') { e.preventDefault(); pick(1); }
 });
 </script>
 </body>
