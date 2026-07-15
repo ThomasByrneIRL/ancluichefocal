@@ -104,6522 +104,1639 @@
 
 <script>
 const DICT = {
-  "cat": [
-    "cat"
-  ],
-  "madra": [
-    "dog"
-  ],
-  "capall": [
-    "horse"
-  ],
-  "bó": [
-    "cow"
-  ],
-  "caora": [
-    "sheep"
-  ],
-  "muc": [
-    "pig"
-  ],
-  "éan": [
-    "bird"
-  ],
-  "iasc": [
-    "fish"
-  ],
-  "leon": [
-    "lion"
-  ],
-  "eilifint": [
-    "elephant"
-  ],
-  "luch": [
-    "mouse",
-    "rat"
-  ],
-  "coinín": [
-    "rabbit"
-  ],
-  "gabhar": [
-    "goat"
-  ],
-  "asal": [
-    "donkey",
-    "ass"
-  ],
-  "fia": [
-    "deer"
-  ],
-  "sionnach": [
-    "fox"
-  ],
-  "ulchabán": [
-    "owl"
-  ],
-  "bradán": [
-    "salmon"
-  ],
-  "béar": [
-    "bear"
-  ],
-  "tíogar": [
-    "tiger"
-  ],
-  "eala": [
-    "swan"
-  ],
-  "colm": [
-    "dove",
-    "pigeon"
-  ],
-  "preachán": [
-    "crow",
-    "raven"
-  ],
-    "duck"
-  ],
-  "cearc": [
-    "hen",
-    "chicken"
-  ],
-  "coileach": [
-    "rooster",
-    "cock"
-  ],
-  "rón": [
-    "seal"
-  ],
-  "iolar": [
-    "eagle"
-  ],
-  "giorria": [
-    "hare"
-  ],
-  "broc": [
-    "badger"
-  ],
-  "uan": [
-    "lamb"
-  ],
-  "lao": [
-    "calf"
-  ],
-  "searrach": [
-    "foal"
-  ],
-  "coileán": [
-    "puppy"
-  ],
-  "piscín": [
-    "kitten"
-  ],
-  "nathair": [
-    "snake"
-  ],
-  "moncaí": [
-    "monkey"
-  ],
-  "dobharchú": [
-    "otter"
-  ],
-  "scadán": [
-    "herring"
-  ],
-  "trosc": [
-    "cod"
-  ],
-  "tuinnín": [
-    "tuna"
-  ],
-  "cú": [
-    "hound",
-    "greyhound"
-  ],
-  "poc": [
-    "buck",
-    "goat"
-  ],
-  "reithe": [
-    "ram"
-  ],
-  "damh": [
-    "ox",
-    "stag"
-  ],
-  "feannóg": [
-    "hooded crow"
-  ],
-  "druid": [
-    "starling"
-  ],
-  "spideog": [
-    "robin"
-  ],
-  "fuiseog": [
-    "lark"
-  ],
-  "smólach": [
-    "thrush"
-  ],
-  "colúr": [
-    "pigeon",
-    "dove"
-  ],
-  "francach": [
-    "rat"
-  ],
-  "lacha": [
-    "duck"
-  ],
-  "péacóg": [
-    "peacock"
-  ],
-  "siorc": [
-    "shark"
-  ],
-  "breac": [
-    "trout"
-  ],
-  "míol": [
-    "insect",
-    "louse"
-  ],
-  "ialtóg": [
-    "bat"
-  ],
-  "portán": [
-    "crab"
-  ],
-  "gliomach": [
-    "lobster"
-  ],
-  "gainéad": [
-    "gannet"
-  ],
-  "corr": [
-    "heron"
-  ],
-  "easóg": [
-    "weasel",
-    "stoat"
-  ],
-  "faolchú": [
-    "wolf"
-  ],
-  "tarbh": [
-    "bull"
-  ],
-  "cráin": [
-    "sow"
-  ],
-  "turcaí": [
-    "turkey"
-  ],
-  "peata": [
-    "pet"
-  ],
-  "fiach": [
-    "raven",
-    "crow"
-  ],
-  "faoileán": [
-    "seagull"
-  ],
-  "dreoilín": [
-    "wren"
-  ],
-  "lon": [
-    "blackbird"
-  ],
-  "gé": [
-    "goose"
-  ],
-  "seabhac": [
-    "hawk",
-    "falcon"
-  ],
-  "gráinneog": [
-    "hedgehog"
-  ],
-  "gealbhan": [
-    "sparrow"
-  ],
-  "lámh": [
-    "hand",
-    "arm"
-  ],
-  "súil": [
-    "eye"
-  ],
-  "cluas": [
-    "ear"
-  ],
-  "srón": [
-    "nose"
-  ],
-  "béal": [
-    "mouth"
-  ],
-  "ceann": [
-    "head"
-  ],
-  "cos": [
-    "foot",
-    "leg"
-  ],
-  "droim": [
-    "back"
-  ],
-  "bolg": [
-    "belly",
-    "stomach"
-  ],
-  "méar": [
-    "finger"
-  ],
-  "glúin": [
-    "knee"
-  ],
-  "gualainn": [
-    "shoulder"
-  ],
-  "muineál": [
-    "neck"
-  ],
-  "teanga": [
-    "tongue",
-    "language"
-  ],
-  "fiacail": [
-    "tooth"
-  ],
-  "croí": [
-    "heart"
-  ],
-  "scamhóg": [
-    "lung"
-  ],
-  "ae": [
-    "liver"
-  ],
-  "cnámh": [
-    "bone"
-  ],
-  "craiceann": [
-    "skin"
-  ],
-  "gruaig": [
-    "hair"
-  ],
-  "féasóg": [
-    "beard"
-  ],
-  "mala": [
-    "eyebrow"
-  ],
-  "ordóg": [
-    "thumb"
-  ],
-  "rosta": [
-    "wrist"
-  ],
-  "smig": [
-    "chin"
-  ],
-  "éadan": [
-    "forehead",
-    "face"
-  ],
-  "scornach": [
-    "throat"
-  ],
-  "ucht": [
-    "chest"
-  ],
-  "easna": [
-    "rib"
-  ],
-  "fuil": [
-    "blood"
-  ],
-  "alt": [
-    "joint"
-  ],
-    "nail",
-    "claw"
-  ],
-  "sáil": [
-    "heel"
-  ],
-  "colpa": [
-    "calf"
-  ],
-  "duán": [
-    "kidney"
-  ],
-  "liopa": [
-    "lip"
-  ],
-  "fabhra": [
-    "eyelash"
-  ],
-  "féith": [
-    "vein"
-  ],
-  "matán": [
-    "muscle"
-  ],
-  "troigh": [
-    "foot"
-  ],
-  "géag": [
-    "limb",
-    "branch"
-  ],
-    "elbow"
-  ],
-  "murnán": [
-    "ankle"
-  ],
-  "bos": [
-    "palm"
-  ],
-  "dorn": [
-    "fist"
-  ],
-  "teach": [
-    "house"
-  ],
-  "doras": [
-    "door"
-  ],
-  "fuinneog": [
-    "window"
-  ],
-  "bord": [
-    "table"
-  ],
-  "cathaoir": [
-    "chair"
-  ],
-  "leaba": [
-    "bed"
-  ],
-  "seomra": [
-    "room"
-  ],
-  "urlár": [
-    "floor"
-  ],
-  "díon": [
-    "roof"
-  ],
-  "balla": [
-    "wall"
-  ],
-  "cistín": [
-    "kitchen"
-  ],
-  "gairdín": [
-    "garden"
-  ],
-  "staighre": [
-    "stairs"
-  ],
-  "tine": [
-    "fire"
-  ],
-  "lampa": [
-    "lamp"
-  ],
-  "scáthán": [
-    "mirror"
-  ],
-  "cófra": [
-    "cupboard",
-    "wardrobe"
-  ],
-  "cuisneoir": [
-    "fridge",
-    "refrigerator"
-  ],
-  "oigheann": [
-    "oven"
-  ],
-  "sorn": [
-    "stove",
-    "cooker"
-  ],
-  "sconna": [
-    "tap"
-  ],
-  "doirteal": [
-    "sink"
-  ],
-  "tuáille": [
-    "towel"
-  ],
-  "blaincéad": [
-    "blanket"
-  ],
-  "piliúr": [
-    "pillow"
-  ],
-  "troscán": [
-    "furniture"
-  ],
-  "coinneal": [
-    "candle"
-  ],
-  "clog": [
-    "clock",
-    "bell"
-  ],
-  "teilifís": [
-    "television",
-    "tv"
-  ],
-  "raidió": [
-    "radio"
-  ],
-  "ríomhaire": [
-    "computer"
-  ],
-  "guthán": [
-    "phone",
-    "telephone"
-  ],
-  "clós": [
-    "yard"
-  ],
-  "garáiste": [
-    "garage"
-  ],
-  "folcadán": [
-    "bath"
-  ],
-  "leithreas": [
-    "toilet"
-  ],
-  "dallóg": [
-    "blind",
-    "shutter"
-  ],
-  "cuirtín": [
-    "curtain"
-  ],
-  "eochair": [
-    "key"
-  ],
-  "tolg": [
-    "sofa",
-    "couch"
-  ],
-  "bosca": [
-    "box"
-  ],
-  "buidéal": [
-    "bottle"
-  ],
-  "gloine": [
-    "glass"
-  ],
-  "cupán": [
-    "cup"
-  ],
-  "muga": [
-    "mug"
-  ],
-  "pláta": [
-    "plate"
-  ],
-  "babhla": [
-    "bowl"
-  ],
-  "sáspan": [
-    "saucepan"
-  ],
-  "pota": [
-    "pot"
-  ],
-  "friochtán": [
-    "frying pan"
-  ],
-  "scian": [
-    "knife"
-  ],
-  "forc": [
-    "fork"
-  ],
-  "spúnóg": [
-    "spoon"
-  ],
-  "citeal": [
-    "kettle"
-  ],
-  "canna": [
-    "can",
-    "tin"
-  ],
-  "léine": [
-    "shirt"
-  ],
-  "geansaí": [
-    "jumper",
-    "sweater"
-  ],
-  "treabhsar": [
-    "trousers"
-  ],
-  "sciorta": [
-    "skirt"
-  ],
-  "gúna": [
-    "dress"
-  ],
-  "bróg": [
-    "shoe"
-  ],
-  "stoca": [
-    "sock"
-  ],
-  "caipín": [
-    "cap"
-  ],
-  "hata": [
-    "hat"
-  ],
-  "cóta": [
-    "coat"
-  ],
-  "seaicéad": [
-    "jacket"
-  ],
-  "crios": [
-    "belt"
-  ],
-  "spéaclaí": [
-    "glasses",
-    "spectacles"
-  ],
-  "fáinne": [
-    "ring"
-  ],
-  "muince": [
-    "necklace"
-  ],
-  "uaireadóir": [
-    "watch"
-  ],
-  "mála": [
-    "bag"
-  ],
-  "sparán": [
-    "purse",
-    "wallet"
-  ],
-  "éadach": [
-    "cloth",
-    "clothes"
-  ],
-  "carbhat": [
-    "tie"
-  ],
-  "scaif": [
-    "scarf"
-  ],
-    "gloves"
-  ],
-  "crann": [
-    "tree"
-  ],
-  "bláth": [
-    "flower"
-  ],
-  "féar": [
-    "grass"
-  ],
-  "farraige": [
-    "sea"
-  ],
-  "abhainn": [
-    "river"
-  ],
-  "loch": [
-    "lake"
-  ],
-  "sliabh": [
-    "mountain"
-  ],
-  "coill": [
-    "forest",
-    "wood"
-  ],
-  "grian": [
-    "sun"
-  ],
-  "gealach": [
-    "moon"
-  ],
-  "réalta": [
-    "star"
-  ],
-  "spéir": [
-    "sky"
-  ],
-  "scamall": [
-    "cloud"
-  ],
-  "báisteach": [
-    "rain"
-  ],
-  "sneachta": [
-    "snow"
-  ],
-  "gaoth": [
-    "wind"
-  ],
-  "carraig": [
-    "rock"
-  ],
-  "ithir": [
-    "soil",
-    "earth"
-  ],
-  "tonn": [
-    "wave"
-  ],
-  "cuan": [
-    "harbour",
-    "bay"
-  ],
-  "foraois": [
-    "forest"
-  ],
-  "gaineamh": [
-    "sand"
-  ],
-  "trá": [
-    "beach",
-    "strand"
-  ],
-  "oileán": [
-    "island"
-  ],
-  "sruthán": [
-    "stream"
-  ],
-  "tobar": [
-    "well"
-  ],
-  "portach": [
-    "bog"
-  ],
-  "talamh": [
-    "land",
-    "earth",
-    "ground"
-  ],
-  "aer": [
-    "air"
-  ],
-  "gleann": [
-    "valley",
-    "glen"
-  ],
-  "cladach": [
-    "shore",
-    "beach"
-  ],
-  "droichead": [
-    "bridge"
-  ],
-  "linn": [
-    "pool",
-    "pond"
-  ],
-  "sceach": [
-    "bush",
-    "thorn"
-  ],
-  "fraoch": [
-    "heather"
-  ],
-  "luachair": [
-    "rushes"
-  ],
-  "cloch": [
-    "stone"
-  ],
-  "drúcht": [
-    "dew"
-  ],
-  "ceo": [
-    "fog",
-    "mist"
-  ],
-  "sioc": [
-    "frost"
-  ],
-  "stoirm": [
-    "storm"
-  ],
-  "toirneach": [
-    "thunder"
-  ],
-  "tintreach": [
-    "lightning"
-  ],
-  "aimsir": [
-    "weather"
-  ],
-  "aeráid": [
-    "climate"
-  ],
-  "aill": [
-    "cliff"
-  ],
-  "eas": [
-    "waterfall"
-  ],
-  "muir": [
-    "sea"
-  ],
-  "duilleog": [
-    "leaf"
-  ],
-  "tor": [
-    "bush",
-    "shrub"
-  ],
-    "root"
-  ],
-  "síol": [
-    "seed"
-  ],
-  "rós": [
-    "rose"
-  ],
-  "seamróg": [
-    "shamrock"
-  ],
-  "cuach": [
-    "cuckoo"
-  ],
-  "caorthann": [
-    "rowan"
-  ],
-  "dair": [
-    "oak"
-  ],
-  "cuileann": [
-    "holly"
-  ],
-  "iúr": [
-    "yew"
-  ],
-  "bia": [
-    "food"
-  ],
-  "uisce": [
-    "water"
-  ],
-  "arán": [
-    "bread"
-  ],
-  "im": [
-    "butter"
-  ],
-  "cáis": [
-    "cheese"
-  ],
-  "feoil": [
-    "meat"
-  ],
-    "vegetables"
-  ],
-  "úll": [
-    "apple"
-  ],
-  "oráiste": [
-    "orange"
-  ],
-  "bainne": [
-    "milk"
-  ],
-  "tae": [
-    "tea"
-  ],
-  "caife": [
-    "coffee"
-  ],
-  "subh": [
-    "jam"
-  ],
-    "potatoes"
-  ],
-  "mairteoil": [
-    "beef"
-  ],
-  "sicín": [
-    "chicken"
-  ],
-  "ispín": [
-    "sausage"
-  ],
-  "bagún": [
-    "bacon"
-  ],
-  "ubh": [
-    "egg"
-  ],
-  "rís": [
-    "rice"
-  ],
-  "cáca": [
-    "cake"
-  ],
-  "milseán": [
-    "sweet",
-    "candy"
-  ],
-  "seacláid": [
-    "chocolate"
-  ],
-  "piorra": [
-    "pear"
-  ],
-  "silín": [
-    "cherry"
-  ],
-  "muisiriún": [
-    "mushroom"
-  ],
-  "pónaire": [
-    "bean"
-  ],
-  "pis": [
-    "pea"
-  ],
-  "leitís": [
-    "lettuce"
-  ],
-  "brocailí": [
-    "broccoli"
-  ],
-  "caróg": [
-    "carrot"
-  ],
-  "cabáiste": [
-    "cabbage"
-  ],
-  "oinniún": [
-    "onion"
-  ],
-  "gairleog": [
-    "garlic"
-  ],
-  "trátaí": [
-    "tomato",
-    "tomatoes"
-  ],
-  "fíon": [
-    "wine"
-  ],
-  "beoir": [
-    "beer"
-  ],
-  "líomanáid": [
-    "lemonade"
-  ],
-  "anraith": [
-    "soup"
-  ],
-  "ceapaire": [
-    "sandwich"
-  ],
-  "sceallóg": [
-    "chip",
-    "chips"
-  ],
-  "sailéad": [
-    "salad"
-  ],
-  "cruithneacht": [
-    "wheat"
-  ],
-  "coirce": [
-    "oats"
-  ],
-  "fíonchaor": [
-    "grape"
-  ],
-  "muiceoil": [
-    "pork"
-  ],
-  "uaineoil": [
-    "lamb"
-  ],
-  "cnó": [
-    "nut"
-  ],
-  "péitseog": [
-    "peach"
-  ],
-  "almóinn": [
-    "almond"
-  ],
-  "cál": [
-    "kale",
-    "cabbage"
-  ],
-    "fruit"
-  ],
-  "salann": [
-    "salt"
-  ],
-  "siúcra": [
-    "sugar"
-  ],
-  "piobar": [
-    "pepper"
-  ],
-  "ola": [
-    "oil"
-  ],
-  "spíosra": [
-    "spice"
-  ],
-  "dearg": [
-    "red"
-  ],
-  "gorm": [
-    "blue"
-  ],
-  "buí": [
-    "yellow"
-  ],
-  "bán": [
-    "white"
-  ],
-  "dubh": [
-    "black"
-  ],
-  "liath": [
-    "grey"
-  ],
-  "donn": [
-    "brown"
-  ],
-  "corcra": [
-    "purple"
-  ],
-  "flannbhuí": [
-    "orange"
-  ],
-  "ómra": [
-    "amber"
-  ],
-  "bándearg": [
-    "pink"
-  ],
-  "uaine": [
-    "green"
-  ],
-  "rua": [
-    "red",
-    "russet",
-    "auburn"
-  ],
-  "geal": [
-    "bright",
-    "white"
-  ],
-  "dorcha": [
-    "dark"
-  ],
-  "lá": [
-    "day"
-  ],
-  "oíche": [
-    "night"
-  ],
-  "maidin": [
-    "morning"
-  ],
-  "tráthnóna": [
-    "evening",
-    "afternoon"
-  ],
-  "seachtain": [
-    "week"
-  ],
-  "mí": [
-    "month"
-  ],
-  "bliain": [
-    "year"
-  ],
-  "am": [
-    "time"
-  ],
-  "uair": [
-    "hour",
-    "time"
-  ],
-  "inniu": [
-    "today"
-  ],
-  "amárach": [
-    "tomorrow"
-  ],
-  "inné": [
-    "yesterday"
-  ],
-  "earrach": [
-    "spring"
-  ],
-  "samhradh": [
-    "summer"
-  ],
-  "fómhar": [
-    "autumn",
-    "harvest"
-  ],
-  "geimhreadh": [
-    "winter"
-  ],
-  "Luan": [
-    "Monday"
-  ],
-  "Máirt": [
-    "Tuesday"
-  ],
-  "Céadaoin": [
-    "Wednesday"
-  ],
-  "Déardaoin": [
-    "Thursday"
-  ],
-  "Aoine": [
-    "Friday"
-  ],
-  "Satharn": [
-    "Saturday"
-  ],
-  "Domhnach": [
-    "Sunday"
-  ],
-  "nóiméad": [
-    "minute"
-  ],
-  "soicind": [
-    "second"
-  ],
-  "tamall": [
-    "while"
-  ],
-  "fadó": [
-    "long ago"
-  ],
-  "anois": [
-    "now"
-  ],
-  "Eanáir": [
-    "January"
-  ],
-  "Feabhra": [
-    "February"
-  ],
-  "Márta": [
-    "March"
-  ],
-  "Aibreán": [
-    "April"
-  ],
-  "Bealtaine": [
-    "May"
-  ],
-  "Meitheamh": [
-    "June"
-  ],
-  "Iúil": [
-    "July"
-  ],
-  "Lúnasa": [
-    "August"
-  ],
-    "September"
-  ],
-  "Samhain": [
-    "November"
-  ],
-  "Nollaig": [
-    "December",
-    "Christmas"
-  ],
-  "náid": [
-    "zero"
-  ],
-  "aon": [
-    "one"
-  ],
-  "dó": [
-    "two"
-  ],
-  "trí": [
-    "three"
-  ],
-  "ceathair": [
-    "four"
-  ],
-  "cúig": [
-    "five"
-  ],
-    "six"
-  ],
-  "seacht": [
-    "seven"
-  ],
-  "ocht": [
-    "eight"
-  ],
-  "naoi": [
-    "nine"
-  ],
-  "deich": [
-    "ten"
-  ],
-  "fiche": [
-    "twenty"
-  ],
-  "tríocha": [
-    "thirty"
-  ],
-  "daichead": [
-    "forty"
-  ],
-  "caoga": [
-    "fifty"
-  ],
-  "céad": [
-    "hundred"
-  ],
-  "míle": [
-    "thousand"
-  ],
-  "bean": [
-    "woman"
-  ],
-  "fear": [
-    "man"
-  ],
-  "páiste": [
-    "child"
-  ],
-  "buachaill": [
-    "boy"
-  ],
-  "cailín": [
-    "girl"
-  ],
-  "máthair": [
-    "mother"
-  ],
-  "athair": [
-    "father"
-  ],
-  "deartháir": [
-    "brother"
-  ],
-  "deirfiúr": [
-    "sister"
-  ],
-  "seanathair": [
-    "grandfather"
-  ],
-  "seanmháthair": [
-    "grandmother"
-  ],
-  "cara": [
-    "friend"
-  ],
-  "múinteoir": [
-    "teacher"
-  ],
-  "dochtúir": [
-    "doctor"
-  ],
-  "saighdiúir": [
-    "soldier"
-  ],
-  "póilín": [
-    "police",
-    "guard"
-  ],
-  "dlíodóir": [
-    "lawyer"
-  ],
-  "innealtóir": [
-    "engineer"
-  ],
-  "scríbhneoir": [
-    "writer",
-    "author"
-  ],
-  "iriseoir": [
-    "journalist"
-  ],
-  "feirmeoir": [
-    "farmer"
-  ],
-  "iascaire": [
-    "fisherman"
-  ],
-  "siúinéir": [
-    "carpenter"
-  ],
-  "táilliúir": [
-    "tailor"
-  ],
-  "báicéir": [
-    "baker"
-  ],
-  "búistéir": [
-    "butcher"
-  ],
-  "cócaire": [
-    "cook",
-    "chef"
-  ],
-  "freastalaí": [
-    "waiter"
-  ],
-  "tiománaí": [
-    "driver"
-  ],
-  "píolóta": [
-    "pilot"
-  ],
-  "comharsa": [
-    "neighbour"
-  ],
-  "oifigeach": [
-    "officer"
-  ],
-  "ailtire": [
-    "architect"
-  ],
-  "tréidlia": [
-    "vet",
-    "veterinarian"
-  ],
-  "ceannaí": [
-    "merchant",
-    "trader"
-  ],
-  "saoránach": [
-    "citizen"
-  ],
-  "cuairteoir": [
-    "visitor"
-  ],
-  "stiúrthóir": [
-    "director"
-  ],
-  "bainisteoir": [
-    "manager"
-  ],
-  "ceannaire": [
-    "leader"
-  ],
-  "clann": [
-    "children",
-    "family"
-  ],
-  "lánúin": [
-    "couple"
-  ],
-  "nia": [
-    "nephew"
-  ],
-  "neacht": [
-    "niece"
-  ],
-  "uncail": [
-    "uncle"
-  ],
-  "aint": [
-    "aunt"
-  ],
-  "oibrí": [
-    "worker"
-  ],
-  "turasóir": [
-    "tourist"
-  ],
-  "imirceach": [
-    "emigrant",
-    "immigrant"
-  ],
-  "léachtóir": [
-    "lecturer"
-  ],
-  "altra": [
-    "nurse"
-  ],
-  "máinlia": [
-    "surgeon"
-  ],
-  "muintir": [
-    "people",
-    "family"
-  ],
-  "teaghlach": [
-    "family",
-    "household"
-  ],
-  "sagart": [
-    "priest"
-  ],
-  "bráthair": [
-    "brother",
-    "friar"
-  ],
-  "garda": [
-    "guard",
-    "police"
-  ],
-  "captaen": [
-    "captain"
-  ],
-  "amhránaí": [
-    "singer"
-  ],
-  "ceoltóir": [
-    "musician"
-  ],
-  "damhsóir": [
-    "dancer"
-  ],
-  "file": [
-    "poet"
-  ],
-  "scéalaí": [
-    "storyteller"
-  ],
-  "cainteoir": [
-    "speaker"
-  ],
-  "leabharlannaí": [
-    "librarian"
-  ],
-  "rúnaí": [
-    "secretary"
-  ],
-  "cuntasóir": [
-    "accountant"
-  ],
-  "gruagaire": [
-    "hairdresser"
-  ],
-  "tógálaí": [
-    "builder"
-  ],
-  "seanóir": [
-    "elder",
-    "senator"
-  ],
-  "naíonán": [
-    "infant",
-    "baby"
-  ],
-  "baile": [
-    "town",
-    "home"
-  ],
-  "cathair": [
-    "city"
-  ],
-  "tír": [
-    "country",
-    "land"
-  ],
-  "sráid": [
-    "street"
-  ],
-  "siopa": [
-    "shop"
-  ],
-  "scoil": [
-    "school"
-  ],
-  "eaglais": [
-    "church"
-  ],
-  "ospidéal": [
-    "hospital"
-  ],
-  "leabharlann": [
-    "library"
-  ],
-  "páirc": [
-    "park",
-    "field"
-  ],
-  "aerfort": [
-    "airport"
-  ],
-  "stáisiún": [
-    "station"
-  ],
-  "contae": [
-    "county"
-  ],
-  "bealach": [
-    "road",
-    "way"
-  ],
-  "cosán": [
-    "path",
-    "footpath"
-  ],
-  "cé": [
-    "pier",
-    "quay"
-  ],
-  "bialann": [
-    "restaurant"
-  ],
-  "caifé": [
-    "café"
-  ],
-  "banc": [
-    "bank"
-  ],
-  "oifig": [
-    "office"
-  ],
-  "coláiste": [
-    "college"
-  ],
-  "ollscoil": [
-    "university"
-  ],
-  "monarcha": [
-    "factory"
-  ],
-  "túr": [
-    "tower"
-  ],
-  "caisleán": [
-    "castle"
-  ],
-  "séipéal": [
-    "chapel"
-  ],
-  "mainistir": [
-    "monastery"
-  ],
-  "cúirt": [
-    "court"
-  ],
-  "geata": [
-    "gate"
-  ],
-  "carrchlós": [
-    "car park"
-  ],
-  "stadiam": [
-    "stadium"
-  ],
-  "faiche": [
-    "green",
-    "lawn"
-  ],
-  "margadh": [
-    "market"
-  ],
-  "príosún": [
-    "prison"
-  ],
-  "muileann": [
-    "mill"
-  ],
-  "dún": [
-    "fort"
-  ],
-  "paróiste": [
-    "parish"
-  ],
-  "cúige": [
-    "province"
-  ],
-  "reilig": [
-    "graveyard",
-    "cemetery"
-  ],
-  "cloigtheach": [
-    "bell tower"
-  ],
-  "bóthar": [
-    "road"
-  ],
-  "cearnóg": [
-    "square"
-  ],
-  "tollán": [
-    "tunnel"
-  ],
-  "lána": [
-    "lane"
-  ],
-  "pictiúrlann": [
-    "cinema"
-  ],
-  "amharclann": [
-    "theatre"
-  ],
-  "cógaslann": [
-    "pharmacy"
-  ],
-  "sráidbhaile": [
-    "village"
-  ],
-  "tuaisceart": [
-    "north"
-  ],
-  "deisceart": [
-    "south"
-  ],
-  "oirthear": [
-    "east"
-  ],
-  "iarthar": [
-    "west"
-  ],
-  "lár": [
-    "centre",
-    "middle"
-  ],
-  "teorainn": [
-    "border",
-    "boundary"
-  ],
-  "réigiún": [
-    "region"
-  ],
-  "ceantar": [
-    "area",
-    "district"
-  ],
-  "caladh": [
-    "harbour",
-    "port"
-  ],
-  "grá": [
-    "love"
-  ],
-  "áthas": [
-    "happiness",
-    "joy"
-  ],
-  "brón": [
-    "sadness",
-    "sorrow"
-  ],
-  "fearg": [
-    "anger"
-  ],
-  "eagla": [
-    "fear"
-  ],
-  "dóchas": [
-    "hope"
-  ],
-  "áilleacht": [
-    "beauty"
-  ],
-  "neart": [
-    "strength"
-  ],
-  "ciall": [
-    "sense",
-    "meaning"
-  ],
-  "iontas": [
-    "wonder",
-    "surprise"
-  ],
-  "trua": [
-    "pity",
-    "sympathy"
-  ],
-  "náire": [
-    "shame"
-  ],
-  "bród": [
-    "pride"
-  ],
-  "misneach": [
-    "courage"
-  ],
-  "creideamh": [
-    "faith",
-    "belief"
-  ],
-  "muinín": [
-    "trust",
-    "confidence"
-  ],
-  "amhras": [
-    "doubt",
-    "suspicion"
-  ],
-  "cineáltas": [
-    "kindness"
-  ],
-  "cabhair": [
-    "help"
-  ],
-  "comhairle": [
-    "advice",
-    "council"
-  ],
-  "brionglóid": [
-    "dream"
-  ],
-  "samhlaíocht": [
-    "imagination"
-  ],
-  "cuimhne": [
-    "memory"
-  ],
-  "dearmad": [
-    "mistake",
-    "forgetfulness"
-  ],
-  "eolas": [
-    "knowledge"
-  ],
-  "tuiscint": [
-    "understanding"
-  ],
-  "scil": [
-    "skill"
-  ],
-  "tallann": [
-    "talent"
-  ],
-  "cumas": [
-    "ability"
-  ],
-  "léann": [
-    "learning",
-    "scholarship"
-  ],
-  "feall": [
-    "betrayal",
-    "treachery"
-  ],
-  "spraoi": [
-    "fun"
-  ],
-  "sásamh": [
-    "satisfaction"
-  ],
-  "buairt": [
-    "worry",
-    "trouble"
-  ],
-  "imní": [
-    "anxiety",
-    "worry"
-  ],
-  "meas": [
-    "respect"
-  ],
-  "fuath": [
-    "hate",
-    "hatred"
-  ],
-  "rún": [
-    "secret"
-  ],
-  "fírinne": [
-    "truth"
-  ],
-  "bréag": [
-    "lie"
-  ],
-  "cairdeas": [
-    "friendship"
-  ],
-  "dílseacht": [
-    "loyalty"
-  ],
-  "maithiúnas": [
-    "forgiveness"
-  ],
-  "onóir": [
-    "honour"
-  ],
-  "bua": [
-    "victory",
-    "talent"
-  ],
-  "saoirse": [
-    "freedom",
-    "liberty"
-  ],
-  "síocháin": [
-    "peace"
-  ],
-  "cogadh": [
-    "war"
-  ],
-  "cath": [
-    "battle"
-  ],
-  "ceartas": [
-    "justice"
-  ],
-  "rogha": [
-    "choice"
-  ],
-  "cúram": [
-    "care"
-  ],
-  "luach": [
-    "value",
-    "worth"
-  ],
-  "dúshlán": [
-    "challenge"
-  ],
-  "caighdeán": [
-    "standard"
-  ],
-  "clú": [
-    "reputation"
-  ],
-  "cáil": [
-    "fame",
-    "reputation"
-  ],
-  "fáilte": [
-    "welcome"
-  ],
-  "slán": [
-    "goodbye",
-    "farewell"
-  ],
-  "buíochas": [
-    "thanks",
-    "gratitude"
-  ],
-  "leithscéal": [
-    "excuse",
-    "apology"
-  ],
-  "bronntanas": [
-    "gift"
-  ],
-  "ceiliúradh": [
-    "celebration"
-  ],
-  "rith": [
-    "run",
-    "running"
-  ],
-  "snámh": [
-    "swim",
-    "swimming"
-  ],
-  "léamh": [
-    "reading"
-  ],
-  "scríobh": [
-    "writing"
-  ],
-  "caint": [
-    "speech",
-    "talk"
-  ],
-  "rince": [
-    "dance"
-  ],
-  "léim": [
-    "jump",
-    "leap"
-  ],
-  "gearradh": [
-    "cut"
-  ],
-  "oscailt": [
-    "opening"
-  ],
-  "tarraingt": [
-    "pull"
-  ],
-  "brú": [
-    "push",
-    "pressure"
-  ],
-  "póg": [
-    "kiss"
-  ],
-  "barróg": [
-    "hug",
-    "embrace"
-  ],
-  "foghlaim": [
-    "learning"
-  ],
-  "siúl": [
-    "walk",
-    "walking"
-  ],
-  "tiomáint": [
-    "drive",
-    "driving"
-  ],
-  "eitilt": [
-    "fly",
-    "flight"
-  ],
-  "tógáil": [
-    "build",
-    "lift"
-  ],
-  "canadh": [
-    "sing",
-    "singing"
-  ],
-  "damhsa": [
-    "dance"
-  ],
-  "seinm": [
-    "play",
-    "playing"
-  ],
-  "pleanáil": [
-    "planning"
-  ],
-  "glanadh": [
-    "cleaning"
-  ],
-  "cócaireacht": [
-    "cooking"
-  ],
-  "taisteal": [
-    "travel",
-    "travelling"
-  ],
-  "léiriú": [
-    "presentation",
-    "show"
-  ],
-  "carr": [
-    "car"
-  ],
-  "bád": [
-    "boat"
-  ],
-  "traein": [
-    "train"
-  ],
-  "eitleán": [
-    "plane",
-    "airplane"
-  ],
-  "rothar": [
-    "bicycle",
-    "bike"
-  ],
-  "leoraí": [
-    "truck",
-    "lorry"
-  ],
-  "veain": [
-    "van"
-  ],
-  "héileacaptar": [
-    "helicopter"
-  ],
-  "cábla": [
-    "cable"
-  ],
-  "soitheach": [
-    "ship",
-    "vessel"
-  ],
-  "scáileán": [
-    "screen"
-  ],
-  "méarchlár": [
-    "keyboard"
-  ],
-  "ceamara": [
-    "camera"
-  ],
-  "cluasán": [
-    "earphones",
-    "headphones"
-  ],
-  "ticéad": [
-    "ticket"
-  ],
-  "cárta": [
-    "card"
-  ],
-  "pas": [
-    "pass",
-    "passport"
-  ],
-  "nasc": [
-    "link",
-    "connection"
-  ],
-  "ríomhphost": [
-    "email"
-  ],
-  "suíomh": [
-    "website",
-    "site"
-  ],
-  "idirlíon": [
-    "internet"
-  ],
-  "peil": [
-    "football"
-  ],
-  "iomáint": [
-    "hurling"
-  ],
-  "camán": [
-    "hurley"
-  ],
-  "sliotar": [
-    "sliotar"
-  ],
-  "réiteoir": [
-    "referee"
-  ],
-  "imreoir": [
-    "player"
-  ],
-  "traenálaí": [
-    "trainer",
-    "coach"
-  ],
-  "corn": [
-    "cup",
-    "trophy"
-  ],
-  "bonn": [
-    "medal"
-  ],
-  "craobh": [
-    "championship"
-  ],
-  "buille": [
-    "hit",
-    "blow"
-  ],
-  "pointe": [
-    "point"
-  ],
-  "cúl": [
-    "goal"
-  ],
-  "foireann": [
-    "team"
-  ],
-  "liathróid": [
-    "ball"
-  ],
-  "cumann": [
-    "club",
-    "association"
-  ],
-  "comórtas": [
-    "competition"
-  ],
-  "gradam": [
-    "award"
-  ],
-  "duais": [
-    "prize",
-    "reward"
-  ],
-  "rásaíocht": [
-    "racing"
-  ],
-  "seilg": [
-    "hunt",
-    "hunting"
-  ],
-  "cispheil": [
-    "basketball"
-  ],
-  "lúthchleasaíocht": [
-    "athletics"
-  ],
-  "rothaíocht": [
-    "cycling"
-  ],
-  "marcaíocht": [
-    "horse riding",
-    "riding"
-  ],
-  "iomrascáil": [
-    "wrestling"
-  ],
-  "snámhóireacht": [
-    "swimming"
-  ],
-  "rang": [
-    "class"
-  ],
-  "scrúdú": [
-    "exam",
-    "examination"
-  ],
-  "teastas": [
-    "certificate"
-  ],
-  "céim": [
-    "degree",
-    "step"
-  ],
-  "dioplóma": [
-    "diploma"
-  ],
-  "dalta": [
-    "pupil",
-    "student"
-  ],
-  "cóipleabhar": [
-    "copybook",
-    "notebook"
-  ],
-  "peann": [
-    "pen"
-  ],
-  "léarscáil": [
-    "map"
-  ],
-  "pictiúr": [
-    "picture"
-  ],
-  "grianghraf": [
-    "photograph",
-    "photo"
-  ],
-  "físeán": [
-    "video"
-  ],
-  "ceacht": [
-    "lesson"
-  ],
-  "cúrsa": [
-    "course"
-  ],
-  "clár": [
-    "programme",
-    "board"
-  ],
-  "leid": [
-    "clue",
-    "hint"
-  ],
-  "punann": [
-    "portfolio"
-  ],
-  "sláinte": [
-    "health"
-  ],
-  "tinneas": [
-    "illness",
-    "sickness"
-  ],
-  "galar": [
-    "disease"
-  ],
-  "leigheas": [
-    "medicine",
-    "cure"
-  ],
-  "cógas": [
-    "medicine",
-    "drug"
-  ],
-  "piollaire": [
-    "pill",
-    "tablet"
-  ],
-  "otharcharr": [
-    "ambulance"
-  ],
-  "éigeandáil": [
-    "emergency"
-  ],
-  "timpiste": [
-    "accident"
-  ],
-    "injury"
-  ],
-  "folláine": [
-    "wellbeing"
-  ],
-    "healing"
-  ],
-  "ocras": [
-    "hunger"
-  ],
-  "tart": [
-    "thirst"
-  ],
-  "tuirse": [
-    "tiredness",
-    "fatigue"
-  ],
-  "pian": [
-    "pain"
-  ],
-  "fiabhras": [
-    "fever"
-  ],
-  "casacht": [
-    "cough"
-  ],
-  "slaghdán": [
-    "cold"
-  ],
-  "pianó": [
-    "piano"
-  ],
-  "veidhlín": [
-    "violin"
-  ],
-  "feadóg": [
-    "whistle",
-    "flute"
-  ],
-  "bodhrán": [
-    "bodhran"
-  ],
-  "giotár": [
-    "guitar"
-  ],
-  "fonn": [
-    "tune",
-    "melody"
-  ],
-  "rithim": [
-    "rhythm"
-  ],
-  "dán": [
-    "poem"
-  ],
-  "filíocht": [
-    "poetry"
-  ],
-  "próis": [
-    "prose"
-  ],
-  "úrscéal": [
-    "novel"
-  ],
-  "dráma": [
-    "drama",
-    "play"
-  ],
-  "péintéireacht": [
-    "painting"
-  ],
-  "dealbhóireacht": [
-    "sculpture"
-  ],
-  "ceardaíocht": [
-    "craft"
-  ],
-  "taispeántas": [
-    "exhibition",
-    "show"
-  ],
-  "féile": [
-    "festival"
-  ],
-  "ceolchoirm": [
-    "concert"
-  ],
-  "Cáisc": [
-    "Easter"
-  ],
-    "mass"
-  ],
-  "baisteadh": [
-    "baptism"
-  ],
-  "aingeal": [
-    "angel"
-  ],
-  "diabhal": [
-    "devil"
-  ],
-  "rosaire": [
-    "rosary"
-  ],
-  "pósadh": [
-    "wedding",
-    "marriage"
-  ],
-    "cross"
-  ],
-  "altóir": [
-    "altar"
-  ],
-  "naomh": [
-    "saint"
-  ],
-  "neamh": [
-    "heaven"
-  ],
-  "ifreann": [
-    "hell"
-  ],
-  "fada": [
-    "long"
-  ],
-  "gairid": [
-    "short"
-  ],
-  "tapa": [
-    "fast",
-    "quick"
-  ],
-  "mall": [
-    "slow"
-  ],
-  "te": [
-    "hot",
-    "warm"
-  ],
-  "fuar": [
-    "cold"
-  ],
-  "fliuch": [
-    "wet"
-  ],
-  "tirim": [
-    "dry"
-  ],
-  "glan": [
-    "clean"
-  ],
-  "salach": [
-    "dirty"
-  ],
-  "breá": [
-    "fine",
-    "beautiful"
-  ],
-  "gnóthach": [
-    "busy"
-  ],
-  "saor": [
-    "free",
-    "cheap"
-  ],
-  "daor": [
-    "expensive"
-  ],
-    "complex",
-    "twisted"
-  ],
-  "simplí": [
-    "simple"
-  ],
-  "cúramach": [
-    "careful"
-  ],
-  "dána": [
-    "bold",
-    "brave"
-  ],
-  "cairdiúil": [
-    "friendly"
-  ],
-  "láidir": [
-    "strong"
-  ],
-  "lag": [
-    "weak"
-  ],
-  "ciúin": [
-    "quiet"
-  ],
-  "glórach": [
-    "loud",
-    "noisy"
-  ],
-  "saibhir": [
-    "rich",
-    "wealthy"
-  ],
-  "bocht": [
-    "poor"
-  ],
-  "sona": [
-    "happy"
-  ],
-  "brónach": [
-    "sad"
-  ],
-  "sásta": [
-    "satisfied",
-    "pleased"
-  ],
-  "deas": [
-    "nice",
-    "pleasant"
-  ],
-  "uaigneach": [
-    "lonely"
-  ],
-  "óg": [
-    "young"
-  ],
-  "sean": [
-    "old"
-  ],
-  "múinte": [
-    "polite"
-  ],
-  "cliste": [
-    "clever",
-    "smart"
-  ],
-  "cróga": [
-    "brave",
-    "courageous"
-  ],
-  "dílis": [
-    "loyal",
-    "faithful"
-  ],
-  "álainn": [
-    "beautiful",
-    "lovely"
-  ],
-  "gránna": [
-    "ugly"
-  ],
-  "folláin": [
-    "healthy"
-  ],
-  "tinn": [
-    "sick",
-    "ill"
-  ],
-  "fiáin": [
-    "wild"
-  ],
-  "mór": [
-    "big",
-    "large",
-    "great"
-  ],
-  "beag": [
-    "small",
-    "little"
-  ],
-  "ard": [
-    "tall",
-    "high"
-  ],
-  "íseal": [
-    "low"
-  ],
-  "glic": [
-    "clever",
-    "cunning"
-  ],
-  "dall": [
-    "blind"
-  ],
-  "bodhar": [
-    "deaf"
-  ],
-  "balbh": [
-    "dumb",
-    "mute"
-  ],
-  "críonna": [
-    "wise"
-  ],
-  "leisciúil": [
-    "lazy"
-  ],
-  "dícheallach": [
-    "diligent",
-    "hardworking"
-  ],
-  "macánta": [
-    "honest"
-  ],
-  "cneasta": [
-    "kind",
-    "gentle"
-  ],
-  "garbh": [
-    "rough"
-  ],
-  "mín": [
-    "smooth",
-    "gentle"
-  ],
-  "crua": [
-    "hard"
-  ],
-  "bog": [
-    "soft"
-  ],
-  "tanaí": [
-    "thin"
-  ],
-  "ramhar": [
-    "fat",
-    "thick"
-  ],
-  "caol": [
-    "narrow",
-    "slim"
-  ],
-  "leathan": [
-    "wide",
-    "broad"
-  ],
-  "fíor": [
-    "true",
-    "real"
-  ],
-  "bréagach": [
-    "false",
-    "lying"
-  ],
-  "díreach": [
-    "straight",
-    "direct"
-  ],
-  "nua": [
-    "new"
-  ],
-  "ábalta": [
-    "able",
-    "capable"
-  ],
-  "aclaí": [
-    "fit",
-    "agile"
-  ],
-  "annamh": [
-    "rare"
-  ],
-  "briomhar": [
-    "lively",
-    "energetic"
-  ],
-  "bródúil": [
-    "proud"
-  ],
-    "worried"
-  ],
-  "cáiliúil": [
-    "famous"
-  ],
-  "ceolmhar": [
-    "musical"
-  ],
-  "compordach": [
-    "comfortable"
-  ],
-  "cothrom": [
-    "fair",
-    "level"
-  ],
-  "cruthaitheach": [
-    "creative"
-  ],
-  "dathúil": [
-    "handsome",
-    "good-looking"
-  ],
-  "éasca": [
-    "easy"
-  ],
-  "feargach": [
-    "angry"
-  ],
-  "flúirseach": [
-    "abundant",
-    "plentiful"
-  ],
-  "foighneach": [
-    "patient"
-  ],
-  "furasta": [
-    "easy"
-  ],
-  "iomlán": [
-    "complete",
-    "whole"
-  ],
-  "luath": [
-    "fast",
-    "early"
-  ],
-  "nádúrtha": [
-    "natural"
-  ],
-  "oscailte": [
-    "open"
-  ],
-  "réidh": [
-    "ready",
-    "smooth"
-  ],
-  "siamsúil": [
-    "entertaining",
-    "fun"
-  ],
-  "suimiúil": [
-    "interesting"
-  ],
-  "tábhachtach": [
-    "important"
-  ],
-  "taitneamhach": [
-    "pleasant",
-    "enjoyable"
-  ],
-  "toilteach": [
-    "willing"
-  ],
-  "tréan": [
-    "strong",
-    "mighty"
-  ],
-  "tuirseach": [
-    "tired"
-  ],
-  "úr": [
-    "fresh",
-    "new"
-  ],
-  "grámhar": [
-    "loving"
-  ],
-  "ceanúil": [
-    "affectionate"
-  ],
-  "gleoite": [
-    "lovely",
-    "cute"
-  ],
-  "galánta": [
-    "elegant"
-  ],
-  "stuama": [
-    "sensible",
-    "calm"
-  ],
-  "focal": [
-    "word"
-  ],
-  "litir": [
-    "letter"
-  ],
-  "leabhar": [
-    "book"
-  ],
-  "nuachtán": [
-    "newspaper"
-  ],
-  "airgead": [
-    "money"
-  ],
-  "amhrán": [
-    "song"
-  ],
-  "scéal": [
-    "story"
-  ],
-  "uimhir": [
-    "number"
-  ],
-  "ceist": [
-    "question"
-  ],
-  "freagra": [
-    "answer"
-  ],
-  "comhartha": [
-    "sign",
-    "symbol"
-  ],
-  "dath": [
-    "colour",
-    "color"
-  ],
-  "cruth": [
-    "shape",
-    "form"
-  ],
-  "méid": [
-    "size",
-    "amount"
-  ],
-  "fad": [
-    "length"
-  ],
-  "airde": [
-    "height"
-  ],
-  "leithead": [
-    "width"
-  ],
-  "teas": [
-    "heat"
-  ],
-  "fuacht": [
-    "cold"
-  ],
-  "iris": [
-    "magazine"
-  ],
-  "dlí": [
-    "law"
-  ],
-  "riail": [
-    "rule"
-  ],
-  "smacht": [
-    "control",
-    "discipline"
-  ],
-  "ordú": [
-    "order"
-  ],
-    "promise"
-  ],
-  "conradh": [
-    "contract",
-    "treaty"
-  ],
-  "ceadúnas": [
-    "licence",
-    "permit"
-  ],
-  "tuarascáil": [
-    "report"
-  ],
-  "stair": [
-    "history"
-  ],
-  "eolaíocht": [
-    "science"
-  ],
-  "matamaitic": [
-    "mathematics"
-  ],
-  "ealaín": [
-    "art"
-  ],
-  "litríocht": [
-    "literature"
-  ],
-  "fealsúnacht": [
-    "philosophy"
-  ],
-  "ainm": [
-    "name"
-  ],
-  "sloinne": [
-    "surname"
-  ],
-  "nuacht": [
-    "news"
-  ],
-  "agallamh": [
-    "interview"
-  ],
-  "comhrá": [
-    "conversation"
-  ],
-  "óráid": [
-    "speech"
-  ],
-  "argóint": [
-    "argument"
-  ],
-  "moladh": [
-    "praise",
-    "recommendation"
-  ],
-  "turas": [
-    "journey",
-    "trip"
-  ],
-  "bratach": [
-    "flag"
-  ],
-  "stampa": [
-    "stamp"
-  ],
-  "uaigh": [
-    "grave"
-  ],
-  "cuid": [
-    "part",
-    "share"
-  ],
-  "beagán": [
-    "a little",
-    "few"
-  ],
-  "mórán": [
-    "much",
-    "many"
-  ],
-  "cuairt": [
-    "visit"
-  ],
-  "cás": [
-    "case",
-    "situation"
-  ],
-  "fíric": [
-    "fact"
-  ],
-  "liosta": [
-    "list"
-  ],
-  "grúpa": [
-    "group"
-  ],
-  "cineál": [
-    "type",
-    "kind"
-  ],
-  "cuspóir": [
-    "purpose",
-    "aim"
-  ],
-  "todhchaí": [
-    "future"
-  ],
-  "fuinneamh": [
-    "energy"
-  ],
-  "spás": [
-    "space"
-  ],
-  "nádúr": [
-    "nature"
-  ],
-  "ábhar": [
-    "subject",
-    "material"
-  ],
-  "cúis": [
-    "reason",
-    "cause"
-  ],
-  "toradh": [
-    "result",
-    "fruit"
-  ],
-  "tionchar": [
-    "influence"
-  ],
-  "athrú": [
-    "change"
-  ],
-  "forbairt": [
-    "development"
-  ],
-    "dolphin"
-  ],
-    "whale"
-  ],
-    "red squirrel"
-  ],
-    "squirrel"
-  ],
-    "insect"
-  ],
-    "spider"
-  ],
-    "fly"
-  ],
-    "bee"
-  ],
-    "butterfly"
-  ],
-    "worm",
-    "beast"
-  ],
-    "snail"
-  ],
-    "giraffe"
-  ],
-    "zebra"
-  ],
-    "crocodile"
-  ],
-    "alligator"
-  ],
-    "leopard"
-  ],
-    "eel"
-  ],
-  "ronnach": [
-    "mackerel"
-  ],
-    "tortoise"
-  ],
-    "parrot"
-  ],
-    "midge"
-  ],
-    "mosquito"
-  ],
-  "rosualt": [
-    "walrus"
-  ],
-    "fox"
-  ],
-    "piglet"
-  ],
-    "pony"
-  ],
-    "panda"
-  ],
-    "kangaroo"
-  ],
-    "hippopotamus",
-    "hippo"
-  ],
-    "jellyfish"
-  ],
-    "crab"
-  ],
-    "lobster"
-  ],
-    "midge",
-    "gnat"
-  ],
-    "ant"
-  ],
-    "wasp"
-  ],
-    "moth"
-  ],
-    "mouse"
-  ],
-    "guinea pig"
-  ],
-    "cheek"
-  ],
-    "jaw"
-  ],
-    "cheek"
-  ],
-    "body"
-  ],
-    "little finger",
-    "pinky"
-  ],
-    "womb"
-  ],
-    "mind"
-  ],
-    "brain"
-  ],
-    "person",
-    "figure"
-  ],
-    "side",
-    "flank"
-  ],
-    "sitting room",
-    "living room"
-  ],
-    "bedroom"
-  ],
-    "bathroom"
-  ],
-    "hall",
-    "hallway"
-  ],
-    "attic",
-    "loft"
-  ],
-    "chimney"
-  ],
-    "balcony"
-  ],
-    "doorstep",
-    "threshold"
-  ],
-    "fireplace",
-    "grate"
-  ],
-    "basement",
-    "cellar"
-  ],
-    "rainbow"
-  ],
-    "hail"
-  ],
-    "ice"
-  ],
-    "hill"
-  ],
-  "mullach": [
-    "top",
-    "summit"
-  ],
-  "uaimh": [
-    "cave"
-  ],
-    "cave",
-    "den"
-  ],
-    "headland",
-    "point"
-  ],
-    "meadow"
-  ],
-  "machaire": [
-    "plain",
-    "field"
-  ],
-    "mound",
-    "hillock"
-  ],
-    "pond",
-    "small lake"
-  ],
-    "bog stream"
-  ],
-    "rock",
-    "crag"
-  ],
-    "shallow",
-    "ford"
-  ],
-  "áth": [
-    "ford"
-  ],
-  "féithleann": [
-    "honeysuckle"
-  ],
-  "beithe": [
-    "birch"
-  ],
-  "fuinseog": [
-    "ash tree"
-  ],
-  "leamhán": [
-    "elm"
-  ],
-    "apple tree"
-  ],
-    "ham"
-  ],
-    "oyster"
-  ],
-    "mussel"
-  ],
-    "cream"
-  ],
-    "ice cream"
-  ],
-    "biscuits",
-    "cookies"
-  ],
-    "toast"
-  ],
-    "pizza"
-  ],
-  "anlann": [
-    "sauce"
-  ],
-  "sú": [
-    "juice"
-  ],
-    "whiskey"
-  ],
-    "poitin",
-    "illicit spirits"
-  ],
-    "loaf"
-  ],
-    "grain"
-  ],
-    "mineral water"
-  ],
-    "whiskey"
-  ],
-    "dessert",
-    "sweet"
-  ],
-    "scone",
-    "pancake"
-  ],
-    "apron"
-  ],
-    "seafood"
-  ],
-  "lus": [
-    "herb",
-    "plant"
-  ],
-    "grape"
-  ],
-    "sleep",
-    "sleeping"
-  ],
-    "waking",
-    "waking up"
-  ],
-    "eating"
-  ],
-  "féachaint": [
-    "watching",
-    "looking"
-  ],
-  "éisteacht": [
-    "listening"
-  ],
-  "labhairt": [
-    "speaking",
-    "talking"
-  ],
-  "ceannach": [
-    "buying",
-    "purchase"
-  ],
-  "díol": [
-    "selling",
-    "sale"
-  ],
-  "íoc": [
-    "paying",
-    "payment"
-  ],
-    "fight",
-    "fighting"
-  ],
-    "laugh",
-    "laughter"
-  ],
-    "crying",
-    "weeping"
-  ],
-    "remembering",
-    "memory"
-  ],
-    "choosing",
-    "selection"
-  ],
-  "cinneadh": [
-    "deciding",
-    "decision"
-  ],
-    "agreeing",
-    "agreement"
-  ],
-    "telling"
-  ],
-    "giving"
-  ],
-  "glacadh": [
-    "taking",
-    "accepting"
-  ],
-    "sailing",
-    "launching",
-    "sending"
-  ],
-  "níochán": [
-    "washing",
-    "laundry"
-  ],
-    "preparing",
-    "preparation"
-  ],
-    "winning"
-  ],
-    "losing",
-    "loss"
-  ],
-    "searching",
-    "tracking",
-    "footprint"
-  ],
-  "breathnú": [
-    "watching",
-    "observing"
-  ],
-  "múineadh": [
-    "teaching"
-  ],
-    "finding"
-  ],
-  "cruthú": [
-    "creating",
-    "proving"
-  ],
-    "measuring",
-    "guessing"
-  ],
-    "describing",
-    "description"
-  ],
-  "cúthaileach": [
-    "shy"
-  ],
-  "fiosrach": [
-    "curious",
-    "inquisitive"
-  ],
-    "lucky"
-  ],
-    "unlucky"
-  ],
-    "boring",
-    "tedious"
-  ],
-    "dangerous"
-  ],
-    "safe"
-  ],
-    "certain",
-    "sure"
-  ],
-    "clear"
-  ],
-  "neamhghnách": [
-    "unusual",
-    "extraordinary"
-  ],
-    "special"
-  ],
-    "wonderful",
-    "great",
-    "terrible"
-  ],
-  "uafásach": [
-    "awful",
-    "terrible",
-    "dreadful"
-  ],
-    "scary",
-    "frightening"
-  ],
-    "funny",
-    "humorous"
-  ],
-    "merry",
-    "playful"
-  ],
-  "cosúil": [
-    "similar",
-    "like"
-  ],
-    "different"
-  ],
-    "happy",
-    "joyful"
-  ],
-    "fearful",
-    "afraid"
-  ],
-    "noble",
-    "gentle"
-  ],
-  "maorga": [
-    "stately",
-    "noble"
-  ],
-  "misniúil": [
-    "courageous"
-  ],
-    "ashamed",
-    "shameful"
-  ],
-    "stubborn",
-    "headstrong"
-  ],
-    "kind",
-    "gentle",
-    "pleasant"
-  ],
-    "gentle",
-    "mild",
-    "soft"
-  ],
-    "silent",
-    "quiet"
-  ],
-    "talkative"
-  ],
-    "respectful",
-    "reverent"
-  ],
-  "santach": [
-    "greedy"
-  ],
-  "flaithiúil": [
-    "generous"
-  ],
-  "spriosánta": [
-    "mean",
-    "stingy"
-  ],
-    "fierce",
-    "ferocious"
-  ],
-    "sensible",
-    "wise"
-  ],
-    "foolish",
-    "silly"
-  ],
-    "idle",
-    "unemployed"
-  ],
-    "quick",
-    "swift"
-  ],
-  "trodach": [
-    "aggressive",
-    "quarrelsome"
-  ],
-  "síochánta": [
-    "peaceful"
-  ],
-  "suaimhneach": [
-    "calm",
-    "peaceful"
-  ],
-    "restless"
-  ],
-    "alive",
-    "living"
-  ],
-    "dead"
-  ],
-    "stale"
-  ],
-    "fertile",
-    "fruitful"
-  ],
-  "lom": [
-    "bare",
-    "bleak"
-  ],
-    "scarce",
-    "sparse"
-  ],
-    "spacious",
-    "wide",
-    "plentiful"
-  ],
-    "narrow",
-    "tight"
-  ],
-    "deep"
-  ],
-    "shallow"
-  ],
-  "smaoineamh": [
-    "thought",
-    "idea"
-  ],
-    "opinion",
-    "view"
-  ],
-    "feeling",
-    "emotion"
-  ],
-  "taithí": [
-    "experience"
-  ],
-    "practice"
-  ],
-  "nós": [
-    "custom",
-    "habit"
-  ],
-  "traidisiún": [
-    "tradition"
-  ],
-  "cultúr": [
-    "culture"
-  ],
-  "pobal": [
-    "community"
-  ],
-    "organisation",
-    "organization"
-  ],
-  "rialtas": [
-    "government"
-  ],
-    "politics"
-  ],
-  "eacnamaíocht": [
-    "economy"
-  ],
-  "gnó": [
-    "business"
-  ],
-  "tionscal": [
-    "industry"
-  ],
-  "talmhaíocht": [
-    "agriculture",
-    "farming"
-  ],
-    "technology"
-  ],
-    "research"
-  ],
-    "experiment"
-  ],
-    "theory"
-  ],
-    "suffering"
-  ],
-    "support"
-  ],
-  "caidreamh": [
-    "relationship"
-  ],
-    "divorce"
-  ],
-    "enmity",
-    "hostility"
-  ],
-    "cooperation"
-  ],
-    "leadership"
-  ],
-  "cumhacht": [
-    "power"
-  ],
-    "success",
-    "prosperity"
-  ],
-    "growth"
-  ],
-    "conflict"
-  ],
-    "agreement"
-  ],
-    "debate",
-    "dispute"
-  ],
-    "service"
-  ],
-  "táirge": [
-    "product"
-  ],
-    "explanation"
-  ],
-    "definition"
-  ],
-    "translation"
-  ],
-    "document"
-  ],
-    "form"
-  ],
-    "message"
-  ],
-  "moill": [
-    "delay"
-  ],
-  "deifir": [
-    "hurry",
-    "haste"
-  ],
-  "fadhb": [
-    "problem"
-  ],
-  "réiteach": [
-    "solution"
-  ],
-    "plan"
-  ],
-    "strategy"
-  ],
-    "policy"
-  ],
-    "project",
-    "initiative"
-  ],
-  "feachtas": [
-    "campaign"
-  ],
-    "movement"
-  ],
-  "toghchán": [
-    "election"
-  ],
-  "vóta": [
-    "vote"
-  ],
-    "occasion",
-    "event"
-  ],
-    "invitation"
-  ],
-    "presentation",
-    "awarding"
-  ],
-  "comhlacht": [
-    "company",
-    "body"
-  ],
-    "plan",
-    "action"
-  ],
-    "scheme",
-    "plan"
-  ],
-    "waiting list"
-  ],
-  "cead": [
-    "permission"
-  ],
-    "calm",
-    "rest",
-    "peace"
-  ],
-    "tension",
-    "stress"
-  ],
-    "stress"
-  ],
-    "excitement"
-  ],
-    "longing",
-    "yearning"
-  ],
-  "cumha": [
-    "longing",
-    "homesickness"
-  ],
-  "uaigneas": [
-    "loneliness",
-    "solitude"
-  ],
-    "joy",
-    "delight"
-  ],
-  "díomá": [
-    "disappointment"
-  ],
-    "frustration"
-  ],
-    "hatred",
-    "disgust"
-  ],
-    "amazement",
-    "astonishment"
-  ],
-    "horror",
-    "terror"
-  ],
-    "regret"
-  ],
-    "joy",
-    "gladness"
-  ],
-    "dissatisfaction"
-  ],
-    "rage",
-    "madness"
-  ],
-    "excitement",
-    "urging"
-  ],
-    "longing",
-    "envy"
-  ],
-    "dentist"
-  ],
-    "psychologist"
-  ],
-    "scientist"
-  ],
-    "detective"
-  ],
-    "judge"
-  ],
-  "státseirbhíseach": [
-    "civil servant"
-  ],
-    "politician"
-  ],
-    "deputy",
-    "delegate"
-  ],
-    "leader",
-    "prime minister"
-  ],
-    "president"
-  ],
-    "king"
-  ],
-    "queen"
-  ],
-    "prince"
-  ],
-    "princess"
-  ],
-    "lord"
-  ],
-    "shepherd"
-  ],
-    "blacksmith",
-    "smith"
-  ],
-  "siopadóir": [
-    "shopkeeper"
-  ],
-    "plumber"
-  ],
-    "electrician"
-  ],
-    "painter"
-  ],
-    "firefighter"
-  ],
-    "astronaut"
-  ],
-    "sailor",
-    "mariner"
-  ],
-    "sailor",
-    "navigator"
-  ],
-    "physiotherapist"
-  ],
-    "therapist"
-  ],
-    "social worker"
-  ],
-    "landlord",
-    "man of the house"
-  ],
-    "landlady",
-    "woman of the house"
-  ],
-    "museum"
-  ],
-    "gallery",
-    "art gallery"
-  ],
-  "ionad": [
-    "centre",
-    "center"
-  ],
-  "ollmhargadh": [
-    "supermarket"
-  ],
-    "pub",
-    "bar"
-  ],
-    "hotel"
-  ],
-    "guesthouse"
-  ],
-    "countryside",
-    "rural area"
-  ],
-    "suburb"
-  ],
-    "town"
-  ],
-    "capital city"
-  ],
-    "territory",
-    "end",
-    "border"
-  ],
-    "district",
-    "homeland"
-  ],
-    "centre"
-  ],
-    "Irish",
-    "Irish language"
-  ],
-    "English",
-    "English language"
-  ],
-    "French"
-  ],
-    "German"
-  ],
-    "Spanish"
-  ],
-    "Italian"
-  ],
-    "Portuguese"
-  ],
-    "Russian"
-  ],
-    "Chinese"
-  ],
-    "Japanese"
-  ],
-    "Arabic"
-  ],
-    "Latin"
-  ],
-    "snooker"
-  ],
-    "tennis"
-  ],
-    "badminton"
-  ],
-    "skiing"
-  ],
-    "boxing"
-  ],
-    "rugby"
-  ],
-    "hockey"
-  ],
-    "soccer",
-    "football"
-  ],
-    "golf"
-  ],
-    "horse racing"
-  ],
-  "seoltóireacht": [
-    "sailing"
-  ],
-    "kayaking"
-  ],
-  "dreapadóireacht": [
-    "climbing"
-  ],
-    "marathon"
-  ],
-    "game",
-    "match"
-  ],
-  "imirt": [
-    "playing",
-    "play"
-  ],
-    "training"
-  ],
-    "midnight"
-  ],
-    "midday",
-    "noon"
-  ],
-    "dawn"
-  ],
-    "sunset"
-  ],
-    "sunrise"
-  ],
-    "last year"
-  ],
-    "day after tomorrow"
-  ],
-    "day before yesterday"
-  ],
-    "October"
-  ],
-    "quarter",
-    "quarter hour"
-  ],
-    "half hour"
-  ],
-    "fortnight",
-    "two weeks"
-  ],
-    "smartphone"
-  ],
-    "tablet"
-  ],
-  "printéir": [
-    "printer"
-  ],
-    "scanner"
-  ],
-  "rialóir": [
-    "ruler",
-    "controller"
-  ],
-    "video game"
-  ],
-    "app",
-    "application"
-  ],
-    "platform"
-  ],
-    "network"
-  ],
-    "password"
-  ],
-    "user"
-  ],
-  "comhad": [
-    "file"
-  ],
-  "fillteán": [
-    "folder"
-  ],
-    "laptop"
-  ],
-    "video call"
-  ],
-    "text message"
-  ],
-    "brush",
-    "broom"
-  ],
-    "mop"
-  ],
-    "soap",
-    "paper"
-  ],
-    "soap"
-  ],
-    "teeth"
-  ],
-    "toothbrush"
-  ],
-    "toothpaste"
-  ],
-    "shampoo"
-  ],
-    "comb"
-  ],
-    "razor"
-  ],
-    "contact lens"
-  ],
-    "rubbish bags"
-  ],
-    "rubbish",
-    "litter"
-  ],
-    "bin",
-    "rubbish bin"
-  ],
-  "leictreachas": [
-    "electricity"
-  ],
-    "gas"
-  ],
-    "hot water"
-  ],
-    "playschool",
-    "nursery"
-  ],
-    "primary school"
-  ],
-    "secondary school"
-  ],
-    "student"
-  ],
-    "postgraduate"
-  ],
-    "curriculum"
-  ],
-    "mark"
-  ],
-    "percentage"
-  ],
-    "school report"
-  ],
-    "environment"
-  ],
-    "ecology"
-  ],
-    "global warming"
-  ],
-    "pollution"
-  ],
-    "sustainable"
-  ],
-    "recycling"
-  ],
-    "renewable energy"
-  ],
-    "solar energy"
-  ],
-    "prayers"
-  ],
-  "adhlacadh": [
-    "burial",
-    "funeral"
-  ],
-    "separation"
-  ],
-  "seisiún": [
-    "session"
-  ],
-    "traditional music"
-  ],
-    "humming",
-    "chanting"
-  ],
-    "céilí dance"
-  ],
-    "placename"
-  ],
-    "proverb"
-  ],
-    "storytelling"
-  ],
-    "folklore"
-  ],
-    "paper"
-  ],
-    "pencil"
-  ],
-    "scissors"
-  ],
-    "glue"
-  ],
-    "tape"
-  ],
-  "clúdach": [
-    "cover",
-    "envelope"
-  ],
-    "copy"
-  ],
-    "postcard"
-  ],
-    "newsletter"
-  ],
-    "blog"
-  ],
-    "podcast"
-  ],
-    "broadcaster"
-  ],
-    "adventure",
-    "event"
-  ],
-    "short story"
-  ],
-    "toy"
-  ],
-    "card game"
-  ],
-    "chess"
-  ],
-    "backgammon"
-  ],
-    "cards"
-  ],
-    "ancestor",
-    "senior"
-  ],
-    "descendants",
-    "offspring"
-  ],
-    "relative",
-    "relation"
-  ],
-    "cousin"
-  ],
-    "stepfather"
-  ],
-    "stepmother"
-  ],
-    "stepbrother"
-  ],
-    "stepsister"
-  ],
-    "child",
-    "infant"
-  ],
-    "teenager"
-  ],
-    "adult"
-  ],
-    "old person",
-    "elderly person"
-  ],
-    "stranger"
-  ],
-    "colleague"
-  ],
-    "enemy"
-  ],
-    "a hundred thousand welcomes"
-  ],
-    "thank you"
-  ],
-    "please"
-  ],
-    "I am sorry",
-    "sorry"
-  ],
-    "hello",
-    "God be with you"
-  ],
-    "safe home"
-  ],
-    "may the road rise with you"
-  ],
-  "titim": [
-    "falling",
-    "fall"
-  ],
-  "seasamh": [
-    "standing",
-    "stand"
-  ],
-  "suí": [
-    "sitting",
-    "sit"
-  ],
-  "luí": [
-    "lying down",
-    "lying"
-  ],
-  "éirí": [
-    "rising",
-    "getting up"
-  ],
-  "imeacht": [
-    "leaving",
-    "departure",
-    "event"
-  ],
-  "teacht": [
-    "coming",
-    "arrival"
-  ],
-  "fágáil": [
-    "leaving",
-    "departure"
-  ],
-  "filleadh": [
-    "returning",
-    "return"
-  ],
-  "bualadh": [
-    "hitting",
-    "beating",
-    "meeting"
-  ],
-  "déanamh": [
-    "doing",
-    "making"
-  ],
-  "dúnadh": [
-    "closing",
-    "shutting"
-  ],
-  "ligean": [
-    "letting",
-    "allowing"
-  ],
-  "fanacht": [
-    "staying",
-    "waiting"
-  ],
-    "working"
-  ],
-  "gearán": [
-    "complaining",
-    "complaint"
-  ],
-  "cosaint": [
-    "defending",
-    "defence",
-    "protection"
-  ],
-  "ionsaí": [
-    "attack",
-    "attacking"
-  ],
-  "éalú": [
-    "escaping",
-    "escape"
-  ],
-    "falling asleep"
-  ],
-  "garraíodóireacht": [
-    "gardening"
-  ],
-  "siopadóireacht": [
-    "shopping"
-  ],
-  "caoineadh": [
-    "crying",
-    "lamenting",
-    "keening"
-  ],
-    "kissing"
-  ],
-  "ardú": [
-    "raising",
-    "lifting",
-    "increase"
-  ],
-    "lowering",
-    "decrease"
-  ],
-  "cur": [
-    "putting",
-    "sowing"
-  ],
-  "baint": [
-    "cutting",
-    "removing",
-    "winning"
-  ],
-    "thinking",
-    "inventing",
-    "appointing"
-  ],
-    "destroying",
-    "deleting"
-  ],
-  "leasú": [
-    "improving",
-    "reform",
-    "improvement"
-  ],
-  "deisiú": [
-    "fixing",
-    "repairing"
-  ],
-  "milleadh": [
-    "ruining",
-    "spoiling"
-  ],
-    "losing",
-    "loss"
-  ],
-  "teipeadh": [
-    "failing",
-    "failure"
-  ],
-    "quitting",
-    "resigning"
-  ],
-    "beginning",
-    "starting"
-  ],
-    "completing",
-    "finishing"
-  ],
-  "áitiúil": [
-    "local"
-  ],
-  "náisiúnta": [
-    "national"
-  ],
-  "idirnáisiúnta": [
-    "international"
-  ],
-  "poiblí": [
-    "public"
-  ],
-  "príobháideach": [
-    "private"
-  ],
-  "gnáth": [
-    "ordinary",
-    "usual"
-  ],
-  "eisceachtúil": [
-    "exceptional"
-  ],
-  "oiriúnach": [
-    "suitable",
-    "appropriate"
-  ],
-  "riachtanach": [
-    "necessary",
-    "essential"
-  ],
-  "éigeantach": [
-    "compulsory",
-    "obligatory"
-  ],
-  "deonach": [
-    "voluntary"
-  ],
-  "úsáideach": [
-    "useful"
-  ],
-  "díobhálach": [
-    "harmful"
-  ],
-  "sláintiúil": [
-    "healthy"
-  ],
-  "saorga": [
-    "artificial"
-  ],
-  "iontaofa": [
-    "reliable",
-    "trustworthy"
-  ],
-  "cáilithe": [
-    "qualified"
-  ],
-    "trained",
-    "skilled"
-  ],
-  "clúiteach": [
-    "famous",
-    "renowned"
-  ],
-  "anaithnid": [
-    "unknown",
-    "anonymous"
-  ],
-  "coimhthíoch": [
-    "foreign",
-    "strange"
-  ],
-  "dúchasach": [
-    "native",
-    "indigenous"
-  ],
-  "ársa": [
-    "ancient"
-  ],
-  "nua-aimseartha": [
-    "modern",
-    "contemporary"
-  ],
-  "seanfhaiseanta": [
-    "old-fashioned"
-  ],
-  "faiseanta": [
-    "fashionable"
-  ],
-  "daonna": [
-    "human"
-  ],
-  "naofa": [
-    "holy",
-    "sacred"
-  ],
-  "beannaithe": [
-    "blessed",
-    "holy"
-  ],
-    "cursed",
-    "damned"
-  ],
-  "báúil": [
-    "sympathetic",
-    "affectionate"
-  ],
-  "tuisceanach": [
-    "understanding",
-    "sympathetic"
-  ],
-  "cabhrach": [
-    "helpful"
-  ],
-  "amhrasach": [
-    "suspicious",
-    "doubtful"
-  ],
-  "páirteach": [
-    "partial"
-  ],
-  "foirfe": [
-    "perfect"
-  ],
-  "lochtach": [
-    "faulty",
-    "defective"
-  ],
-  "sonrach": [
-    "specific",
-    "particular"
-  ],
-  "ginearálta": [
-    "general"
-  ],
-  "sainiúil": [
-    "specific",
-    "distinctive"
-  ],
-  "práinneach": [
-    "urgent"
-  ],
-  "sothuigthe": [
-    "understandable",
-    "clear"
-  ],
-    "incomprehensible"
-  ],
-  "spreagúil": [
-    "inspiring",
-    "motivating"
-  ],
-  "corraítheach": [
-    "moving",
-    "stirring"
-  ],
-  "sásúil": [
-    "satisfying"
-  ],
-    "unsatisfying"
-  ],
-  "éifeachtach": [
-    "effective"
-  ],
-    "ineffective"
-  ],
-    "unfair",
-    "unequal"
-  ],
-  "follasach": [
-    "obvious",
-    "clear"
-  ],
-    "unclear",
-    "obscure"
-  ],
-    "negligent",
-    "careless"
-  ],
-  "díograiseach": [
-    "enthusiastic",
-    "zealous"
-  ],
-  "leithleach": [
-    "selfish"
-  ],
-  "néaróg": [
-    "nerve"
-  ],
-  "cuisle": [
-    "pulse",
-    "vein"
-  ],
-  "colainn": [
-    "body"
-  ],
-  "aghaidh": [
-    "face"
-  ],
-  "cnámharlach": [
-    "skeleton"
-  ],
-  "tinneas cinn": [
-    "headache"
-  ],
-  "tinneas fiacaile": [
-    "toothache"
-  ],
-  "ochlán": [
-    "moan",
-    "groan"
-  ],
-  "borrtha": [
-    "swelling"
-  ],
-  "téarnamh": [
-    "recovery",
-    "recuperation"
-  ],
-  "biseach": [
-    "recovery",
-    "improvement"
-  ],
-  "othar": [
-    "patient",
-    "sick person"
-  ],
-  "otharlann": [
-    "hospital ward"
-  ],
-  "cóireáil": [
-    "treatment"
-  ],
-  "obráid": [
-    "operation",
-    "surgery"
-  ],
-  "instealladh": [
-    "injection"
-  ],
-  "vacsaín": [
-    "vaccine"
-  ],
-    "pharmacy",
-    "pharmacology"
-  ],
-    "recipe"
-  ],
-  "comharthaí": [
-    "symptoms",
-    "signs"
-  ],
-  "ionfhabhtú": [
-    "infection"
-  ],
-  "víreas": [
-    "virus"
-  ],
-  "baictéar": [
-    "bacteria"
-  ],
-  "frithbheathach": [
-    "antibiotic"
-  ],
-  "ailse": [
-    "cancer"
-  ],
-  "croíthinneas": [
-    "heart disease"
-  ],
-  "diaibéiteas": [
-    "diabetes"
-  ],
-  "ailtéirnéis": [
-    "allergy"
-  ],
-  "béile": [
-    "meal"
-  ],
-  "bricfeasta": [
-    "breakfast"
-  ],
-  "lón": [
-    "lunch"
-  ],
-  "dinnéar": [
-    "dinner",
-    "supper"
-  ],
-  "deoch": [
-    "drink"
-  ],
-    "ingredient"
-  ],
-  "sú talún": [
-    "strawberry"
-  ],
-  "sméar": [
-    "blackberry",
-    "berry"
-  ],
-  "ológ": [
-    "olive"
-  ],
-  "avocád": [
-    "avocado"
-  ],
-  "mangó": [
-    "mango"
-  ],
-  "anann": [
-    "pineapple"
-  ],
-  "cnó cócó": [
-    "coconut"
-  ],
-  "iógart": [
-    "yogurt"
-  ],
-    "porridge",
-    "cereal"
-  ],
-  "calóg arbhair": [
-    "cornflake",
-    "cornflakes"
-  ],
-  "laofheoil": [
-    "veal"
-  ],
-  "cnónna": [
-    "nuts"
-  ],
-    "peanut butter"
-  ],
-  "mil": [
-    "honey"
-  ],
-    "juice"
-  ],
-    "snacks",
-    "refreshments"
-  ],
-    "tomato sauce",
-    "ketchup"
-  ],
-    "mustard"
-  ],
-  "finéagar": [
-    "vinegar"
-  ],
-    "olive oil"
-  ],
-    "butter"
-  ],
-    "sour cream"
-  ],
-    "fresh cheese",
-    "cottage cheese"
-  ],
-    "cheeseburger"
-  ],
-    "chips",
-    "fries"
-  ],
-  "rollóg": [
-    "roll",
-    "bread roll"
-  ],
-  "toirtín": [
-    "tart",
-    "small cake"
-  ],
-  "císte": [
-    "cake"
-  ],
-  "brioscán": [
-    "crisp",
-    "cracker"
-  ],
-    "frozen dessert"
-  ],
-  "cnó capaill": [
-    "chestnut"
-  ],
-  "pluma": [
-    "plum"
-  ],
-  "airne": [
-    "sloe",
-    "damson"
-  ],
-  "spionáiste": [
-    "spinach"
-  ],
-  "coilis": [
-    "cauliflower"
-  ],
-  "piseanna": [
-    "peas"
-  ],
-  "dúlra": [
-    "nature",
-    "wildlife"
-  ],
-  "bithéagsúlacht": [
-    "biodiversity"
-  ],
-  "speiceas": [
-    "species"
-  ],
-  "caomhnú": [
-    "conservation",
-    "preservation"
-  ],
-    "best effort"
-  ],
-  "lasair": [
-    "flame",
-    "flash"
-  ],
-  "deataigh": [
-    "smoke"
-  ],
-  "smúit": [
-    "haze",
-    "smog"
-  ],
-  "urú": [
-    "eclipse"
-  ],
-  "réaltbhuíon": [
-    "constellation"
-  ],
-  "gealach lán": [
-    "full moon"
-  ],
-  "tubaiste": [
-    "disaster",
-    "catastrophe"
-  ],
-  "tuile": [
-    "flood"
-  ],
-  "triomach": [
-    "drought"
-  ],
-  "crith talún": [
-    "earthquake"
-  ],
-  "bolcán": [
-    "volcano"
-  ],
-  "taisleach": [
-    "moisture",
-    "dampness"
-  ],
-  "splanc": [
-    "flash",
-    "spark"
-  ],
-  "dorchadas": [
-    "darkness"
-  ],
-  "solas": [
-    "light"
-  ],
-  "scáth": [
-    "shadow",
-    "shelter"
-  ],
-    "waves"
-  ],
-    "shores"
-  ],
-    "wet grass"
-  ],
-    "deep forest"
-  ],
-    "large lake"
-  ],
-    "hills"
-  ],
-    "valleys"
-  ],
-    "forests",
-    "woodlands"
-  ],
-    "jet stream",
-    "fountain"
-  ],
-    "particle",
-    "speck"
-  ],
-  "dusta": [
-    "dust"
-  ],
-  "láib": [
-    "mud"
-  ],
-    "sandy",
-    "sandy place"
-  ],
-  "dumhach": [
-    "sand dune"
-  ],
-  "parlaimint": [
-    "parliament"
-  ],
-  "bunreacht": [
-    "constitution"
-  ],
-  "reachtaíocht": [
-    "legislation"
-  ],
-  "ionchúisitheoir": [
-    "prosecutor"
-  ],
-    "defender"
-  ],
-  "fianaise": [
-    "evidence",
-    "witness"
-  ],
-  "breithiúnas": [
-    "judgement"
-  ],
-  "ciontacht": [
-    "guilt"
-  ],
-  "neamhchiontacht": [
-    "innocence"
-  ],
-  "pionós": [
-    "punishment",
-    "penalty"
-  ],
-  "caingean": [
-    "legal action",
-    "case"
-  ],
-  "dídeanach": [
-    "refugee"
-  ],
-  "tearmann": [
-    "refuge",
-    "sanctuary"
-  ],
-    "freedom of speech"
-  ],
-    "right to vote"
-  ],
-  "cáin": [
-    "tax"
-  ],
-    "income tax"
-  ],
-  "buiséad": [
-    "budget"
-  ],
-  "caiteachas": [
-    "spending",
-    "expenditure"
-  ],
-  "ioncam": [
-    "income"
-  ],
-  "brabús": [
-    "profit"
-  ],
-  "caillteanas": [
-    "loss"
-  ],
-  "infheistíocht": [
-    "investment"
-  ],
-  "iasacht": [
-    "loan",
-    "borrowing"
-  ],
-  "morgáiste": [
-    "mortgage"
-  ],
-  "cíos": [
-    "rent"
-  ],
-  "costas": [
-    "cost",
-    "expense"
-  ],
-  "praghas": [
-    "price"
-  ],
-    "good deal",
-    "bargain"
-  ],
-  "díolachán": [
-    "sale"
-  ],
-  "tomhaltas": [
-    "consumption"
-  ],
-    "debts"
-  ],
-  "coigilteas": [
-    "savings"
-  ],
-    "pension"
-  ],
-    "allowance",
-    "benefit"
-  ],
-    "dole",
-    "social welfare"
-  ],
-  "fostaíocht": [
-    "employment"
-  ],
-  "dífhostaíocht": [
-    "unemployment"
-  ],
-  "feithicil": [
-    "vehicle"
-  ],
-  "gluaisteán": [
-    "car",
-    "automobile"
-  ],
-  "mótarbhealach": [
-    "motorway"
-  ],
-  "crosaire": [
-    "crossroads"
-  ],
-  "iompar": [
-    "transport"
-  ],
-  "calafort": [
-    "port",
-    "harbour"
-  ],
-  "puball": [
-    "tent"
-  ],
-  "mála droma": [
-    "backpack",
-    "rucksack"
-  ],
-  "crios sábhála": [
-    "seatbelt"
-  ],
-  "clogad": [
-    "helmet"
-  ],
-  "árachas": [
-    "insurance"
-  ],
-  "víosa": [
-    "visa"
-  ],
-  "bordáil": [
-    "boarding"
-  ],
-    "return ticket"
-  ],
-    "single ticket"
-  ],
-    "reservation",
-    "booking"
-  ],
-  "treoraí": [
-    "guide"
-  ],
-  "conair": [
-    "path",
-    "route"
-  ],
-  "achar": [
-    "distance"
-  ],
-    "long journey"
-  ],
-    "short trip"
-  ],
-    "direct flight"
-  ],
-    "stopover"
-  ],
-  "bagáiste": [
-    "luggage",
-    "baggage"
-  ],
-  "mála taistil": [
-    "travel bag"
-  ],
-    "passes"
-  ],
-    "compass"
-  ],
-  "meáin shóisialta": [
-    "social media"
-  ],
-    "media"
-  ],
-  "scannán": [
-    "film",
-    "movie"
-  ],
-  "sraith": [
-    "series"
-  ],
-  "grianghrafadóireacht": [
-    "photography"
-  ],
-  "léirmheas": [
-    "review",
-    "critique"
-  ],
-  "fógra": [
-    "advertisement",
-    "notice"
-  ],
-  "suíomh gréasáin": [
-    "website"
-  ],
-  "glaoch": [
-    "call",
-    "phone call"
-  ],
-  "slándáil": [
-    "security"
-  ],
-  "príobháideacht": [
-    "privacy"
-  ],
-  "cóipcheart": [
-    "copyright"
-  ],
-  "feidhmchlár": [
-    "application",
-    "app"
-  ],
-  "bogearraí": [
-    "software"
-  ],
-  "crua-earraí": [
-    "hardware"
-  ],
-    "highlight",
-    "peak"
-  ],
-  "cúltaca": [
-    "backup"
-  ],
-  "nuashonrú": [
-    "update"
-  ],
-  "íoslódáil": [
-    "download"
-  ],
-  "uaslódáil": [
-    "upload"
-  ],
-  "nascadh": [
-    "connecting",
-    "connection"
-  ],
-    "wi-fi",
-    "wireless internet"
-  ],
-    "bluetooth"
-  ],
-  "batarói": [
-    "battery"
-  ],
-  "luchtaire": [
-    "charger"
-  ],
-  "seanachas": [
-    "traditional lore",
-    "storytelling"
-  ],
-  "seanchaí": [
-    "storyteller",
-    "lore-keeper"
-  ],
-  "ceol traidisiúnta": [
-    "traditional music"
-  ],
-  "rince céilí": [
-    "céilí dancing"
-  ],
-  "peil Ghaelach": [
-    "Gaelic football"
-  ],
-  "camógaíocht": [
-    "camogie"
-  ],
-  "CLG": [
-    "GAA"
-  ],
-  "An Ghaeltacht": [
-    "the Gaeltacht",
-    "Irish-speaking area"
-  ],
-  "Baile Átha Cliath": [
-    "Dublin"
-  ],
-  "Corcaigh": [
-    "Cork"
-  ],
-  "Gaillimh": [
-    "Galway"
-  ],
-  "Luimneach": [
-    "Limerick"
-  ],
-  "An Mhumhain": [
-    "Munster"
-  ],
-  "Laighin": [
-    "Leinster"
-  ],
-  "Connacht": [
-    "Connacht"
-  ],
-  "Cúige Uladh": [
-    "Ulster"
-  ],
-  "poblacht": [
-    "republic"
-  ],
-  "náisiún": [
-    "nation"
-  ],
-  "náisiúnachas": [
-    "nationalism"
-  ],
-  "féiniúlacht": [
-    "identity"
-  ],
-  "oidhreacht": [
-    "heritage"
-  ],
-    "significance",
-    "importance"
-  ],
-    "manner of speaking",
-    "idiom"
-  ],
-  "dul chun cinn": [
-    "progress"
-  ],
-  "cúlú": [
-    "decline",
-    "retreat"
-  ],
-    "increase"
-  ],
-  "laghdú": [
-    "decrease",
-    "reduction"
-  ],
-  "sprioc": [
-    "target",
-    "goal"
-  ],
-  "aidhm": [
-    "aim",
-    "goal"
-  ],
-  "aisling": [
-    "dream",
-    "vision"
-  ],
-  "idéal": [
-    "ideal"
-  ],
-  "cáilíocht": [
-    "quality"
-  ],
-  "cainníocht": [
-    "quantity"
-  ],
-  "éifeacht": [
-    "effect",
-    "effectiveness"
-  ],
-  "iarmhairt": [
-    "consequence"
-  ],
-  "buntáiste": [
-    "advantage"
-  ],
-  "míbhuntáiste": [
-    "disadvantage"
-  ],
-  "deis": [
-    "opportunity",
-    "chance"
-  ],
-  "baol": [
-    "danger"
-  ],
-  "sábháilteacht": [
-    "safety"
-  ],
-  "riosca": [
-    "risk"
-  ],
-  "spreagadh": [
-    "motivation",
-    "encouragement"
-  ],
-  "dreasacht": [
-    "incentive"
-  ],
-  "cúiteamh": [
-    "compensation"
-  ],
-  "luach saothair": [
-    "reward",
-    "remuneration"
-  ],
-  "éacht": [
-    "achievement",
-    "feat"
-  ],
-  "míshuaimhneas": [
-    "unease",
-    "restlessness"
-  ],
-  "sástacht": [
-    "satisfaction"
-  ],
-  "mearbhall": [
-    "confusion",
-    "dizziness"
-  ],
-  "botún": [
-    "mistake",
-    "error"
-  ],
-  "gaois": [
-    "wisdom",
-    "wit"
-  ],
-  "críonnacht": [
-    "wisdom"
-  ],
-  "amaideacht": [
-    "foolishness",
-    "silliness"
-  ],
-  "dánacht": [
-    "boldness",
-    "audacity"
-  ],
-  "scéin": [
-    "fright",
-    "panic"
-  ],
-  "gean": [
-    "love",
-    "affection",
-    "liking"
-  ],
-  "éad": [
-    "jealousy"
-  ],
-  "formad": [
-    "envy"
-  ],
-  "caoinfhulaingt": [
-    "tolerance"
-  ],
-  "éagóir": [
-    "injustice",
-    "wrong"
-  ],
-  "cinnteacht": [
-    "certainty"
-  ],
-  "éiginnteacht": [
-    "uncertainty"
-  ],
-  "éadóchas": [
-    "hopelessness",
-    "despair"
-  ],
-  "neamhchreideamh": [
-    "disbelief",
-    "unbelief"
-  ],
-  "ollamh": [
-    "professor"
-  ],
-  "oiliúint": [
-    "training"
-  ],
-    "work experience"
-  ],
-  "pá": [
-    "pay",
-    "wages"
-  ],
-  "tuarastal": [
-    "salary"
-  ],
-  "post": [
-    "job",
-    "post"
-  ],
-  "folúntas": [
-    "vacancy"
-  ],
-  "ardú céime": [
-    "promotion"
-  ],
-  "comhairleoir": [
-    "counsellor",
-    "advisor"
-  ],
-  "measúnú": [
-    "assessment",
-    "evaluation"
-  ],
-  "meastachán": [
-    "estimate"
-  ],
-  "tuar": [
-    "forecast",
-    "omen"
-  ],
-  "réamhaisnéis": [
-    "forecast"
-  ],
-    "implementation"
-  ],
-  "tionscadal": [
-    "project"
-  ],
-  "clár oibre": [
-    "work plan",
-    "agenda"
-  ],
-  "cruinniú": [
-    "meeting"
-  ],
-  "comhdháil": [
-    "conference"
-  ],
-  "seimineár": [
-    "seminar"
-  ],
-  "ceardlann": [
-    "workshop"
-  ],
-  "léacht": [
-    "lecture"
-  ],
-  "aiste": [
-    "essay"
-  ],
-  "tráchtas": [
-    "thesis",
-    "dissertation"
-  ],
-  "foilseachán": [
-    "publication"
-  ],
-  "irisleabhar": [
-    "journal",
-    "magazine"
-  ],
-  "eagarthóir": [
-    "editor"
-  ],
-  "foilsitheoir": [
-    "publisher"
-  ],
-    "textbook"
-  ],
-  "foclóir": [
-    "dictionary"
-  ],
-  "gramadach": [
-    "grammar"
-  ],
-  "comhréir": [
-    "syntax"
-  ],
-  "litriú": [
-    "spelling"
-  ],
-  "fuaimniú": [
-    "pronunciation"
-  ],
-  "bríathar": [
-    "verb"
-  ],
-  "ainmfhocal": [
-    "noun"
-  ],
-  "aidiacht": [
-    "adjective"
-  ],
-  "dobhriathar": [
-    "adverb"
-  ],
-  "réamhfhocal": [
-    "preposition"
-  ],
-  "forainm": [
-    "pronoun"
-  ],
-  "clásal": [
-    "clause"
-  ],
-  "abairt": [
-    "sentence"
-  ],
-    "case (grammar)"
-  ],
-  "inscne": [
-    "gender (grammar)"
-  ],
-  "iolra": [
-    "plural"
-  ],
-    "singular"
-  ],
-  "aerach": [
-    "airy",
-    "lively",
-    "carefree"
-  ],
-  "ainmhí": [
-    "animal"
-  ],
-  "aisteach": [
-    "strange",
-    "peculiar",
-    "odd"
-  ],
-  "aithris": [
-    "imitation",
-    "recitation",
-    "mimicry"
-  ],
-  "amharc": [
-    "look",
-    "sight",
-    "view"
-  ],
-  "anfa": [
-    "storm",
-    "tempest"
-  ],
-  "aonach": [
-    "fair",
-    "assembly",
-    "market"
-  ],
-  "binn": [
-    "melodious",
-    "sweet-sounding",
-    "peak"
-  ],
-  "borb": [
-    "fierce",
-    "rude",
-    "savage"
-  ],
-  "buíoch": [
-    "grateful",
-    "thankful"
-  ],
-  "callóid": [
-    "commotion",
-    "noise",
-    "fuss"
-  ],
-  "casúr": [
-    "hammer"
-  ],
-  "ceol": [
-    "music"
-  ],
-  "ciontach": [
-    "guilty"
-  ],
-  "cleas": [
-    "trick",
-    "feat",
-    "stunt"
-  ],
-  "cóisir": [
-    "party",
-    "feast",
-    "celebration"
-  ],
-  "comhluadar": [
-    "company",
-    "group",
-    "companions"
-  ],
-  "cóngarach": [
-    "near",
-    "close",
-    "nearby"
-  ],
-  "córas": [
-    "system",
-    "method",
-    "arrangement"
-  ],
-  "craic": [
-    "fun",
-    "crack",
-    "entertainment"
-  ],
-  "cruach": [
-    "stack",
-    "rick",
-    "heap"
-  ],
-  "daingean": [
-    "firm",
-    "secure",
-    "fortress"
-  ],
-  "daonra": [
-    "population"
-  ],
-  "deacair": [
-    "difficult",
-    "hard"
-  ],
-  "dealg": [
-    "thorn",
-    "pin",
-    "brooch"
-  ],
-  "dioltas": [
-    "revenge",
-    "vengeance"
-  ],
-  "dream": [
-    "group",
-    "crowd",
-    "people"
-  ],
-  "feirm": [
-    "farm"
-  ],
-  "fial": [
-    "generous",
-    "noble"
-  ],
-  "gadaí": [
-    "thief"
-  ],
-  "gaiscíoch": [
-    "hero",
-    "warrior",
-    "champion"
-  ],
-  "garg": [
-    "rough",
-    "harsh",
-    "severe"
-  ],
-  "gealgháireach": [
-    "cheerful",
-    "merry",
-    "bright-faced"
-  ],
-  "geall": [
-    "bet",
-    "promise",
-    "pledge"
-  ],
-  "glas": [
-    "green",
-    "grey",
-    "lock"
-  ],
-  "gléas": [
-    "device",
-    "equipment",
-    "instrument"
-  ],
-  "glór": [
-    "voice",
-    "sound"
-  ],
-  "gnás": [
-    "custom",
-    "habit",
-    "practice"
-  ],
-  "gníomhaíocht": [
-    "activity"
-  ],
-  "greim": [
-    "grip",
-    "bite",
-    "stitch"
-  ],
-  "guí": [
-    "prayer",
-    "wish",
-    "blessing"
-  ],
-  "iarracht": [
-    "attempt",
-    "effort",
-    "try"
-  ],
-  "imeall": [
-    "edge",
-    "margin",
-    "outskirts"
-  ],
-  "iníon": [
-    "daughter"
-  ],
-  "iomaire": [
-    "ridge"
-  ],
-  "ionraic": [
-    "honest",
-    "upright",
-    "righteous"
-  ],
-  "leisce": [
-    "laziness",
-    "reluctance"
-  ],
-  "leoithne": [
-    "breeze",
-    "gentle wind"
-  ],
-  "luaineach": [
-    "restless",
-    "volatile",
-    "changeable"
-  ],
-  "machnamh": [
-    "reflection",
-    "contemplation",
-    "thought"
-  ],
-  "maireachtáil": [
-    "survival",
-    "living",
-    "livelihood"
-  ],
-  "masc": [
-    "mask"
-  ],
-  "meacán": [
-    "parsnip",
-    "root vegetable",
-    "carrot"
-  ],
-  "meabhair": [
-    "sense",
-    "mind",
-    "memory"
-  ],
-  "meanma": [
-    "spirit",
-    "morale",
-    "mood"
-  ],
-  "meán": [
-    "middle",
-    "medium",
-    "mean"
-  ],
-  "measúil": [
-    "respectful",
-    "decent",
-    "esteemed"
-  ],
-  "mias": [
-    "dish",
-    "plate",
-    "basin"
-  ],
-  "milseacht": [
-    "sweetness"
-  ],
-  "mionn": [
-    "oath",
-    "vow"
-  ],
-  "naomhóg": [
-    "currach",
-    "coracle",
-    "traditional boat"
-  ],
-  "nead": [
-    "nest"
-  ],
-  "néata": [
-    "neat",
-    "tidy",
-    "trim"
-  ],
-  "nimhneach": [
-    "poisonous",
-    "painful",
-    "venomous"
-  ],
-  "oscartha": [
-    "bold",
-    "dashing",
-    "fierce"
-  ],
-  "piopa": [
-    "pipe",
-    "tube"
-  ],
-  "plé": [
-    "discussion",
-    "dealing",
-    "debate"
-  ],
-  "póca": [
-    "pocket"
-  ],
-  "rábach": [
-    "abundant",
-    "lavish",
-    "reckless"
-  ],
-  "rámhainn": [
-    "spade"
-  ],
-  "ráth": [
-    "fort",
-    "prosperity",
-    "grace"
-  ],
-  "radharc": [
-    "sight",
-    "view",
-    "scene"
-  ],
-  "réchúiseach": [
-    "easygoing",
-    "casual",
-    "indifferent"
-  ],
-  "riachtanas": [
-    "need",
-    "necessity",
-    "requirement"
-  ],
-  "rian": [
-    "track",
-    "trace",
-    "mark"
-  ],
-  "righin": [
-    "tough",
-    "slow",
-    "sticky"
-  ],
-  "ríméadach": [
-    "delighted",
-    "joyful",
-    "thrilled"
-  ],
-  "rópa": [
-    "rope"
-  ],
-  "saothar": [
-    "work",
-    "labour",
-    "effort"
-  ],
-  "scáfar": [
-    "shy",
-    "nervous",
-    "timid"
-  ],
-  "searc": [
-    "love",
-    "darling",
-    "affection"
-  ],
-  "seol": [
-    "sail",
-    "send",
-    "dispatch"
-  ],
-  "slí": [
-    "way",
-    "path",
-    "means"
-  ],
-  "slua": [
-    "crowd",
-    "army",
-    "multitude"
-  ],
-  "sochar": [
-    "benefit",
-    "profit",
-    "advantage"
-  ],
-  "sonas": [
-    "happiness",
-    "good fortune",
-    "bliss"
-  ],
-  "spraíúil": [
-    "fun",
-    "playful",
-    "entertaining"
-  ],
-  "sruth": [
-    "stream",
-    "current",
-    "flow"
-  ],
-  "stad": [
-    "stop",
-    "pause",
-    "halt"
-  ],
-  "taibhse": [
-    "ghost",
-    "apparition",
-    "phantom"
-  ],
-  "tairbhe": [
-    "benefit",
-    "profit",
-    "use"
-  ],
-  "tairiscint": [
-    "offer",
-    "proposal",
-    "bid"
-  ],
-  "téad": [
-    "rope",
-    "string",
-    "cord"
-  ],
-  "teideal": [
-    "title"
-  ],
-  "tréith": [
-    "trait",
-    "characteristic",
-    "quality"
-  ],
-  "tuama": [
-    "tomb",
-    "grave"
-  ],
-  "uirlis": [
-    "tool",
-    "instrument",
-    "utensil"
-  ],
-  "umhal": [
-    "humble",
-    "obedient",
-    "submissive"
-  ],
-  "ait": [
-    "funny",
-    "strange",
-    "odd"
-  ],
-  "aiteann": [
-    "gorse",
-    "furze"
-  ],
-  "bacainn": [
-    "obstacle",
-    "barrier",
-    "hindrance"
-  ],
-  "blásta": [
-    "tasty",
-    "delicious",
-    "pleasant"
-  ],
-  "bréan": [
-    "rotten",
-    "stale",
-    "foul"
-  ],
-  "cabhlach": [
-    "navy",
-    "fleet"
-  ],
-  "caibideal": [
-    "chapter",
-    "topic"
-  ],
-  "cairt": [
-    "cart",
-    "charter",
-    "map"
-  ],
-  "canúint": [
-    "dialect",
-    "accent"
-  ],
-  "ceannasach": [
-    "dominant",
-    "bossy",
-    "commanding"
-  ],
-  "ceilp": [
-    "kelp",
-    "seaweed"
-  ],
-  "ceomhar": [
-    "misty",
-    "foggy",
-    "hazy"
-  ],
-  "cinntitheach": [
-    "decisive",
-    "conclusive",
-    "determined"
-  ],
-  "ciorcal": [
-    "circle"
-  ],
-    "boulder",
-    "large stone"
-  ],
-  "cloígh": [
-    "defeat",
-    "overcome",
-    "cleave"
-  ],
-  "cnag": [
-    "knock",
-    "tap",
-    "crack"
-  ],
-  "cogar": [
-    "whisper"
-  ],
-  "coiscéim": [
-    "step",
-    "footstep",
-    "pace"
-  ],
-  "contúirt": [
-    "danger",
-    "peril",
-    "hazard"
-  ],
-    "back road",
-    "byroad"
-  ],
-  "deighilt": [
-    "division",
-    "separation",
-    "partition"
-  ],
-  "díbirt": [
-    "expulsion",
-    "exile",
-    "banishment"
-  ],
-  "dóchasach": [
-    "hopeful",
-    "optimistic"
-  ],
-  "dréacht": [
-    "draft",
-    "outline",
-    "poem"
-  ],
-    "bad condition",
-    "poor state"
-  ],
-  "dúshlánach": [
-    "challenging",
-    "defiant"
-  ],
-  "fadtéarmach": [
-    "long-term"
-  ],
-  "gaofar": [
-    "windy"
-  ],
-    "game",
-    "bellow",
-    "roar"
-  ],
-  "gnáthach": [
-    "ordinary",
-    "usual",
-    "common"
-  ],
-  "guaim": [
-    "self-control",
-    "composure",
-    "discretion"
-  ],
-    "afterthought",
-    "reflection"
-  ],
-  "imeachtaí": [
-    "events",
-    "proceedings",
-    "activities"
-  ],
-  "ionadh": [
-    "wonder",
-    "surprise"
-  ],
-  "lámhach": [
-    "shooting",
-    "gunfire"
-  ],
-  "leochaileach": [
-    "fragile",
-    "vulnerable",
-    "delicate"
-  ],
-  "lonnaíocht": [
-    "settlement",
-    "colony"
-  ],
-  "mana": [
-    "motto",
-    "slogan",
-    "omen"
-  ],
-  "maolú": [
-    "softening",
-    "reduction",
-    "moderation"
-  ],
-  "marbhlann": [
-    "morgue",
-    "mortuary"
-  ],
-  "meabhrú": [
-    "remembering",
-    "reminding",
-    "recalling"
-  ],
-  "mianach": [
-    "ore",
-    "nature",
-    "tendency"
-  ],
-  "muirín": [
-    "family",
-    "dependants",
-    "burden"
-  ],
-  "neamhspleáchas": [
-    "independence",
-    "autonomy"
-  ],
-    "modern",
-    "contemporary",
-    "up-to-date"
-  ],
-  "oibleagáid": [
-    "obligation",
-    "duty"
-  ],
-  "oscailteacht": [
-    "openness",
-    "transparency"
-  ],
-  "páirt": [
-    "part",
-    "role",
-    "share"
-  ],
-  "pléisiúr": [
-    "pleasure",
-    "enjoyment"
-  ],
-  "ráig": [
-    "outbreak",
-    "surge",
-    "burst"
-  ],
-    "commotion",
-    "uproar",
-    "excitement"
-  ],
-    "regular",
-    "systematic",
-    "orderly"
-  ],
-  "sáraíocht": [
-    "violation",
-    "surpassing",
-    "breach"
-  ],
-  "scaipeadh": [
-    "scattering",
-    "spreading",
-    "distributing"
-  ],
-  "sócúlacht": [
-    "comfort",
-    "ease",
-    "luxury"
-  ],
-  "súgán": [
-    "straw rope",
-    "twisted cord"
-  ],
-  "taibhreamh": [
-    "dream",
-    "vision",
-    "reverie"
-  ],
-  "tréaniarracht": [
-    "great effort",
-    "strenuous attempt"
-  ],
-  "uachtarach": [
-    "upper",
-    "superior",
-    "overhead"
-  ],
-  "aibítir": [
-    "alphabet"
-  ],
-  "aicme": [
-    "class",
-    "category",
-    "type",
-    "group"
-  ],
-  "aistear": [
-    "journey",
-    "voyage",
-    "travel"
-  ],
-  "aitheantas": [
-    "identity",
-    "recognition",
-    "identification"
-  ],
-  "arracht": [
-    "monster",
-    "giant",
-    "apparition"
-  ],
-  "babhta": [
-    "round",
-    "bout",
-    "turn"
-  ],
-  "barúil": [
-    "opinion",
-    "notion",
-    "idea"
-  ],
-  "béas": [
-    "custom",
-    "manner",
-    "habit"
-  ],
-  "beirt": [
-    "two people",
-    "pair"
-  ],
-  "bláthchuach": [
-    "vase"
-  ],
-    "helping",
-    "assisting",
-    "aiding"
-  ],
-  "cáineadh": [
-    "criticism",
-    "condemnation",
-    "censure"
-  ],
-  "casadh": [
-    "turning",
-    "twisting",
-    "meeting"
-  ],
-  "ceangal": [
-    "bond",
-    "tie",
-    "connection"
-  ],
-    "cancellation",
-    "abolition"
-  ],
-  "cianrialtán": [
-    "remote control"
-  ],
-  "cill": [
-    "church",
-    "cell",
-    "burial ground"
-  ],
-  "cinnire": [
-    "leader",
-    "guide",
-    "captain"
-  ],
-  "claíomh": [
-    "sword"
-  ],
-  "coinneáil": [
-    "keeping",
-    "holding",
-    "maintaining"
-  ],
-  "cor": [
-    "turn",
-    "condition",
-    "twist"
-  ],
-  "cothromaíocht": [
-    "balance",
-    "equality",
-    "equilibrium"
-  ],
-  "crannóg": [
-    "lake dwelling",
-    "crannog",
-    "wooden platform"
-  ],
-    "finishing",
-    "completing",
-    "concluding"
-  ],
-  "dallamullóg": [
-    "deception",
-    "trick",
-    "blindfold"
-  ],
-  "daonlathas": [
-    "democracy"
-  ],
-  "domhan": [
-    "world"
-  ],
-  "earnáil": [
-    "sector",
-    "category",
-    "section"
-  ],
-  "éileamh": [
-    "demand",
-    "claim",
-    "requirement"
-  ],
-  "fáinleog": [
-    "swallow"
-  ],
-  "fáltas": [
-    "income",
-    "receipt",
-    "proceeds"
-  ],
-  "feidhm": [
-    "function",
-    "use",
-    "purpose"
-  ],
-  "fíoch": [
-    "fury",
-    "rage",
-    "fierce anger"
-  ],
-  "gabhlán": [
-    "swallow",
-    "swift"
-  ],
-  "gairm": [
-    "calling",
-    "vocation",
-    "profession"
-  ],
-  "gátar": [
-    "need",
-    "want",
-    "poverty"
-  ],
-  "inbhear": [
-    "estuary",
-    "river mouth"
-  ],
-  "íobairt": [
-    "sacrifice",
-    "offering"
-  ],
-  "íomhá": [
-    "image",
-    "icon",
-    "statue"
-  ],
-  "iomaíocht": [
-    "competition",
-    "rivalry",
-    "contest"
-  ],
-  "iomrall": [
-    "error",
-    "straying",
-    "wandering"
-  ],
-    "following",
-    "continuing",
-    "pursuing"
-  ],
-  "líon tí": [
-    "household",
-    "family",
-    "dependants"
-  ],
-  "loscann": [
-    "frog"
-  ],
-  "luibh": [
-    "herb",
-    "plant"
-  ],
-  "meadhrán": [
-    "dizziness",
-    "vertigo"
-  ],
-  "pléaráca": [
-    "revelry",
-    "merrymaking",
-    "fun"
-  ],
-  "poll": [
-    "hole",
-    "pit",
-    "puddle"
-  ],
-  "práinn": [
-    "urgency",
-    "hurry",
-    "haste"
-  ],
-  "prionsabal": [
-    "principle"
-  ],
-  "rabharta": [
-    "flood tide",
-    "surge",
-    "abundance"
-  ],
-  "ráithe": [
-    "quarter",
-    "season",
-    "three months"
-  ],
-  "ráiteas": [
-    "statement",
-    "declaration"
-  ],
-  "saol": [
-    "life",
-    "world",
-    "age"
-  ],
-  "sárú": [
-    "overcoming",
-    "violating",
-    "surpassing"
-  ],
-  "scata": [
-    "flock",
-    "group",
-    "crowd"
-  ],
-  "sceilig": [
-    "rocky cliff",
-    "skerry"
-  ],
-  "seachaint": [
-    "avoiding",
-    "avoidance",
-    "evasion"
-  ],
-  "séanadh": [
-    "denying",
-    "disowning",
-    "renouncing"
-  ],
-  "síneadh": [
-    "stretching",
-    "extension",
-    "prolonging"
-  ],
-  "socrú": [
-    "settling",
-    "arranging",
-    "fixing"
-  ],
-  "tairne": [
-    "nail",
-    "tack"
-  ],
-  "taisce": [
-    "treasure",
-    "savings",
-    "store"
-  ],
-  "tarcaisne": [
-    "contempt",
-    "scorn"
-  ],
-  "téarma": [
-    "term",
-    "period",
-    "expression"
-  ],
-  "tornóg": [
-    "turnip"
-  ],
-  "tréimhse": [
-    "period",
-    "spell",
-    "term"
-  ],
-  "uabhar": [
-    "pride",
-    "arrogance",
-    "conceit"
-  ],
-  "ualach": [
-    "load",
-    "burden",
-    "weight"
-  ],
-  "údarás": [
-    "authority",
-    "board",
-    "organisation"
-  ],
-  "aistriú": [
-    "translating",
-    "moving",
-    "transferring"
-  ],
-    "cheerful",
-    "high-spirited",
-    "lively"
-  ],
-  "bagrach": [
-    "threatening",
-    "menacing",
-    "ominous"
-  ],
-  "bunaithe": [
-    "based",
-    "established",
-    "founded"
-  ],
-  "caoin": [
-    "gentle",
-    "mild",
-    "smooth"
-  ],
-  "ciotach": [
-    "left-handed",
-    "awkward",
-    "clumsy"
-  ],
-    "tormented",
-    "afflicted",
-    "anguished"
-  ],
-  "dlúth": [
-    "close",
-    "dense",
-    "tight"
-  ],
-  "dochma": [
-    "gloomy",
-    "sullen",
-    "surly"
-  ],
-  "dúr": [
-    "dull",
-    "stubborn",
-    "obtuse"
-  ],
-  "dúthrachtach": [
-    "earnest",
-    "sincere",
-    "zealous"
-  ],
-  "éadrom": [
-    "light",
-    "carefree",
-    "trivial"
-  ],
-  "ionann": [
-    "same",
-    "identical",
-    "equal"
-  ],
-    "fluent",
-    "smooth",
-    "eloquent"
-  ],
-  "meabhrach": [
-    "clever",
-    "mindful",
-    "intelligent"
-  ],
-  "míshásta": [
-    "dissatisfied",
-    "unhappy",
-    "discontented"
-  ],
-  "neirbhíseach": [
-    "nervous",
-    "anxious"
-  ],
-  "paiteanta": [
-    "handy",
-    "neat",
-    "clever"
-  ],
-  "suairc": [
-    "pleasant",
-    "cheerful",
-    "affable"
-  ],
-  "taibhseach": [
-    "spectacular",
-    "striking",
-    "ghostly"
-  ],
-  "ailtireacht": ["architecture"]
-  "aire": ["care, attention"]
-  "aoibhinn": ["delightful, blissful"]
-  "aois": ["age (of person)"]
-  "bainis": ["wedding, wedding feast"]
-  "baithis": ["top, crown (of head)"]
-  "banana": ["banana"]
-  "beannacht": ["blessing"]
-  "bitheolaíocht": ["biology"]
-  "bogadh": ["softening, easement"]
-  "borgaire": ["hamburger"]
-  "briosc": ["brittle, fragile"]
-  "briseadh": ["break, the act of breaking; breakage"]
-  "bruach": ["bank (edge of river, lake, or other watercourse), brink"]
-  "bunúsach": ["original, basic, primary"]
-  "bus": ["bus"]
-  "cadhan": ["brent goose, brant goose"]
-  "caibidil": ["chapter"]
-  "caisearbhán": ["dandelion, Taraxacum spp."]
-  "caitheamh": ["consumption"]
-  "cam": ["crooked"]
-  "caonach": ["moss"]
-  "caor": ["berry"]
-  "ceannas": ["headship, sovereignty"]
-  "ceart": ["right, correct"]
-  "ceimic": ["chemistry"]
-  "claí": ["dry-stone wall"]
-  "cliabhrach": ["chest, thorax (region of the mammalian body)"]
-  "clochar": ["nunnery, convent"]
-  "cnaipe": ["button"]
-  "cnocán": ["hillock"]
-  "coip": ["ferment"]
-  "coirt": ["bark (exterior covering of a tree)"]
-  "coiste": ["committee"]
-  "comhthéacs": ["context"]
-  "copóg": ["large leaf"]
-  "cosúlacht": ["likeness; appearance, resemblance"]
-  "cruinn": ["round (circular or cylindrical)"]
-  "cré": ["clay"]
-  "culaith": ["suit (of clothes), dress, apparel"]
-  "cág": ["jackdaw"]
-  "deatach": ["smoke"]
-  "diagacht": ["divinity"]
-  "difríocht": ["difference (characteristic of something that makes it different from something else)"]
-  "dualgas": ["duty, obligation, onus"]
-  "dáta": ["date (specification of time; point in time)"]
-  "díog": ["ditch, trench (also in archaeology), dyke"]
-  "díograis": ["fervor, zeal; fervent love; kindred affection"]
-  "eagrú": ["arrangement, organisation"]
-  "ealaíontóir": ["artist"]
-  "eidheann": ["ivy"]
-  "eorna": ["barley (Hordeum vulgare)"]
-  "feamainn": ["seaweed, wrack"]
-  "fearnóg": ["alder tree"]
-  "feisire": ["A member of parliament (used historically in the context of the parliament of the Kingdom of Ireland, used nowadays for MEPs or British MPs)."]
-  "fisic": ["physics"]
-  "fonnmhar": ["willing, ready, eager"]
-  "freagairt": ["answering, answer; correspondence; responsibility; reaction, response"]
-  "freagracht": ["responsibility"]
-  "fáil": ["possession"]
-  "fál": ["hedge (thicket of bushes planted in a row), fence (barrier)"]
-  "féarach": ["pasture"]
-  "gabháil": ["catch, seizure, capture; assumption (of authority); occupation (of territory); acceptance; undertaking; tolerance"]
-  "garraíodóir": ["gardener"]
-  "gasóg": ["little stalk; young shoot"]
-  "giúis": ["fir, Abies genus"]
-  "gruama": ["gloomy, morose"]
-  "gréasaí": ["shoemaker, bootmaker"]
-  "iarraidh": ["request, demand"]
-  "iascaireacht": ["fishing"]
-  "imleacán": ["navel, belly button"]
-  "innealtóireacht": ["engineering"]
-  "iompú": ["turning, turn"]
-  "leithinis": ["peninsula"]
-  "locht": ["fault, defect, blemish, flaw, imperfection"]
-  "lárnach": ["central"]
-  "maor": ["steward"]
-  "mine": ["genitive feminine singular"]
-  "móin": ["turf, peat"]
-  "naoscach": ["snipe (bird of the family Scolopacidae)"]
-  "neantóg": ["nettle (stinging herb of genus Urtica)"]
-  "nócha": ["ninety"]
-  "nóinín": ["daisy"]
-  "obair": ["work, labor"]
-  "ochtó": ["eighty"]
-  "paidir": ["Lord’s Prayer"]
-  "pasta": ["pasta"]
-  "plúr": ["flour"]
-  "putóg": ["pudding (sausage made primarily from blood)"]
-  "páirtí": ["party"]
-  "pátrún": ["patron"]
-  "raithneach": ["fern, bracken"]
-  "riasc": ["marsh, fen, moor"]
-  "roinnt": ["somewhat"]
-  "rá": ["saying, quote"]
-  "ré": ["stretch of ground; level ground"]
-  "rósach": ["rose, rosy, roseate"]
-  "sceir": ["skerry"]
-  "seachtó": ["seventy"]
-  "seasca": ["sixty"]
-  "siúlóid": ["a walk"]
-  "slachtmhar": ["neat, tidy, well-finished"]
-  "smior": ["bone marrow"]
-  "snag": ["a catch (hesitation in voice), gasp, sob"]
-  "socheolaíocht": ["sociology"]
-  "sonra": ["characteristic; particular, detail"]
-  "stát": ["state"]
-  "síceolaíocht": ["psychology"]
-  "súgradh": ["playing, sporting; amusement, fun"]
-  "taispeáint": ["show, display, exhibition"]
-  "taoide": ["tide (periodic change of sea level)"]
-  "teagasc": ["teaching, doctrine"]
-  "teangeolaíocht": ["linguistics"]
-  "teocht": ["heat, warmth"]
-  "tiubh": ["thick, dense, closely set"]
-  "togha": ["choice (best or most preferable part), pick"]
-  "toil": ["will"]
-  "tormán": ["noise, roar (loud resounding noise), rumble (low, heavy, continuous sound), thunder (deep, rumbling noise), boom (low-pitched, resonant sound)"]
-  "tornapa": ["turnip"]
-  "tosú": ["beginning, commencement, start"]
-  "tráchtáil": ["commerce"]
-  "tuairisc": ["information, tidings"]
-  "tuilleamh": ["earning"]
-  "tíreolaíocht": ["geography"]
-  "tórramh": ["wake (period after death)"]
-  "véarsa": ["verse; stanza; (biblical) verse"]
-  "ógánach": ["adolescent, youngster, youth, young man"]
-  "ól": ["to drink"]
-  "ómós": ["homage, respect"]
-  "ór": ["gold"]
+  "cat": ["cat"],
+  "madra": ["dog"],
+  "capall": ["horse"],
+  "bó": ["cow"],
+  "caora": ["sheep"],
+  "muc": ["pig"],
+  "éan": ["bird"],
+  "iasc": ["fish"],
+  "leon": ["lion"],
+  "eilifint": ["elephant"],
+  "luch": ["mouse"],
+  "coinín": ["rabbit"],
+  "gabhar": ["goat"],
+  "asal": ["donkey"],
+  "fia": ["deer"],
+  "sionnach": ["fox"],
+  "ulchabán": ["owl"],
+  "bradán": ["salmon"],
+  "béar": ["bear"],
+  "tíogar": ["tiger"],
+  "eala": ["swan"],
+  "colm": ["dove"],
+  "preachán": ["crow"],
+  "cearc": ["hen"],
+  "coileach": ["rooster"],
+  "rón": ["seal"],
+  "iolar": ["eagle"],
+  "giorria": ["hare"],
+  "broc": ["badger"],
+  "uan": ["lamb"],
+  "lao": ["calf"],
+  "searrach": ["foal"],
+  "coileán": ["puppy"],
+  "piscín": ["kitten"],
+  "nathair": ["snake"],
+  "moncaí": ["monkey"],
+  "dobharchú": ["otter"],
+  "scadán": ["herring"],
+  "trosc": ["cod"],
+  "tuinnín": ["tuna"],
+  "cú": ["hound"],
+  "poc": ["buck"],
+  "reithe": ["ram"],
+  "damh": ["ox"],
+  "feannóg": ["hooded crow"],
+  "druid": ["starling"],
+  "spideog": ["robin"],
+  "fuiseog": ["lark"],
+  "smólach": ["thrush"],
+  "colúr": ["pigeon"],
+  "francach": ["rat"],
+  "lacha": ["duck"],
+  "péacóg": ["peacock"],
+  "siorc": ["shark"],
+  "breac": ["trout"],
+  "míol": ["insect"],
+  "ialtóg": ["bat"],
+  "portán": ["crab"],
+  "gliomach": ["lobster"],
+  "gainéad": ["gannet"],
+  "corr": ["heron"],
+  "easóg": ["weasel"],
+  "faolchú": ["wolf"],
+  "tarbh": ["bull"],
+  "cráin": ["sow"],
+  "turcaí": ["turkey"],
+  "peata": ["pet"],
+  "fiach": ["raven"],
+  "faoileán": ["seagull"],
+  "dreoilín": ["wren"],
+  "lon": ["blackbird"],
+  "gé": ["goose"],
+  "seabhac": ["hawk"],
+  "gráinneog": ["hedgehog"],
+  "gealbhan": ["sparrow"],
+  "lámh": ["hand"],
+  "súil": ["eye"],
+  "cluas": ["ear"],
+  "srón": ["nose"],
+  "béal": ["mouth"],
+  "ceann": ["head"],
+  "cos": ["foot"],
+  "droim": ["back"],
+  "bolg": ["belly"],
+  "méar": ["finger"],
+  "glúin": ["knee"],
+  "gualainn": ["shoulder"],
+  "muineál": ["neck"],
+  "teanga": ["tongue"],
+  "fiacail": ["tooth"],
+  "croí": ["heart"],
+  "scamhóg": ["lung"],
+  "ae": ["liver"],
+  "cnámh": ["bone"],
+  "craiceann": ["skin"],
+  "gruaig": ["hair"],
+  "féasóg": ["beard"],
+  "mala": ["eyebrow"],
+  "ordóg": ["thumb"],
+  "rosta": ["wrist"],
+  "smig": ["chin"],
+  "éadan": ["forehead"],
+  "scornach": ["throat"],
+  "ucht": ["chest"],
+  "easna": ["rib"],
+  "fuil": ["blood"],
+  "alt": ["joint"],
+  "sáil": ["heel"],
+  "colpa": ["calf"],
+  "duán": ["kidney"],
+  "liopa": ["lip"],
+  "fabhra": ["eyelash"],
+  "féith": ["vein"],
+  "matán": ["muscle"],
+  "troigh": ["foot"],
+  "géag": ["limb"],
+  "murnán": ["ankle"],
+  "bos": ["palm"],
+  "dorn": ["fist"],
+  "teach": ["house"],
+  "doras": ["door"],
+  "fuinneog": ["window"],
+  "bord": ["table"],
+  "cathaoir": ["chair"],
+  "leaba": ["bed"],
+  "seomra": ["room"],
+  "urlár": ["floor"],
+  "díon": ["roof"],
+  "balla": ["wall"],
+  "cistín": ["kitchen"],
+  "gairdín": ["garden"],
+  "staighre": ["stairs"],
+  "tine": ["fire"],
+  "lampa": ["lamp"],
+  "scáthán": ["mirror"],
+  "cófra": ["cupboard"],
+  "cuisneoir": ["fridge"],
+  "oigheann": ["oven"],
+  "sorn": ["stove"],
+  "sconna": ["tap"],
+  "doirteal": ["sink"],
+  "tuáille": ["towel"],
+  "blaincéad": ["blanket"],
+  "piliúr": ["pillow"],
+  "troscán": ["furniture"],
+  "coinneal": ["candle"],
+  "clog": ["clock"],
+  "teilifís": ["television"],
+  "raidió": ["radio"],
+  "ríomhaire": ["computer"],
+  "guthán": ["phone"],
+  "clós": ["yard"],
+  "garáiste": ["garage"],
+  "folcadán": ["bath"],
+  "leithreas": ["toilet"],
+  "dallóg": ["blind"],
+  "cuirtín": ["curtain"],
+  "eochair": ["key"],
+  "tolg": ["sofa"],
+  "bosca": ["box"],
+  "buidéal": ["bottle"],
+  "gloine": ["glass"],
+  "cupán": ["cup"],
+  "muga": ["mug"],
+  "pláta": ["plate"],
+  "babhla": ["bowl"],
+  "sáspan": ["saucepan"],
+  "pota": ["pot"],
+  "friochtán": ["frying pan"],
+  "scian": ["knife"],
+  "forc": ["fork"],
+  "spúnóg": ["spoon"],
+  "citeal": ["kettle"],
+  "canna": ["can"],
+  "léine": ["shirt"],
+  "geansaí": ["jumper"],
+  "treabhsar": ["trousers"],
+  "sciorta": ["skirt"],
+  "gúna": ["dress"],
+  "bróg": ["shoe"],
+  "stoca": ["sock"],
+  "caipín": ["cap"],
+  "hata": ["hat"],
+  "cóta": ["coat"],
+  "seaicéad": ["jacket"],
+  "crios": ["belt"],
+  "spéaclaí": ["glasses"],
+  "fáinne": ["ring"],
+  "muince": ["necklace"],
+  "uaireadóir": ["watch"],
+  "mála": ["bag"],
+  "sparán": ["purse"],
+  "éadach": ["cloth"],
+  "carbhat": ["tie"],
+  "scaif": ["scarf"],
+  "crann": ["tree"],
+  "bláth": ["flower"],
+  "féar": ["grass"],
+  "farraige": ["sea"],
+  "abhainn": ["river"],
+  "loch": ["lake"],
+  "sliabh": ["mountain"],
+  "coill": ["forest"],
+  "grian": ["sun"],
+  "gealach": ["moon"],
+  "réalta": ["star"],
+  "spéir": ["sky"],
+  "scamall": ["cloud"],
+  "báisteach": ["rain"],
+  "sneachta": ["snow"],
+  "gaoth": ["wind"],
+  "carraig": ["rock"],
+  "ithir": ["soil"],
+  "tonn": ["wave"],
+  "cuan": ["harbour"],
+  "foraois": ["forest"],
+  "gaineamh": ["sand"],
+  "trá": ["beach"],
+  "oileán": ["island"],
+  "sruthán": ["stream"],
+  "tobar": ["well"],
+  "portach": ["bog"],
+  "talamh": ["land"],
+  "aer": ["air"],
+  "gleann": ["valley"],
+  "cladach": ["shore"],
+  "droichead": ["bridge"],
+  "linn": ["pool"],
+  "sceach": ["bush"],
+  "fraoch": ["heather"],
+  "luachair": ["rushes"],
+  "cloch": ["stone"],
+  "drúcht": ["dew"],
+  "ceo": ["fog"],
+  "sioc": ["frost"],
+  "stoirm": ["storm"],
+  "toirneach": ["thunder"],
+  "tintreach": ["lightning"],
+  "aimsir": ["weather"],
+  "aeráid": ["climate"],
+  "aill": ["cliff"],
+  "eas": ["waterfall"],
+  "muir": ["sea"],
+  "duilleog": ["leaf"],
+  "tor": ["bush"],
+  "síol": ["seed"],
+  "rós": ["rose"],
+  "seamróg": ["shamrock"],
+  "cuach": ["cuckoo"],
+  "caorthann": ["rowan"],
+  "dair": ["oak"],
+  "cuileann": ["holly"],
+  "iúr": ["yew"],
+  "bia": ["food"],
+  "uisce": ["water"],
+  "arán": ["bread"],
+  "im": ["butter"],
+  "cáis": ["cheese"],
+  "feoil": ["meat"],
+  "úll": ["apple"],
+  "oráiste": ["orange"],
+  "bainne": ["milk"],
+  "tae": ["tea"],
+  "caife": ["coffee"],
+  "subh": ["jam"],
+  "mairteoil": ["beef"],
+  "sicín": ["chicken"],
+  "ispín": ["sausage"],
+  "bagún": ["bacon"],
+  "ubh": ["egg"],
+  "rís": ["rice"],
+  "cáca": ["cake"],
+  "milseán": ["sweet"],
+  "seacláid": ["chocolate"],
+  "piorra": ["pear"],
+  "silín": ["cherry"],
+  "muisiriún": ["mushroom"],
+  "pónaire": ["bean"],
+  "pis": ["pea"],
+  "leitís": ["lettuce"],
+  "brocailí": ["broccoli"],
+  "caróg": ["carrot"],
+  "cabáiste": ["cabbage"],
+  "oinniún": ["onion"],
+  "gairleog": ["garlic"],
+  "trátaí": ["tomato"],
+  "fíon": ["wine"],
+  "beoir": ["beer"],
+  "líomanáid": ["lemonade"],
+  "anraith": ["soup"],
+  "ceapaire": ["sandwich"],
+  "sceallóg": ["chip"],
+  "sailéad": ["salad"],
+  "cruithneacht": ["wheat"],
+  "coirce": ["oats"],
+  "fíonchaor": ["grape"],
+  "muiceoil": ["pork"],
+  "uaineoil": ["lamb"],
+  "cnó": ["nut"],
+  "péitseog": ["peach"],
+  "almóinn": ["almond"],
+  "cál": ["kale"],
+  "salann": ["salt"],
+  "siúcra": ["sugar"],
+  "piobar": ["pepper"],
+  "ola": ["oil"],
+  "spíosra": ["spice"],
+  "dearg": ["red"],
+  "gorm": ["blue"],
+  "buí": ["yellow"],
+  "bán": ["white"],
+  "dubh": ["black"],
+  "liath": ["grey"],
+  "donn": ["brown"],
+  "corcra": ["purple"],
+  "flannbhuí": ["orange"],
+  "ómra": ["amber"],
+  "bándearg": ["pink"],
+  "uaine": ["green"],
+  "rua": ["red"],
+  "geal": ["bright"],
+  "dorcha": ["dark"],
+  "lá": ["day"],
+  "oíche": ["night"],
+  "maidin": ["morning"],
+  "tráthnóna": ["evening"],
+  "seachtain": ["week"],
+  "mí": ["month"],
+  "bliain": ["year"],
+  "am": ["time"],
+  "uair": ["hour"],
+  "inniu": ["today"],
+  "amárach": ["tomorrow"],
+  "inné": ["yesterday"],
+  "earrach": ["spring"],
+  "samhradh": ["summer"],
+  "fómhar": ["autumn"],
+  "geimhreadh": ["winter"],
+  "Luan": ["Monday"],
+  "Máirt": ["Tuesday"],
+  "Céadaoin": ["Wednesday"],
+  "Déardaoin": ["Thursday"],
+  "Aoine": ["Friday"],
+  "Satharn": ["Saturday"],
+  "Domhnach": ["Sunday"],
+  "nóiméad": ["minute"],
+  "soicind": ["second"],
+  "tamall": ["while"],
+  "fadó": ["long ago"],
+  "anois": ["now"],
+  "Eanáir": ["January"],
+  "Feabhra": ["February"],
+  "Márta": ["March"],
+  "Aibreán": ["April"],
+  "Bealtaine": ["May"],
+  "Meitheamh": ["June"],
+  "Iúil": ["July"],
+  "Lúnasa": ["August"],
+  "Samhain": ["November"],
+  "Nollaig": ["December"],
+  "náid": ["zero"],
+  "aon": ["one"],
+  "dó": ["two"],
+  "trí": ["three"],
+  "ceathair": ["four"],
+  "cúig": ["five"],
+  "seacht": ["seven"],
+  "ocht": ["eight"],
+  "naoi": ["nine"],
+  "deich": ["ten"],
+  "fiche": ["twenty"],
+  "tríocha": ["thirty"],
+  "daichead": ["forty"],
+  "caoga": ["fifty"],
+  "céad": ["hundred"],
+  "míle": ["thousand"],
+  "bean": ["woman"],
+  "fear": ["man"],
+  "páiste": ["child"],
+  "buachaill": ["boy"],
+  "cailín": ["girl"],
+  "máthair": ["mother"],
+  "athair": ["father"],
+  "deartháir": ["brother"],
+  "deirfiúr": ["sister"],
+  "seanathair": ["grandfather"],
+  "seanmháthair": ["grandmother"],
+  "cara": ["friend"],
+  "múinteoir": ["teacher"],
+  "dochtúir": ["doctor"],
+  "saighdiúir": ["soldier"],
+  "póilín": ["police"],
+  "dlíodóir": ["lawyer"],
+  "innealtóir": ["engineer"],
+  "scríbhneoir": ["writer"],
+  "iriseoir": ["journalist"],
+  "feirmeoir": ["farmer"],
+  "iascaire": ["fisherman"],
+  "siúinéir": ["carpenter"],
+  "táilliúir": ["tailor"],
+  "báicéir": ["baker"],
+  "búistéir": ["butcher"],
+  "cócaire": ["cook"],
+  "freastalaí": ["waiter"],
+  "tiománaí": ["driver"],
+  "píolóta": ["pilot"],
+  "comharsa": ["neighbour"],
+  "oifigeach": ["officer"],
+  "ailtire": ["architect"],
+  "tréidlia": ["vet"],
+  "ceannaí": ["merchant"],
+  "saoránach": ["citizen"],
+  "cuairteoir": ["visitor"],
+  "stiúrthóir": ["director"],
+  "bainisteoir": ["manager"],
+  "ceannaire": ["leader"],
+  "clann": ["children"],
+  "lánúin": ["couple"],
+  "nia": ["nephew"],
+  "neacht": ["niece"],
+  "uncail": ["uncle"],
+  "aint": ["aunt"],
+  "oibrí": ["worker"],
+  "turasóir": ["tourist"],
+  "imirceach": ["emigrant"],
+  "léachtóir": ["lecturer"],
+  "altra": ["nurse"],
+  "máinlia": ["surgeon"],
+  "muintir": ["people"],
+  "teaghlach": ["family"],
+  "sagart": ["priest"],
+  "bráthair": ["brother"],
+  "garda": ["guard"],
+  "captaen": ["captain"],
+  "amhránaí": ["singer"],
+  "ceoltóir": ["musician"],
+  "damhsóir": ["dancer"],
+  "file": ["poet"],
+  "scéalaí": ["storyteller"],
+  "cainteoir": ["speaker"],
+  "leabharlannaí": ["librarian"],
+  "rúnaí": ["secretary"],
+  "cuntasóir": ["accountant"],
+  "gruagaire": ["hairdresser"],
+  "tógálaí": ["builder"],
+  "seanóir": ["elder"],
+  "naíonán": ["infant"],
+  "baile": ["town"],
+  "cathair": ["city"],
+  "tír": ["country"],
+  "sráid": ["street"],
+  "siopa": ["shop"],
+  "scoil": ["school"],
+  "eaglais": ["church"],
+  "ospidéal": ["hospital"],
+  "leabharlann": ["library"],
+  "páirc": ["park"],
+  "aerfort": ["airport"],
+  "stáisiún": ["station"],
+  "contae": ["county"],
+  "bealach": ["road"],
+  "cosán": ["path"],
+  "cé": ["pier"],
+  "bialann": ["restaurant"],
+  "caifé": ["café"],
+  "banc": ["bank"],
+  "oifig": ["office"],
+  "coláiste": ["college"],
+  "ollscoil": ["university"],
+  "monarcha": ["factory"],
+  "túr": ["tower"],
+  "caisleán": ["castle"],
+  "séipéal": ["chapel"],
+  "mainistir": ["monastery"],
+  "cúirt": ["court"],
+  "geata": ["gate"],
+  "carrchlós": ["car park"],
+  "stadiam": ["stadium"],
+  "faiche": ["green"],
+  "margadh": ["market"],
+  "príosún": ["prison"],
+  "muileann": ["mill"],
+  "dún": ["fort"],
+  "paróiste": ["parish"],
+  "cúige": ["province"],
+  "reilig": ["graveyard"],
+  "cloigtheach": ["bell tower"],
+  "bóthar": ["road"],
+  "cearnóg": ["square"],
+  "tollán": ["tunnel"],
+  "lána": ["lane"],
+  "pictiúrlann": ["cinema"],
+  "amharclann": ["theatre"],
+  "cógaslann": ["pharmacy"],
+  "sráidbhaile": ["village"],
+  "tuaisceart": ["north"],
+  "deisceart": ["south"],
+  "oirthear": ["east"],
+  "iarthar": ["west"],
+  "lár": ["centre"],
+  "teorainn": ["border"],
+  "réigiún": ["region"],
+  "ceantar": ["area"],
+  "caladh": ["harbour"],
+  "grá": ["love"],
+  "áthas": ["happiness"],
+  "brón": ["sadness"],
+  "fearg": ["anger"],
+  "eagla": ["fear"],
+  "dóchas": ["hope"],
+  "áilleacht": ["beauty"],
+  "neart": ["strength"],
+  "ciall": ["sense"],
+  "iontas": ["wonder"],
+  "trua": ["pity"],
+  "náire": ["shame"],
+  "bród": ["pride"],
+  "misneach": ["courage"],
+  "creideamh": ["faith"],
+  "muinín": ["trust"],
+  "amhras": ["doubt"],
+  "cineáltas": ["kindness"],
+  "cabhair": ["help"],
+  "comhairle": ["advice"],
+  "brionglóid": ["dream"],
+  "samhlaíocht": ["imagination"],
+  "cuimhne": ["memory"],
+  "dearmad": ["mistake"],
+  "eolas": ["knowledge"],
+  "tuiscint": ["understanding"],
+  "scil": ["skill"],
+  "tallann": ["talent"],
+  "cumas": ["ability"],
+  "léann": ["learning"],
+  "feall": ["betrayal"],
+  "spraoi": ["fun"],
+  "sásamh": ["satisfaction"],
+  "buairt": ["worry"],
+  "imní": ["anxiety"],
+  "meas": ["respect"],
+  "fuath": ["hate"],
+  "rún": ["secret"],
+  "fírinne": ["truth"],
+  "bréag": ["lie"],
+  "cairdeas": ["friendship"],
+  "dílseacht": ["loyalty"],
+  "maithiúnas": ["forgiveness"],
+  "onóir": ["honour"],
+  "bua": ["victory"],
+  "saoirse": ["freedom"],
+  "síocháin": ["peace"],
+  "cogadh": ["war"],
+  "cath": ["battle"],
+  "ceartas": ["justice"],
+  "rogha": ["choice"],
+  "cúram": ["care"],
+  "luach": ["value"],
+  "dúshlán": ["challenge"],
+  "caighdeán": ["standard"],
+  "clú": ["reputation"],
+  "cáil": ["fame"],
+  "fáilte": ["welcome"],
+  "slán": ["goodbye"],
+  "buíochas": ["thanks"],
+  "leithscéal": ["excuse"],
+  "bronntanas": ["gift"],
+  "ceiliúradh": ["celebration"],
+  "rith": ["run"],
+  "snámh": ["swim"],
+  "léamh": ["reading"],
+  "scríobh": ["writing"],
+  "caint": ["speech"],
+  "rince": ["dance"],
+  "léim": ["jump"],
+  "gearradh": ["cut"],
+  "oscailt": ["opening"],
+  "tarraingt": ["pull"],
+  "brú": ["push"],
+  "póg": ["kiss"],
+  "barróg": ["hug"],
+  "foghlaim": ["learning"],
+  "siúl": ["walk"],
+  "tiomáint": ["drive"],
+  "eitilt": ["fly"],
+  "tógáil": ["build"],
+  "canadh": ["sing"],
+  "damhsa": ["dance"],
+  "seinm": ["play"],
+  "pleanáil": ["planning"],
+  "glanadh": ["cleaning"],
+  "cócaireacht": ["cooking"],
+  "taisteal": ["travel"],
+  "léiriú": ["presentation"],
+  "carr": ["car"],
+  "bád": ["boat"],
+  "traein": ["train"],
+  "eitleán": ["plane"],
+  "rothar": ["bicycle"],
+  "leoraí": ["truck"],
+  "veain": ["van"],
+  "héileacaptar": ["helicopter"],
+  "cábla": ["cable"],
+  "soitheach": ["ship"],
+  "scáileán": ["screen"],
+  "méarchlár": ["keyboard"],
+  "ceamara": ["camera"],
+  "cluasán": ["earphones"],
+  "ticéad": ["ticket"],
+  "cárta": ["card"],
+  "pas": ["pass"],
+  "nasc": ["link"],
+  "ríomhphost": ["email"],
+  "suíomh": ["website"],
+  "idirlíon": ["internet"],
+  "peil": ["football"],
+  "iomáint": ["hurling"],
+  "camán": ["hurley"],
+  "sliotar": ["sliotar"],
+  "réiteoir": ["referee"],
+  "imreoir": ["player"],
+  "traenálaí": ["trainer"],
+  "corn": ["cup"],
+  "bonn": ["medal"],
+  "craobh": ["championship"],
+  "buille": ["hit"],
+  "pointe": ["point"],
+  "cúl": ["goal"],
+  "foireann": ["team"],
+  "liathróid": ["ball"],
+  "cumann": ["club"],
+  "comórtas": ["competition"],
+  "gradam": ["award"],
+  "duais": ["prize"],
+  "rásaíocht": ["racing"],
+  "seilg": ["hunt"],
+  "cispheil": ["basketball"],
+  "lúthchleasaíocht": ["athletics"],
+  "rothaíocht": ["cycling"],
+  "marcaíocht": ["horse riding"],
+  "iomrascáil": ["wrestling"],
+  "snámhóireacht": ["swimming"],
+  "rang": ["class"],
+  "scrúdú": ["exam"],
+  "teastas": ["certificate"],
+  "céim": ["degree"],
+  "dioplóma": ["diploma"],
+  "dalta": ["pupil"],
+  "cóipleabhar": ["copybook"],
+  "peann": ["pen"],
+  "léarscáil": ["map"],
+  "pictiúr": ["picture"],
+  "grianghraf": ["photograph"],
+  "físeán": ["video"],
+  "ceacht": ["lesson"],
+  "cúrsa": ["course"],
+  "clár": ["programme"],
+  "leid": ["clue"],
+  "punann": ["portfolio"],
+  "sláinte": ["health"],
+  "tinneas": ["illness"],
+  "galar": ["disease"],
+  "leigheas": ["medicine"],
+  "cógas": ["medicine"],
+  "piollaire": ["pill"],
+  "otharcharr": ["ambulance"],
+  "éigeandáil": ["emergency"],
+  "timpiste": ["accident"],
+  "folláine": ["wellbeing"],
+  "ocras": ["hunger"],
+  "tart": ["thirst"],
+  "tuirse": ["tiredness"],
+  "pian": ["pain"],
+  "fiabhras": ["fever"],
+  "casacht": ["cough"],
+  "slaghdán": ["cold"],
+  "pianó": ["piano"],
+  "veidhlín": ["violin"],
+  "feadóg": ["whistle"],
+  "bodhrán": ["bodhran"],
+  "giotár": ["guitar"],
+  "fonn": ["tune"],
+  "rithim": ["rhythm"],
+  "dán": ["poem"],
+  "filíocht": ["poetry"],
+  "próis": ["prose"],
+  "úrscéal": ["novel"],
+  "dráma": ["drama"],
+  "péintéireacht": ["painting"],
+  "dealbhóireacht": ["sculpture"],
+  "ceardaíocht": ["craft"],
+  "taispeántas": ["exhibition"],
+  "féile": ["festival"],
+  "ceolchoirm": ["concert"],
+  "Cáisc": ["Easter"],
+  "baisteadh": ["baptism"],
+  "aingeal": ["angel"],
+  "diabhal": ["devil"],
+  "rosaire": ["rosary"],
+  "pósadh": ["wedding"],
+  "altóir": ["altar"],
+  "naomh": ["saint"],
+  "neamh": ["heaven"],
+  "ifreann": ["hell"],
+  "fada": ["long"],
+  "gairid": ["short"],
+  "tapa": ["fast"],
+  "mall": ["slow"],
+  "te": ["hot"],
+  "fuar": ["cold"],
+  "fliuch": ["wet"],
+  "tirim": ["dry"],
+  "glan": ["clean"],
+  "salach": ["dirty"],
+  "breá": ["fine"],
+  "gnóthach": ["busy"],
+  "saor": ["free"],
+  "daor": ["expensive"],
+  "simplí": ["simple"],
+  "cúramach": ["careful"],
+  "dána": ["bold"],
+  "cairdiúil": ["friendly"],
+  "láidir": ["strong"],
+  "lag": ["weak"],
+  "ciúin": ["quiet"],
+  "glórach": ["loud"],
+  "saibhir": ["rich"],
+  "bocht": ["poor"],
+  "sona": ["happy"],
+  "brónach": ["sad"],
+  "sásta": ["satisfied"],
+  "deas": ["nice"],
+  "uaigneach": ["lonely"],
+  "óg": ["young"],
+  "sean": ["old"],
+  "múinte": ["polite"],
+  "cliste": ["clever"],
+  "cróga": ["brave"],
+  "dílis": ["loyal"],
+  "álainn": ["beautiful"],
+  "gránna": ["ugly"],
+  "folláin": ["healthy"],
+  "tinn": ["sick"],
+  "fiáin": ["wild"],
+  "mór": ["big"],
+  "beag": ["small"],
+  "ard": ["tall"],
+  "íseal": ["low"],
+  "glic": ["clever"],
+  "dall": ["blind"],
+  "bodhar": ["deaf"],
+  "balbh": ["dumb"],
+  "críonna": ["wise"],
+  "leisciúil": ["lazy"],
+  "dícheallach": ["diligent"],
+  "macánta": ["honest"],
+  "cneasta": ["kind"],
+  "garbh": ["rough"],
+  "mín": ["smooth"],
+  "crua": ["hard"],
+  "bog": ["soft"],
+  "tanaí": ["thin"],
+  "ramhar": ["fat"],
+  "caol": ["narrow"],
+  "leathan": ["wide"],
+  "fíor": ["true"],
+  "bréagach": ["false"],
+  "díreach": ["straight"],
+  "nua": ["new"],
+  "ábalta": ["able"],
+  "aclaí": ["fit"],
+  "annamh": ["rare"],
+  "briomhar": ["lively"],
+  "bródúil": ["proud"],
+  "cáiliúil": ["famous"],
+  "ceolmhar": ["musical"],
+  "compordach": ["comfortable"],
+  "cothrom": ["fair"],
+  "cruthaitheach": ["creative"],
+  "dathúil": ["handsome"],
+  "éasca": ["easy"],
+  "feargach": ["angry"],
+  "flúirseach": ["abundant"],
+  "foighneach": ["patient"],
+  "furasta": ["easy"],
+  "iomlán": ["complete"],
+  "luath": ["fast"],
+  "nádúrtha": ["natural"],
+  "oscailte": ["open"],
+  "réidh": ["ready"],
+  "siamsúil": ["entertaining"],
+  "suimiúil": ["interesting"],
+  "tábhachtach": ["important"],
+  "taitneamhach": ["pleasant"],
+  "toilteach": ["willing"],
+  "tréan": ["strong"],
+  "tuirseach": ["tired"],
+  "úr": ["fresh"],
+  "grámhar": ["loving"],
+  "ceanúil": ["affectionate"],
+  "gleoite": ["lovely"],
+  "galánta": ["elegant"],
+  "stuama": ["sensible"],
+  "focal": ["word"],
+  "litir": ["letter"],
+  "leabhar": ["book"],
+  "nuachtán": ["newspaper"],
+  "airgead": ["money"],
+  "amhrán": ["song"],
+  "scéal": ["story"],
+  "uimhir": ["number"],
+  "ceist": ["question"],
+  "freagra": ["answer"],
+  "comhartha": ["sign"],
+  "dath": ["colour"],
+  "cruth": ["shape"],
+  "méid": ["size"],
+  "fad": ["length"],
+  "airde": ["height"],
+  "leithead": ["width"],
+  "teas": ["heat"],
+  "fuacht": ["cold"],
+  "iris": ["magazine"],
+  "dlí": ["law"],
+  "riail": ["rule"],
+  "smacht": ["control"],
+  "ordú": ["order"],
+  "conradh": ["contract"],
+  "ceadúnas": ["licence"],
+  "tuarascáil": ["report"],
+  "stair": ["history"],
+  "eolaíocht": ["science"],
+  "matamaitic": ["mathematics"],
+  "ealaín": ["art"],
+  "litríocht": ["literature"],
+  "fealsúnacht": ["philosophy"],
+  "ainm": ["name"],
+  "sloinne": ["surname"],
+  "nuacht": ["news"],
+  "agallamh": ["interview"],
+  "comhrá": ["conversation"],
+  "óráid": ["speech"],
+  "argóint": ["argument"],
+  "moladh": ["praise"],
+  "turas": ["journey"],
+  "bratach": ["flag"],
+  "stampa": ["stamp"],
+  "uaigh": ["grave"],
+  "cuid": ["part"],
+  "beagán": ["a little"],
+  "mórán": ["much"],
+  "cuairt": ["visit"],
+  "cás": ["case"],
+  "fíric": ["fact"],
+  "liosta": ["list"],
+  "grúpa": ["group"],
+  "cineál": ["type"],
+  "cuspóir": ["purpose"],
+  "todhchaí": ["future"],
+  "fuinneamh": ["energy"],
+  "spás": ["space"],
+  "nádúr": ["nature"],
+  "ábhar": ["subject"],
+  "cúis": ["reason"],
+  "toradh": ["result"],
+  "tionchar": ["influence"],
+  "athrú": ["change"],
+  "forbairt": ["development"],
+  "ronnach": ["mackerel"],
+  "rosualt": ["walrus"],
+  "mullach": ["top"],
+  "uaimh": ["cave"],
+  "machaire": ["plain"],
+  "áth": ["ford"],
+  "féithleann": ["honeysuckle"],
+  "beithe": ["birch"],
+  "fuinseog": ["ash tree"],
+  "leamhán": ["elm"],
+  "anlann": ["sauce"],
+  "sú": ["juice"],
+  "lus": ["herb"],
+  "féachaint": ["watching"],
+  "éisteacht": ["listening"],
+  "labhairt": ["speaking"],
+  "ceannach": ["buying"],
+  "díol": ["selling"],
+  "íoc": ["paying"],
+  "cinneadh": ["deciding"],
+  "glacadh": ["taking"],
+  "níochán": ["washing"],
+  "breathnú": ["watching"],
+  "múineadh": ["teaching"],
+  "cruthú": ["creating"],
+  "cúthaileach": ["shy"],
+  "fiosrach": ["curious"],
+  "neamhghnách": ["unusual"],
+  "uafásach": ["awful"],
+  "cosúil": ["similar"],
+  "maorga": ["stately"],
+  "misniúil": ["courageous"],
+  "santach": ["greedy"],
+  "flaithiúil": ["generous"],
+  "spriosánta": ["mean"],
+  "trodach": ["aggressive"],
+  "síochánta": ["peaceful"],
+  "suaimhneach": ["calm"],
+  "lom": ["bare"],
+  "smaoineamh": ["thought"],
+  "taithí": ["experience"],
+  "nós": ["custom"],
+  "traidisiún": ["tradition"],
+  "cultúr": ["culture"],
+  "pobal": ["community"],
+  "rialtas": ["government"],
+  "eacnamaíocht": ["economy"],
+  "gnó": ["business"],
+  "tionscal": ["industry"],
+  "talmhaíocht": ["agriculture"],
+  "caidreamh": ["relationship"],
+  "cumhacht": ["power"],
+  "táirge": ["product"],
+  "moill": ["delay"],
+  "deifir": ["hurry"],
+  "fadhb": ["problem"],
+  "réiteach": ["solution"],
+  "feachtas": ["campaign"],
+  "toghchán": ["election"],
+  "vóta": ["vote"],
+  "comhlacht": ["company"],
+  "cead": ["permission"],
+  "cumha": ["longing"],
+  "uaigneas": ["loneliness"],
+  "díomá": ["disappointment"],
+  "státseirbhíseach": ["civil servant"],
+  "siopadóir": ["shopkeeper"],
+  "ionad": ["centre"],
+  "ollmhargadh": ["supermarket"],
+  "seoltóireacht": ["sailing"],
+  "dreapadóireacht": ["climbing"],
+  "imirt": ["playing"],
+  "printéir": ["printer"],
+  "rialóir": ["ruler"],
+  "comhad": ["file"],
+  "fillteán": ["folder"],
+  "leictreachas": ["electricity"],
+  "adhlacadh": ["burial"],
+  "seisiún": ["session"],
+  "clúdach": ["cover"],
+  "titim": ["falling"],
+  "seasamh": ["standing"],
+  "suí": ["sitting"],
+  "luí": ["lying down"],
+  "éirí": ["rising"],
+  "imeacht": ["leaving"],
+  "teacht": ["coming"],
+  "fágáil": ["leaving"],
+  "filleadh": ["returning"],
+  "bualadh": ["hitting"],
+  "déanamh": ["doing"],
+  "dúnadh": ["closing"],
+  "ligean": ["letting"],
+  "fanacht": ["staying"],
+  "gearán": ["complaining"],
+  "cosaint": ["defending"],
+  "ionsaí": ["attack"],
+  "éalú": ["escaping"],
+  "garraíodóireacht": ["gardening"],
+  "siopadóireacht": ["shopping"],
+  "caoineadh": ["crying"],
+  "ardú": ["raising"],
+  "cur": ["putting"],
+  "baint": ["cutting"],
+  "leasú": ["improving"],
+  "deisiú": ["fixing"],
+  "milleadh": ["ruining"],
+  "teipeadh": ["failing"],
+  "áitiúil": ["local"],
+  "náisiúnta": ["national"],
+  "idirnáisiúnta": ["international"],
+  "poiblí": ["public"],
+  "príobháideach": ["private"],
+  "gnáth": ["ordinary"],
+  "eisceachtúil": ["exceptional"],
+  "oiriúnach": ["suitable"],
+  "riachtanach": ["necessary"],
+  "éigeantach": ["compulsory"],
+  "deonach": ["voluntary"],
+  "úsáideach": ["useful"],
+  "díobhálach": ["harmful"],
+  "sláintiúil": ["healthy"],
+  "saorga": ["artificial"],
+  "iontaofa": ["reliable"],
+  "cáilithe": ["qualified"],
+  "clúiteach": ["famous"],
+  "anaithnid": ["unknown"],
+  "coimhthíoch": ["foreign"],
+  "dúchasach": ["native"],
+  "ársa": ["ancient"],
+  "nua-aimseartha": ["modern"],
+  "seanfhaiseanta": ["old-fashioned"],
+  "faiseanta": ["fashionable"],
+  "daonna": ["human"],
+  "naofa": ["holy"],
+  "beannaithe": ["blessed"],
+  "báúil": ["sympathetic"],
+  "tuisceanach": ["understanding"],
+  "cabhrach": ["helpful"],
+  "amhrasach": ["suspicious"],
+  "páirteach": ["partial"],
+  "foirfe": ["perfect"],
+  "lochtach": ["faulty"],
+  "sonrach": ["specific"],
+  "ginearálta": ["general"],
+  "sainiúil": ["specific"],
+  "práinneach": ["urgent"],
+  "sothuigthe": ["understandable"],
+  "spreagúil": ["inspiring"],
+  "corraítheach": ["moving"],
+  "sásúil": ["satisfying"],
+  "éifeachtach": ["effective"],
+  "follasach": ["obvious"],
+  "díograiseach": ["enthusiastic"],
+  "leithleach": ["selfish"],
+  "néaróg": ["nerve"],
+  "cuisle": ["pulse"],
+  "colainn": ["body"],
+  "aghaidh": ["face"],
+  "cnámharlach": ["skeleton"],
+  "tinneas cinn": ["headache"],
+  "tinneas fiacaile": ["toothache"],
+  "ochlán": ["moan"],
+  "borrtha": ["swelling"],
+  "téarnamh": ["recovery"],
+  "biseach": ["recovery"],
+  "othar": ["patient"],
+  "otharlann": ["hospital ward"],
+  "cóireáil": ["treatment"],
+  "obráid": ["operation"],
+  "instealladh": ["injection"],
+  "vacsaín": ["vaccine"],
+  "comharthaí": ["symptoms"],
+  "ionfhabhtú": ["infection"],
+  "víreas": ["virus"],
+  "baictéar": ["bacteria"],
+  "frithbheathach": ["antibiotic"],
+  "ailse": ["cancer"],
+  "croíthinneas": ["heart disease"],
+  "diaibéiteas": ["diabetes"],
+  "ailtéirnéis": ["allergy"],
+  "béile": ["meal"],
+  "bricfeasta": ["breakfast"],
+  "lón": ["lunch"],
+  "dinnéar": ["dinner"],
+  "deoch": ["drink"],
+  "sú talún": ["strawberry"],
+  "sméar": ["blackberry"],
+  "ológ": ["olive"],
+  "avocád": ["avocado"],
+  "mangó": ["mango"],
+  "anann": ["pineapple"],
+  "cnó cócó": ["coconut"],
+  "iógart": ["yogurt"],
+  "calóg arbhair": ["cornflake"],
+  "laofheoil": ["veal"],
+  "cnónna": ["nuts"],
+  "mil": ["honey"],
+  "finéagar": ["vinegar"],
+  "rollóg": ["roll"],
+  "toirtín": ["tart"],
+  "císte": ["cake"],
+  "brioscán": ["crisp"],
+  "cnó capaill": ["chestnut"],
+  "pluma": ["plum"],
+  "airne": ["sloe"],
+  "spionáiste": ["spinach"],
+  "coilis": ["cauliflower"],
+  "piseanna": ["peas"],
+  "dúlra": ["nature"],
+  "bithéagsúlacht": ["biodiversity"],
+  "speiceas": ["species"],
+  "caomhnú": ["conservation"],
+  "lasair": ["flame"],
+  "deataigh": ["smoke"],
+  "smúit": ["haze"],
+  "urú": ["eclipse"],
+  "réaltbhuíon": ["constellation"],
+  "gealach lán": ["full moon"],
+  "tubaiste": ["disaster"],
+  "tuile": ["flood"],
+  "triomach": ["drought"],
+  "crith talún": ["earthquake"],
+  "bolcán": ["volcano"],
+  "taisleach": ["moisture"],
+  "splanc": ["flash"],
+  "dorchadas": ["darkness"],
+  "solas": ["light"],
+  "scáth": ["shadow"],
+  "dusta": ["dust"],
+  "láib": ["mud"],
+  "dumhach": ["sand dune"],
+  "parlaimint": ["parliament"],
+  "bunreacht": ["constitution"],
+  "reachtaíocht": ["legislation"],
+  "ionchúisitheoir": ["prosecutor"],
+  "fianaise": ["evidence"],
+  "breithiúnas": ["judgement"],
+  "ciontacht": ["guilt"],
+  "neamhchiontacht": ["innocence"],
+  "pionós": ["punishment"],
+  "caingean": ["legal action"],
+  "dídeanach": ["refugee"],
+  "tearmann": ["refuge"],
+  "cáin": ["tax"],
+  "buiséad": ["budget"],
+  "caiteachas": ["spending"],
+  "ioncam": ["income"],
+  "brabús": ["profit"],
+  "caillteanas": ["loss"],
+  "infheistíocht": ["investment"],
+  "iasacht": ["loan"],
+  "morgáiste": ["mortgage"],
+  "cíos": ["rent"],
+  "costas": ["cost"],
+  "praghas": ["price"],
+  "díolachán": ["sale"],
+  "tomhaltas": ["consumption"],
+  "coigilteas": ["savings"],
+  "fostaíocht": ["employment"],
+  "dífhostaíocht": ["unemployment"],
+  "feithicil": ["vehicle"],
+  "gluaisteán": ["car"],
+  "mótarbhealach": ["motorway"],
+  "crosaire": ["crossroads"],
+  "iompar": ["transport"],
+  "calafort": ["port"],
+  "puball": ["tent"],
+  "mála droma": ["backpack"],
+  "crios sábhála": ["seatbelt"],
+  "clogad": ["helmet"],
+  "árachas": ["insurance"],
+  "víosa": ["visa"],
+  "bordáil": ["boarding"],
+  "treoraí": ["guide"],
+  "conair": ["path"],
+  "achar": ["distance"],
+  "bagáiste": ["luggage"],
+  "mála taistil": ["travel bag"],
+  "meáin shóisialta": ["social media"],
+  "scannán": ["film"],
+  "sraith": ["series"],
+  "grianghrafadóireacht": ["photography"],
+  "léirmheas": ["review"],
+  "fógra": ["advertisement"],
+  "suíomh gréasáin": ["website"],
+  "glaoch": ["call"],
+  "slándáil": ["security"],
+  "príobháideacht": ["privacy"],
+  "cóipcheart": ["copyright"],
+  "feidhmchlár": ["application"],
+  "bogearraí": ["software"],
+  "crua-earraí": ["hardware"],
+  "cúltaca": ["backup"],
+  "nuashonrú": ["update"],
+  "íoslódáil": ["download"],
+  "uaslódáil": ["upload"],
+  "nascadh": ["connecting"],
+  "batarói": ["battery"],
+  "luchtaire": ["charger"],
+  "seanachas": ["traditional lore"],
+  "seanchaí": ["storyteller"],
+  "ceol traidisiúnta": ["traditional music"],
+  "rince céilí": ["céilí dancing"],
+  "peil Ghaelach": ["Gaelic football"],
+  "camógaíocht": ["camogie"],
+  "CLG": ["GAA"],
+  "An Ghaeltacht": ["the Gaeltacht"],
+  "Baile Átha Cliath": ["Dublin"],
+  "Corcaigh": ["Cork"],
+  "Gaillimh": ["Galway"],
+  "Luimneach": ["Limerick"],
+  "An Mhumhain": ["Munster"],
+  "Laighin": ["Leinster"],
+  "Connacht": ["Connacht"],
+  "Cúige Uladh": ["Ulster"],
+  "poblacht": ["republic"],
+  "náisiún": ["nation"],
+  "náisiúnachas": ["nationalism"],
+  "féiniúlacht": ["identity"],
+  "oidhreacht": ["heritage"],
+  "dul chun cinn": ["progress"],
+  "cúlú": ["decline"],
+  "laghdú": ["decrease"],
+  "sprioc": ["target"],
+  "aidhm": ["aim"],
+  "aisling": ["dream"],
+  "idéal": ["ideal"],
+  "cáilíocht": ["quality"],
+  "cainníocht": ["quantity"],
+  "éifeacht": ["effect"],
+  "iarmhairt": ["consequence"],
+  "buntáiste": ["advantage"],
+  "míbhuntáiste": ["disadvantage"],
+  "deis": ["opportunity"],
+  "baol": ["danger"],
+  "sábháilteacht": ["safety"],
+  "riosca": ["risk"],
+  "spreagadh": ["motivation"],
+  "dreasacht": ["incentive"],
+  "cúiteamh": ["compensation"],
+  "luach saothair": ["reward"],
+  "éacht": ["achievement"],
+  "míshuaimhneas": ["unease"],
+  "sástacht": ["satisfaction"],
+  "mearbhall": ["confusion"],
+  "botún": ["mistake"],
+  "gaois": ["wisdom"],
+  "críonnacht": ["wisdom"],
+  "amaideacht": ["foolishness"],
+  "dánacht": ["boldness"],
+  "scéin": ["fright"],
+  "gean": ["love"],
+  "éad": ["jealousy"],
+  "formad": ["envy"],
+  "caoinfhulaingt": ["tolerance"],
+  "éagóir": ["injustice"],
+  "cinnteacht": ["certainty"],
+  "éiginnteacht": ["uncertainty"],
+  "éadóchas": ["hopelessness"],
+  "neamhchreideamh": ["disbelief"],
+  "ollamh": ["professor"],
+  "oiliúint": ["training"],
+  "pá": ["pay"],
+  "tuarastal": ["salary"],
+  "post": ["job"],
+  "folúntas": ["vacancy"],
+  "ardú céime": ["promotion"],
+  "comhairleoir": ["counsellor"],
+  "measúnú": ["assessment"],
+  "meastachán": ["estimate"],
+  "tuar": ["forecast"],
+  "réamhaisnéis": ["forecast"],
+  "tionscadal": ["project"],
+  "clár oibre": ["work plan"],
+  "cruinniú": ["meeting"],
+  "comhdháil": ["conference"],
+  "seimineár": ["seminar"],
+  "ceardlann": ["workshop"],
+  "léacht": ["lecture"],
+  "aiste": ["essay"],
+  "tráchtas": ["thesis"],
+  "foilseachán": ["publication"],
+  "irisleabhar": ["journal"],
+  "eagarthóir": ["editor"],
+  "foilsitheoir": ["publisher"],
+  "foclóir": ["dictionary"],
+  "gramadach": ["grammar"],
+  "comhréir": ["syntax"],
+  "litriú": ["spelling"],
+  "fuaimniú": ["pronunciation"],
+  "bríathar": ["verb"],
+  "ainmfhocal": ["noun"],
+  "aidiacht": ["adjective"],
+  "dobhriathar": ["adverb"],
+  "réamhfhocal": ["preposition"],
+  "forainm": ["pronoun"],
+  "clásal": ["clause"],
+  "abairt": ["sentence"],
+  "inscne": ["gender (grammar)"],
+  "iolra": ["plural"],
+  "aerach": ["airy"],
+  "ainmhí": ["animal"],
+  "aisteach": ["strange"],
+  "aithris": ["imitation"],
+  "amharc": ["look"],
+  "anfa": ["storm"],
+  "aonach": ["fair"],
+  "binn": ["melodious"],
+  "borb": ["fierce"],
+  "buíoch": ["grateful"],
+  "callóid": ["commotion"],
+  "casúr": ["hammer"],
+  "ceol": ["music"],
+  "ciontach": ["guilty"],
+  "cleas": ["trick"],
+  "cóisir": ["party"],
+  "comhluadar": ["company"],
+  "cóngarach": ["near"],
+  "córas": ["system"],
+  "craic": ["fun"],
+  "cruach": ["stack"],
+  "daingean": ["firm"],
+  "daonra": ["population"],
+  "deacair": ["difficult"],
+  "dealg": ["thorn"],
+  "dioltas": ["revenge"],
+  "dream": ["group"],
+  "feirm": ["farm"],
+  "fial": ["generous"],
+  "gadaí": ["thief"],
+  "gaiscíoch": ["hero"],
+  "garg": ["rough"],
+  "gealgháireach": ["cheerful"],
+  "geall": ["bet"],
+  "glas": ["green"],
+  "gléas": ["device"],
+  "glór": ["voice"],
+  "gnás": ["custom"],
+  "gníomhaíocht": ["activity"],
+  "greim": ["grip"],
+  "guí": ["prayer"],
+  "iarracht": ["attempt"],
+  "imeall": ["edge"],
+  "iníon": ["daughter"],
+  "iomaire": ["ridge"],
+  "ionraic": ["honest"],
+  "leisce": ["laziness"],
+  "leoithne": ["breeze"],
+  "luaineach": ["restless"],
+  "machnamh": ["reflection"],
+  "maireachtáil": ["survival"],
+  "masc": ["mask"],
+  "meacán": ["parsnip"],
+  "meabhair": ["sense"],
+  "meanma": ["spirit"],
+  "meán": ["middle"],
+  "measúil": ["respectful"],
+  "mias": ["dish"],
+  "milseacht": ["sweetness"],
+  "mionn": ["oath"],
+  "naomhóg": ["currach"],
+  "nead": ["nest"],
+  "néata": ["neat"],
+  "nimhneach": ["poisonous"],
+  "oscartha": ["bold"],
+  "piopa": ["pipe"],
+  "plé": ["discussion"],
+  "póca": ["pocket"],
+  "rábach": ["abundant"],
+  "rámhainn": ["spade"],
+  "ráth": ["fort"],
+  "radharc": ["sight"],
+  "réchúiseach": ["easygoing"],
+  "riachtanas": ["need"],
+  "rian": ["track"],
+  "righin": ["tough"],
+  "ríméadach": ["delighted"],
+  "rópa": ["rope"],
+  "saothar": ["work"],
+  "scáfar": ["shy"],
+  "searc": ["love"],
+  "seol": ["sail"],
+  "slí": ["way"],
+  "slua": ["crowd"],
+  "sochar": ["benefit"],
+  "sonas": ["happiness"],
+  "spraíúil": ["fun"],
+  "sruth": ["stream"],
+  "stad": ["stop"],
+  "taibhse": ["ghost"],
+  "tairbhe": ["benefit"],
+  "tairiscint": ["offer"],
+  "téad": ["rope"],
+  "teideal": ["title"],
+  "tréith": ["trait"],
+  "tuama": ["tomb"],
+  "uirlis": ["tool"],
+  "umhal": ["humble"],
+  "ait": ["funny"],
+  "aiteann": ["gorse"],
+  "bacainn": ["obstacle"],
+  "blásta": ["tasty"],
+  "bréan": ["rotten"],
+  "cabhlach": ["navy"],
+  "caibideal": ["chapter"],
+  "cairt": ["cart"],
+  "canúint": ["dialect"],
+  "ceannasach": ["dominant"],
+  "ceilp": ["kelp"],
+  "ceomhar": ["misty"],
+  "cinntitheach": ["decisive"],
+  "ciorcal": ["circle"],
+  "cloígh": ["defeat"],
+  "cnag": ["knock"],
+  "cogar": ["whisper"],
+  "coiscéim": ["step"],
+  "contúirt": ["danger"],
+  "deighilt": ["division"],
+  "díbirt": ["expulsion"],
+  "dóchasach": ["hopeful"],
+  "dréacht": ["draft"],
+  "dúshlánach": ["challenging"],
+  "fadtéarmach": ["long-term"],
+  "gaofar": ["windy"],
+  "gnáthach": ["ordinary"],
+  "guaim": ["self-control"],
+  "imeachtaí": ["events"],
+  "ionadh": ["wonder"],
+  "lámhach": ["shooting"],
+  "leochaileach": ["fragile"],
+  "lonnaíocht": ["settlement"],
+  "mana": ["motto"],
+  "maolú": ["softening"],
+  "marbhlann": ["morgue"],
+  "meabhrú": ["remembering"],
+  "mianach": ["ore"],
+  "muirín": ["family"],
+  "neamhspleáchas": ["independence"],
+  "oibleagáid": ["obligation"],
+  "oscailteacht": ["openness"],
+  "páirt": ["part"],
+  "pléisiúr": ["pleasure"],
+  "ráig": ["outbreak"],
+  "sáraíocht": ["violation"],
+  "scaipeadh": ["scattering"],
+  "sócúlacht": ["comfort"],
+  "súgán": ["straw rope"],
+  "taibhreamh": ["dream"],
+  "tréaniarracht": ["great effort"],
+  "uachtarach": ["upper"],
+  "aibítir": ["alphabet"],
+  "aicme": ["class"],
+  "aistear": ["journey"],
+  "aitheantas": ["identity"],
+  "arracht": ["monster"],
+  "babhta": ["round"],
+  "barúil": ["opinion"],
+  "béas": ["custom"],
+  "beirt": ["two people"],
+  "bláthchuach": ["vase"],
+  "cáineadh": ["criticism"],
+  "casadh": ["turning"],
+  "ceangal": ["bond"],
+  "cianrialtán": ["remote control"],
+  "cill": ["church"],
+  "cinnire": ["leader"],
+  "claíomh": ["sword"],
+  "coinneáil": ["keeping"],
+  "cor": ["turn"],
+  "cothromaíocht": ["balance"],
+  "crannóg": ["lake dwelling"],
+  "dallamullóg": ["deception"],
+  "daonlathas": ["democracy"],
+  "domhan": ["world"],
+  "earnáil": ["sector"],
+  "éileamh": ["demand"],
+  "fáinleog": ["swallow"],
+  "fáltas": ["income"],
+  "feidhm": ["function"],
+  "fíoch": ["fury"],
+  "gabhlán": ["swallow"],
+  "gairm": ["calling"],
+  "gátar": ["need"],
+  "inbhear": ["estuary"],
+  "íobairt": ["sacrifice"],
+  "íomhá": ["image"],
+  "iomaíocht": ["competition"],
+  "iomrall": ["error"],
+  "líon tí": ["household"],
+  "loscann": ["frog"],
+  "luibh": ["herb"],
+  "meadhrán": ["dizziness"],
+  "pléaráca": ["revelry"],
+  "poll": ["hole"],
+  "práinn": ["urgency"],
+  "prionsabal": ["principle"],
+  "rabharta": ["flood tide"],
+  "ráithe": ["quarter"],
+  "ráiteas": ["statement"],
+  "saol": ["life"],
+  "sárú": ["overcoming"],
+  "scata": ["flock"],
+  "sceilig": ["rocky cliff"],
+  "seachaint": ["avoiding"],
+  "séanadh": ["denying"],
+  "síneadh": ["stretching"],
+  "socrú": ["settling"],
+  "tairne": ["nail"],
+  "taisce": ["treasure"],
+  "tarcaisne": ["contempt"],
+  "téarma": ["term"],
+  "tornóg": ["turnip"],
+  "tréimhse": ["period"],
+  "uabhar": ["pride"],
+  "ualach": ["load"],
+  "údarás": ["authority"],
+  "aistriú": ["translating"],
+  "bagrach": ["threatening"],
+  "bunaithe": ["based"],
+  "caoin": ["gentle"],
+  "ciotach": ["left-handed"],
+  "dlúth": ["close"],
+  "dochma": ["gloomy"],
+  "dúr": ["dull"],
+  "dúthrachtach": ["earnest"],
+  "éadrom": ["light"],
+  "ionann": ["same"],
+  "meabhrach": ["clever"],
+  "míshásta": ["dissatisfied"],
+  "neirbhíseach": ["nervous"],
+  "paiteanta": ["handy"],
+  "suairc": ["pleasant"],
+  "taibhseach": ["spectacular"],
+  "ailtireacht": ["architecture"],
+  "aire": ["care, attention"],
+  "aoibhinn": ["delightful, blissful"],
+  "aois": ["age (of person)"],
+  "bainis": ["wedding, wedding feast"],
+  "baithis": ["top, crown (of head)"],
+  "banana": ["banana"],
+  "beannacht": ["blessing"],
+  "bitheolaíocht": ["biology"],
+  "bogadh": ["softening, easement"],
+  "borgaire": ["hamburger"],
+  "briosc": ["brittle, fragile"],
+  "briseadh": ["break, the act of breaking; breakage"],
+  "bruach": ["bank (edge of river, lake, or other watercourse), brink"],
+  "bunúsach": ["original, basic, primary"],
+  "bus": ["bus"],
+  "cadhan": ["brent goose, brant goose"],
+  "caibidil": ["chapter"],
+  "caisearbhán": ["dandelion, Taraxacum spp."],
+  "caitheamh": ["consumption"],
+  "cam": ["crooked"],
+  "caonach": ["moss"],
+  "caor": ["berry"],
+  "ceannas": ["headship, sovereignty"],
+  "ceart": ["right, correct"],
+  "ceimic": ["chemistry"],
+  "claí": ["dry-stone wall"],
+  "cliabhrach": ["chest, thorax (region of the mammalian body)"],
+  "clochar": ["nunnery, convent"],
+  "cnaipe": ["button"],
+  "cnocán": ["hillock"],
+  "coip": ["ferment"],
+  "coirt": ["bark (exterior covering of a tree)"],
+  "coiste": ["committee"],
+  "comhthéacs": ["context"],
+  "copóg": ["large leaf"],
+  "cosúlacht": ["likeness; appearance, resemblance"],
+  "cruinn": ["round (circular or cylindrical)"],
+  "cré": ["clay"],
+  "culaith": ["suit (of clothes), dress, apparel"],
+  "cág": ["jackdaw"],
+  "deatach": ["smoke"],
+  "diagacht": ["divinity"],
+  "difríocht": ["difference (characteristic of something that makes it different from something else)"],
+  "dualgas": ["duty, obligation, onus"],
+  "dáta": ["date (specification of time; point in time)"],
+  "díog": ["ditch, trench (also in archaeology), dyke"],
+  "díograis": ["fervor, zeal; fervent love; kindred affection"],
+  "eagrú": ["arrangement, organisation"],
+  "ealaíontóir": ["artist"],
+  "eidheann": ["ivy"],
+  "eorna": ["barley (Hordeum vulgare)"],
+  "feamainn": ["seaweed, wrack"],
+  "fearnóg": ["alder tree"],
+  "feisire": ["A member of parliament (used historically in the context of the parliament of the Kingdom of Ireland, used nowadays for MEPs or British MPs)."],
+  "fisic": ["physics"],
+  "fonnmhar": ["willing, ready, eager"],
+  "freagairt": ["answering, answer; correspondence; responsibility; reaction, response"],
+  "freagracht": ["responsibility"],
+  "fáil": ["possession"],
+  "fál": ["hedge (thicket of bushes planted in a row), fence (barrier)"],
+  "féarach": ["pasture"],
+  "gabháil": ["catch, seizure, capture; assumption (of authority); occupation (of territory); acceptance; undertaking; tolerance"],
+  "garraíodóir": ["gardener"],
+  "gasóg": ["little stalk; young shoot"],
+  "giúis": ["fir, Abies genus"],
+  "gruama": ["gloomy, morose"],
+  "gréasaí": ["shoemaker, bootmaker"],
+  "iarraidh": ["request, demand"],
+  "iascaireacht": ["fishing"],
+  "imleacán": ["navel, belly button"],
+  "innealtóireacht": ["engineering"],
+  "iompú": ["turning, turn"],
+  "leithinis": ["peninsula"],
+  "locht": ["fault, defect, blemish, flaw, imperfection"],
+  "lárnach": ["central"],
+  "maor": ["steward"],
+  "mine": ["genitive feminine singular"],
+  "móin": ["turf, peat"],
+  "naoscach": ["snipe (bird of the family Scolopacidae)"],
+  "neantóg": ["nettle (stinging herb of genus Urtica)"],
+  "nócha": ["ninety"],
+  "nóinín": ["daisy"],
+  "obair": ["work, labor"],
+  "ochtó": ["eighty"],
+  "paidir": ["Lord’s Prayer"],
+  "pasta": ["pasta"],
+  "plúr": ["flour"],
+  "putóg": ["pudding (sausage made primarily from blood)"],
+  "páirtí": ["party"],
+  "pátrún": ["patron"],
+  "raithneach": ["fern, bracken"],
+  "riasc": ["marsh, fen, moor"],
+  "roinnt": ["somewhat"],
+  "rá": ["saying, quote"],
+  "ré": ["stretch of ground; level ground"],
+  "rósach": ["rose, rosy, roseate"],
+  "sceir": ["skerry"],
+  "seachtó": ["seventy"],
+  "seasca": ["sixty"],
+  "siúlóid": ["a walk"],
+  "slachtmhar": ["neat, tidy, well-finished"],
+  "smior": ["bone marrow"],
+  "snag": ["a catch (hesitation in voice), gasp, sob"],
+  "socheolaíocht": ["sociology"],
+  "sonra": ["characteristic; particular, detail"],
+  "stát": ["state"],
+  "síceolaíocht": ["psychology"],
+  "súgradh": ["playing, sporting; amusement, fun"],
+  "taispeáint": ["show, display, exhibition"],
+  "taoide": ["tide (periodic change of sea level)"],
+  "teagasc": ["teaching, doctrine"],
+  "teangeolaíocht": ["linguistics"],
+  "teocht": ["heat, warmth"],
+  "tiubh": ["thick, dense, closely set"],
+  "togha": ["choice (best or most preferable part), pick"],
+  "toil": ["will"],
+  "tormán": ["noise, roar (loud resounding noise), rumble (low, heavy, continuous sound), thunder (deep, rumbling noise), boom (low-pitched, resonant sound)"],
+  "tornapa": ["turnip"],
+  "tosú": ["beginning, commencement, start"],
+  "tráchtáil": ["commerce"],
+  "tuairisc": ["information, tidings"],
+  "tuilleamh": ["earning"],
+  "tíreolaíocht": ["geography"],
+  "tórramh": ["wake (period after death)"],
+  "véarsa": ["verse; stanza; (biblical) verse"],
+  "ógánach": ["adolescent, youngster, youth, young man"],
+  "ól": ["to drink"],
+  "ómós": ["homage, respect"],
+  "ór": ["gold"],
   "úsáid": ["use, utilization, usage"]
+
 };
 const WORDS = Object.keys(DICT);
 const ROUND_LENGTH = 20;
