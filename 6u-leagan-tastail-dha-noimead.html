@@ -129,6 +129,9 @@
     }
     .start-btn:hover, .restart-btn:hover { background: #c73652; }
     .hint { font-size: 0.8rem; color: #555; }
+    #lives-display { font-size: 1.3rem; letter-spacing: 3px; }
+    .life-full { color: #e94560; }
+    .life-lost { color: #2a2a45; transition: color 0.3s; }
   </style>
 </head>
 <body>
@@ -143,7 +146,7 @@
   </p>
   <p id="start-best" class="best-line"></p>
   <button class="start-btn" onclick="startGame()">Tosaigh</button>
-  <p class="hint">← → nó A / B a úsáid freisin</p>
+  <p class="hint">↑ ↓ nó W / S a úsáid freisin</p>
 </div>
 
 <!-- ══ GAME SCREEN ═══════════════════════════════════════════════════════════ -->
@@ -153,6 +156,7 @@
     <div id="timer-display">2:00</div>
     <div id="score-label">ceart</div>
     <div id="score-display">0</div>
+    <div id="lives-display"></div>
   </div>
 
   <div id="word-card" class="card">—</div>
@@ -168,7 +172,7 @@
 
 <!-- ══ OVER SCREEN ═══════════════════════════════════════════════════════════ -->
 <div id="over-screen" class="screen">
-  <h2>Am Istigh!</h2>
+  <h2 id="over-title">Am Istigh!</h2>
   <div class="final-score-num" id="final-score-num">0</div>
   <p class="final-sub">focal ceart</p>
   <p class="best-line" id="over-best"></p>
@@ -19185,6 +19189,7 @@ const WORDS = Object.keys(DICT);
 const GAME_MS = 120000; // 2 minutes
 
 let score = 0, bestScore = 0;
+let lives = 3;
 let timerRAF, wordStartTime;
 let gameStart, gameEnd;
 let correctIdx = 0, locked = false;
@@ -19212,12 +19217,23 @@ function updateBestDisplay() {
 }
 updateBestDisplay();
 
+function updateLives() {
+  const el = document.getElementById('lives-display');
+  let html = '';
+  for (let i = 0; i < 3; i++) {
+    html += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
+  }
+  el.innerHTML = html;
+}
+
 function startGame() {
   score = 0;
+  lives = 3;
   locked = false;
   gameEnd = Date.now() + GAME_MS;
   document.getElementById('score-display').textContent = '0';
   document.getElementById('pts-flash').style.opacity = '0';
+  updateLives();
   show('game-screen');
   nextWord();
   tickTimer();
@@ -19271,16 +19287,19 @@ function pick(idx) {
     showFlash('+1');
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
+    setTimeout(() => { locked = false; nextWord(); }, 380);
   } else {
+    lives--;
+    updateLives();
     btns[idx].className = 'choice-btn selected-wrong';
     btns[correctIdx].className = 'choice-btn reveal-correct';
     document.getElementById('word-card').className = 'card flash-wrong';
+    if (lives <= 0) {
+      setTimeout(endGame, 600);
+    } else {
+      setTimeout(() => { locked = false; nextWord(); }, 380);
+    }
   }
-
-  setTimeout(() => {
-    locked = false;
-    nextWord();
-  }, 380);
 }
 
 function showFlash(txt) {
@@ -19309,6 +19328,7 @@ function tickTimer() {
 function endGame() {
   cancelAnimationFrame(timerRAF);
   locked = true;
+  document.getElementById('over-title').textContent = lives <= 0 ? 'Saol Amach!' : 'Am Istigh!';
   if (score > bestScore) {
     bestScore = score;
     try { localStorage.setItem('6u_best', bestScore); } catch(e){}
@@ -19322,14 +19342,16 @@ function endGame() {
   show('over-screen');
 }
 
-// Keyboard support below
-
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
   if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
 });
 
 show('start-screen');
+</script>
+</body>
+</html>
+
 </script>
 </body>
 </html>
