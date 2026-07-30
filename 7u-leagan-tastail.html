@@ -1966,8 +1966,9 @@ function rnd(exclude) {
 }
 
 function updateLives() {
+  const maxLives = LEVELS[currentLevel].lives;
   let h = '';
-  for (let i = 0; i < 3; i++)
+  for (let i = 0; i < maxLives; i++)
     h += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
   document.getElementById('lives-display').innerHTML = h;
 }
@@ -2118,16 +2119,17 @@ function endGame(survived) {
     document.getElementById('over-icon').textContent  = '🏆';
     document.getElementById('over-title').textContent = LEVELS[currentLevel].label + ' críochnaithe!';
     nextBtn.style.display  = 'inline-block';
-    retryBtn.textContent   = 'Arís';
+    retryBtn.style.display = 'none';
   } else if (survived && currentLevel === 2) {
     document.getElementById('over-icon').textContent  = '🏆';
     document.getElementById('over-title').textContent = 'Comhghairdeas!';
     nextBtn.style.display  = 'none';
-    retryBtn.textContent   = 'Arís';
+    retryBtn.style.display = 'none';
   } else {
     document.getElementById('over-icon').textContent  = '💀';
     document.getElementById('over-title').textContent = 'Saol Amach!';
     nextBtn.style.display  = 'none';
+    retryBtn.style.display = 'inline-block';
     retryBtn.textContent   = 'Arís';
   }
 
@@ -2145,6 +2147,12 @@ function goNext() { startLevel(currentLevel + 1); }
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
   if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
+  if (e.key === 'Enter') {
+    const nextBtn = document.getElementById('btn-next');
+    if (nextBtn.style.display !== 'none' && document.getElementById('over-screen').classList.contains('active')) {
+      e.preventDefault(); goNext();
+    }
+  }
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
