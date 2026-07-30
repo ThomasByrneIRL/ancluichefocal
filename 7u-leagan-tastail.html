@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7ú – Tastáil Dhá Nóiméad</title>
+  <title>7ú – Leibhéil</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -16,72 +16,131 @@
       justify-content: center;
     }
     .screen { display: none; flex-direction: column; align-items: center;
-              justify-content: center; gap: 20px; text-align: center;
-              width: 100%; max-width: 540px; padding: 20px; }
+              justify-content: center; gap: 18px; text-align: center;
+              width: 100%; max-width: 540px; padding: 24px; }
     .screen.active { display: flex; }
 
-    h1 { font-size: 3.5rem; color: #53d8fb; letter-spacing: 2px; }
+    h1 { font-size: 3.2rem; color: #53d8fb; letter-spacing: 2px; }
     h2 { font-size: 2rem; color: #53d8fb; }
     .subtitle { font-size: 1.1rem; color: #aaa; }
-    .best-line { font-size: 1rem; color: #888; }
 
-    #game-screen { gap: 16px; }
+    /* ── Level cards on start screen ── */
+    .level-cards { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .level-card {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid #0f3460;
+      background: #0f3460;
+      color: #eee;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .level-card:hover { background: #1a4f8a; border-color: #53d8fb; }
+    .level-card.locked {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .level-card .lc-left { text-align: left; }
+    .level-card .lc-name { font-size: 1.05rem; font-weight: bold; }
+    .level-card .lc-info { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+    .level-card .lc-best { font-size: 0.85rem; color: #ffc107; }
+    .level-card .lc-lock { font-size: 1.2rem; opacity: 0.5; }
 
-    #timer-wrap {
+    /* ── Game screen ── */
+    #game-screen { gap: 14px; }
+
+    #hud {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 14px;
       width: 100%;
     }
+    #level-badge {
+      font-size: 0.8rem;
+      color: #53d8fb;
+      border: 1px solid #0f3460;
+      border-radius: 6px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
     #timer-display {
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #53d8fb;
       font-variant-numeric: tabular-nums;
       letter-spacing: 2px;
-      min-width: 80px;
+      min-width: 72px;
     }
     #timer-display.warning { color: #ffc107; }
     #timer-display.danger  { color: #e94560; }
+    #score-wrap { display: flex; flex-direction: column; align-items: center; }
     #score-display {
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #4caf50;
-      min-width: 60px;
+      min-width: 50px;
+      line-height: 1;
     }
-    #score-label { font-size: 0.85rem; color: #888; align-self: flex-end; padding-bottom: 6px; }
+    #score-label { font-size: 0.75rem; color: #888; }
+    #lives-display { font-size: 1.3rem; letter-spacing: 3px; }
+    .life-full { color: #e94560; }
+    .life-lost { color: #2a2a45; }
 
+    /* Word card */
     .card {
       background: #16213e;
       border-radius: 14px;
-      padding: 28px 24px;
+      padding: 26px 24px;
       width: 100%;
       font-size: 1.9rem;
       font-weight: bold;
       color: #fff;
       letter-spacing: 1px;
-      min-height: 90px;
+      min-height: 88px;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
       cursor: pointer;
     }
     .card.flash-correct { background: #1b4d2e; }
     .card.flash-wrong   { background: #4d1b1b; }
+    .card.flash-timeout { background: #3a2a00; }
+
+    /* Word timer bar */
+    #word-timer-wrap {
+      width: 100%;
+      height: 5px;
+      background: #0d1b3e;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    #word-timer-bar {
+      height: 100%;
+      background: #53d8fb;
+      border-radius: 3px;
+      width: 100%;
+      transform-origin: left;
+    }
+    #word-timer-bar.urgent { background: #e94560; }
 
     #sound-btn {
-      font-size: 0.85rem;
-      color: #555;
+      font-size: 0.82rem;
+      color: #444;
       cursor: pointer;
       user-select: none;
-      letter-spacing: 1px;
     }
     #sound-btn:hover { color: #aaa; }
 
-    .choices { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+    /* Choices */
+    .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
       width: 100%;
-      padding: 15px 20px;
+      padding: 13px 18px;
       border-radius: 10px;
       border: 2px solid #0f3460;
       background: #0f3460;
@@ -93,75 +152,61 @@
       align-items: center;
       gap: 12px;
     }
-    .key-hint {
-      font-size: 1.1rem;
-      opacity: 0.5;
-      flex-shrink: 0;
-      width: 1.2em;
-      text-align: center;
-    }
-    .btn-text { flex: 1; text-align: left; }
+    .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
+    .btn-text  { flex: 1; text-align: left; }
     .choice-btn:hover:not(:disabled) { background: #1a4f8a; border-color: #53d8fb; }
     .choice-btn.selected-correct { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
     .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
     .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
 
     #pts-flash {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #4caf50;
-      opacity: 0;
-      transition: opacity 0.3s;
-      height: 32px;
+      font-size: 1.3rem; font-weight: bold; color: #4caf50;
+      opacity: 0; transition: opacity 0.3s; height: 28px;
     }
 
+    /* Over / complete screen */
+    .result-icon { font-size: 3rem; line-height: 1; }
     .final-score-num { font-size: 5rem; font-weight: bold; color: #53d8fb; line-height: 1; }
     .final-sub       { font-size: 1rem; color: #aaa; }
-    .best-line       { font-size: 1.1rem; color: #ffc107; }
+    .best-note       { font-size: 1rem; color: #ffc107; }
 
-    .start-btn, .restart-btn {
-      background: #e94560;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 14px 36px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      font-weight: bold;
+    .btn-primary, .btn-secondary {
+      border: none; border-radius: 10px;
+      padding: 13px 32px; font-size: 1.05rem;
+      cursor: pointer; font-weight: bold;
       transition: background 0.2s;
     }
-    .start-btn:hover, .restart-btn:hover { background: #c73652; }
-    .hint { font-size: 0.8rem; color: #555; }
-    #lives-display { font-size: 1.3rem; letter-spacing: 3px; }
-    .life-full { color: #e94560; }
-    .life-lost { color: #2a2a45; transition: color 0.3s; }
+    .btn-primary   { background: #e94560; color: #fff; }
+    .btn-primary:hover   { background: #c73652; }
+    .btn-secondary { background: #0f3460; color: #eee; }
+    .btn-secondary:hover { background: #1a4f8a; }
+
+    .hint { font-size: 0.78rem; color: #444; margin-top: 4px; }
   </style>
 </head>
 <body>
 
-<!-- ══ START SCREEN ══════════════════════════════════════════════════════════ -->
+<!-- ══ START SCREEN ═══════════════════════════════════════════════════════════ -->
 <div id="start-screen" class="screen active">
   <h1>7ú</h1>
-  <p class="subtitle">Tastáil Dhá Nóiméad</p>
-  <p style="color:#ccc;max-width:340px;line-height:1.5;">
-    Cé mhéad focal is féidir leat a aistriú i 2 nóiméad?<br>
-    3 shaol. Dhá rogha an gach focal. Fuaimniú Chonamara.
-  </p>
-  <p id="start-best" class="best-line"></p>
-  <button class="start-btn" onclick="startGame()">Tosaigh</button>
-  <p class="hint">↑ ↓ nó W / S a úsáid freisin</p>
+  <p class="subtitle">Roghnaigh leibhéal</p>
+  <div class="level-cards" id="level-cards"></div>
+  <p class="hint">↑ ↓ nó W / S a úsáid le linn an chluiche</p>
 </div>
 
-<!-- ══ GAME SCREEN ═══════════════════════════════════════════════════════════ -->
+<!-- ══ GAME SCREEN ════════════════════════════════════════════════════════════ -->
 <div id="game-screen" class="screen">
-
-  <div id="timer-wrap">
-    <div id="timer-display">2:00</div>
-    <div id="score-label">ceart</div>
-    <div id="score-display">0</div>
+  <div id="hud">
+    <div id="level-badge">L1</div>
+    <div id="timer-display">0:30</div>
+    <div id="score-wrap">
+      <div id="score-display">0</div>
+      <div id="score-label">ceart</div>
+    </div>
     <div id="lives-display"></div>
   </div>
 
+  <div id="word-timer-wrap"><div id="word-timer-bar"></div></div>
   <div id="word-card" class="card" onclick="replayPron()">—</div>
   <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
 
@@ -169,18 +214,19 @@
     <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
     <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
   </div>
-
   <div id="pts-flash">+1</div>
-
 </div>
 
-<!-- ══ OVER SCREEN ═══════════════════════════════════════════════════════════ -->
+<!-- ══ OVER / COMPLETE SCREEN ════════════════════════════════════════════════ -->
 <div id="over-screen" class="screen">
-  <h2 id="over-title">Am Istigh!</h2>
+  <div class="result-icon" id="over-icon"></div>
+  <h2 id="over-title"></h2>
   <div class="final-score-num" id="final-score-num">0</div>
   <p class="final-sub">focal ceart</p>
-  <p class="best-line" id="over-best"></p>
-  <button class="restart-btn" onclick="startGame()">Arís</button>
+  <p class="best-note" id="over-best"></p>
+  <button class="btn-primary"   id="btn-next"  onclick="goNext()"  style="display:none">Ar aghaidh →</button>
+  <button class="btn-secondary" id="btn-retry" onclick="startLevel(currentLevel)">Arís</button>
+  <button class="btn-secondary" id="btn-menu"  onclick="showMenu()">Roghchlár</button>
 </div>
 
 <script>
@@ -1820,43 +1866,78 @@ const DICT = {
 
 };
 
+// ── Level config ──────────────────────────────────────────────────────────────
+const LEVELS = [
+  { num: 1, lives: 3, gameMs: 30000, label: 'Leibhéal 1', info: '3 shaol · 30 soic' },
+  { num: 2, lives: 2, gameMs: 45000, label: 'Leibhéal 2', info: '2 shaol · 45 soic' },
+  { num: 3, lives: 1, gameMs: 60000, label: 'Leibhéal 3', info: '1 shaol · 60 soic' },
+];
+const WORD_MS = 5000;
 const WORDS = Object.keys(DICT);
-const GAME_MS = 120000;
 
-let score = 0, bestScore = 0;
-let lives = 3;
-let timerRAF, gameEnd;
+// ── Persistent state ──────────────────────────────────────────────────────────
+let unlockedLevel = 0;
+let bestScores = [0, 0, 0];
+function loadStorage() {
+  try { unlockedLevel = parseInt(localStorage.getItem('7u_unlocked') || '0'); } catch(e){}
+  try { for (let i = 0; i < 3; i++) bestScores[i] = parseInt(localStorage.getItem('7u_best_' + (i+1)) || '0'); } catch(e){}
+}
+function saveUnlocked(lvl) {
+  if (lvl > unlockedLevel) {
+    unlockedLevel = lvl;
+    try { localStorage.setItem('7u_unlocked', unlockedLevel); } catch(e){}
+  }
+}
+function saveBest(lvlIdx, s) {
+  if (s > bestScores[lvlIdx]) {
+    bestScores[lvlIdx] = s;
+    try { localStorage.setItem('7u_best_' + (lvlIdx+1), s); } catch(e){}
+  }
+}
+loadStorage();
+
+// ── Runtime state ─────────────────────────────────────────────────────────────
+let currentLevel = 0;
+let score = 0, lives = 3;
+let gameEnd, wordEnd;
+let gameRAF, wordRAF;
 let correctIdx = 0, locked = false;
 let flashTimer;
 let _ca = null, _currentWord = '';
 
-try { bestScore = parseInt(localStorage.getItem('7u_best') || '0'); } catch(e){}
-
+// ── Screens ───────────────────────────────────────────────────────────────────
 function show(id) {
-  ['start-screen','game-screen','over-screen'].forEach(s => {
-    document.getElementById(s).classList.toggle('active', s === id);
+  ['start-screen','game-screen','over-screen'].forEach(s =>
+    document.getElementById(s).classList.toggle('active', s === id));
+}
+
+// ── Start screen ──────────────────────────────────────────────────────────────
+function buildMenu() {
+  const wrap = document.getElementById('level-cards');
+  wrap.innerHTML = '';
+  LEVELS.forEach((lv, i) => {
+    const locked = i > unlockedLevel;
+    const best   = bestScores[i];
+    const card   = document.createElement('div');
+    card.className = 'level-card' + (locked ? ' locked' : '');
+    card.innerHTML =
+      '<div class="lc-left">' +
+        '<div class="lc-name">' + lv.label + '</div>' +
+        '<div class="lc-info">' + lv.info + ' · 5 soic an focal</div>' +
+        (best > 0 ? '<div class="lc-best">Is fearr: ' + best + ' focal</div>' : '') +
+      '</div>' +
+      '<div class="lc-lock">' + (locked ? '🔒' : '') + '</div>';
+    if (!locked) card.onclick = () => startLevel(i);
+    wrap.appendChild(card);
   });
 }
 
-function fmt(ms) {
-  const total = Math.max(0, Math.ceil(ms / 1000));
-  return Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0');
+function showMenu() {
+  buildMenu();
+  show('start-screen');
 }
 
-function updateBestDisplay() {
-  const el = document.getElementById('start-best');
-  el.textContent = bestScore > 0 ? 'Is fearr: ' + bestScore + ' focal' : '';
-}
-updateBestDisplay();
-
-function updateLives() {
-  let html = '';
-  for (let i = 0; i < 3; i++) {
-    html += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
-  }
-  document.getElementById('lives-display').innerHTML = html;
-}
-
+// ── Audio ─────────────────────────────────────────────────────────────────────
 function playPron(word) {
   if (_ca) { _ca.pause(); _ca = null; }
   const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
@@ -1864,46 +1945,67 @@ function playPron(word) {
   a.play().catch(function(){});
   _ca = a;
 }
+function replayPron() { if (_currentWord) playPron(_currentWord); }
 
-function replayPron() {
-  if (_currentWord) playPron(_currentWord);
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmt(ms) {
+  const t = Math.max(0, Math.ceil(ms / 1000));
+  return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
 }
-
-function startGame() {
-  score = 0;
-  lives = 3;
-  locked = false;
-  gameEnd = Date.now() + GAME_MS;
-  document.getElementById('score-display').textContent = '0';
-  document.getElementById('pts-flash').style.opacity = '0';
-  updateLives();
-  show('game-screen');
-  nextWord();
-  tickTimer();
-}
-
 function sh(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
   }
   return arr;
 }
-
 function rnd(exclude) {
   let w;
-  do { w = WORDS[Math.floor(Math.random() * WORDS.length)]; } while (w === exclude);
+  do { w = WORDS[Math.floor(Math.random()*WORDS.length)]; } while (w === exclude);
   return w;
 }
 
+function updateLives() {
+  let h = '';
+  for (let i = 0; i < 3; i++)
+    h += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
+  document.getElementById('lives-display').innerHTML = h;
+}
+
+// ── Start a level ─────────────────────────────────────────────────────────────
+function startLevel(lvlIdx) {
+  currentLevel = lvlIdx;
+  const lv = LEVELS[lvlIdx];
+  score  = 0;
+  lives  = lv.lives;
+  locked = false;
+
+  cancelAnimationFrame(gameRAF);
+  cancelAnimationFrame(wordRAF);
+
+  gameEnd = Date.now() + lv.gameMs;
+
+  document.getElementById('level-badge').textContent = 'L' + lv.num;
+  document.getElementById('timer-display').textContent = fmt(lv.gameMs);
+  document.getElementById('timer-display').className = '';
+  document.getElementById('score-display').textContent = '0';
+  document.getElementById('pts-flash').style.opacity = '0';
+  updateLives();
+
+  show('game-screen');
+  nextWord();
+  tickGame();
+}
+
+// ── Word loop ─────────────────────────────────────────────────────────────────
 function nextWord() {
   if (locked) return;
-  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const word    = WORDS[Math.floor(Math.random()*WORDS.length)];
   const correct = DICT[word][0];
-  const wrong = DICT[rnd(word)][0];
-  const opts = sh([correct, wrong]);
-  correctIdx = opts.indexOf(correct);
-  _currentWord = word;
+  const wrong   = DICT[rnd(word)][0];
+  const opts    = sh([correct, wrong]);
+  correctIdx    = opts.indexOf(correct);
+  _currentWord  = word;
 
   document.getElementById('word-card').textContent = word;
   document.getElementById('word-card').className = 'card';
@@ -1912,16 +2014,62 @@ function nextWord() {
   btns.forEach((b, i) => {
     b.querySelector('.btn-text').textContent = opts[i];
     b.className = 'choice-btn';
-    b.disabled = false;
+    b.disabled  = false;
   });
 
   playPron(word);
+
+  // Word timer
+  cancelAnimationFrame(wordRAF);
+  wordEnd = Date.now() + WORD_MS;
+  tickWord();
 }
 
+function tickWord() {
+  const rem = wordEnd - Date.now();
+  if (rem <= 0) {
+    // Timed out on this word — lose a life
+    document.getElementById('word-timer-bar').style.width = '0%';
+    document.getElementById('word-timer-bar').className = 'urgent';
+    document.getElementById('word-card').className = 'card flash-timeout';
+    const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
+    btns.forEach(b => b.disabled = true);
+    locked = true;
+    lives--;
+    updateLives();
+    if (lives <= 0) { setTimeout(endGame, 500); return; }
+    setTimeout(() => { locked = false; nextWord(); }, 500);
+    return;
+  }
+  const pct = (rem / WORD_MS) * 100;
+  const bar = document.getElementById('word-timer-bar');
+  bar.style.width = pct + '%';
+  bar.className   = rem <= 1500 ? 'urgent' : '';
+  wordRAF = requestAnimationFrame(tickWord);
+}
+
+// ── Game clock ────────────────────────────────────────────────────────────────
+function tickGame() {
+  const rem = gameEnd - Date.now();
+  if (rem <= 0) {
+    document.getElementById('timer-display').textContent = '0:00';
+    endGame(true);
+    return;
+  }
+  const td = document.getElementById('timer-display');
+  td.textContent = fmt(rem);
+  if      (rem <= 10000) td.className = 'danger';
+  else if (rem <= 20000) td.className = 'warning';
+  else                   td.className = '';
+  gameRAF = requestAnimationFrame(tickGame);
+}
+
+// ── Pick ──────────────────────────────────────────────────────────────────────
 function pick(idx) {
   if (locked) return;
   if (gameEnd - Date.now() <= 0) return;
   locked = true;
+  cancelAnimationFrame(wordRAF);
 
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => b.disabled = true);
@@ -1932,18 +2080,15 @@ function pick(idx) {
     showFlash('+1');
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
-    setTimeout(() => { locked = false; nextWord(); }, 380);
+    setTimeout(() => { locked = false; nextWord(); }, 340);
   } else {
     lives--;
     updateLives();
     btns[idx].className = 'choice-btn selected-wrong';
     btns[correctIdx].className = 'choice-btn reveal-correct';
     document.getElementById('word-card').className = 'card flash-wrong';
-    if (lives <= 0) {
-      setTimeout(endGame, 600);
-    } else {
-      setTimeout(() => { locked = false; nextWord(); }, 380);
-    }
+    if (lives <= 0) { setTimeout(() => endGame(false), 550); }
+    else            { setTimeout(() => { locked = false; nextWord(); }, 380); }
   }
 }
 
@@ -1952,47 +2097,58 @@ function showFlash(txt) {
   el.textContent = txt;
   el.style.opacity = '1';
   clearTimeout(flashTimer);
-  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 600);
+  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 550);
 }
 
-function tickTimer() {
-  const remaining = gameEnd - Date.now();
-  if (remaining <= 0) {
-    document.getElementById('timer-display').textContent = '0:00';
-    endGame();
-    return;
-  }
-  const td = document.getElementById('timer-display');
-  td.textContent = fmt(remaining);
-  if (remaining <= 15000)      td.className = 'danger';
-  else if (remaining <= 30000) td.className = 'warning';
-  else                         td.className = '';
-  timerRAF = requestAnimationFrame(tickTimer);
-}
-
-function endGame() {
-  cancelAnimationFrame(timerRAF);
+// ── End game ──────────────────────────────────────────────────────────────────
+function endGame(survived) {
+  cancelAnimationFrame(gameRAF);
+  cancelAnimationFrame(wordRAF);
   locked = true;
   if (_ca) { _ca.pause(); _ca = null; }
-  document.getElementById('over-title').textContent = lives <= 0 ? 'Saol Amach!' : 'Am Istigh!';
-  if (score > bestScore) {
-    bestScore = score;
-    try { localStorage.setItem('7u_best', bestScore); } catch(e){}
-    updateBestDisplay();
+
+  saveBest(currentLevel, score);
+  const isNewBest = score >= bestScores[currentLevel] && score > 0;
+
+  const nextBtn  = document.getElementById('btn-next');
+  const retryBtn = document.getElementById('btn-retry');
+
+  if (survived && currentLevel < 2) {
+    saveUnlocked(currentLevel + 1);
+    document.getElementById('over-icon').textContent  = '🏆';
+    document.getElementById('over-title').textContent = LEVELS[currentLevel].label + ' críochnaithe!';
+    nextBtn.style.display  = 'inline-block';
+    retryBtn.textContent   = 'Arís';
+  } else if (survived && currentLevel === 2) {
+    document.getElementById('over-icon').textContent  = '🏆';
+    document.getElementById('over-title').textContent = 'Comhghairdeas!';
+    nextBtn.style.display  = 'none';
+    retryBtn.textContent   = 'Arís';
+  } else {
+    document.getElementById('over-icon').textContent  = '💀';
+    document.getElementById('over-title').textContent = 'Saol Amach!';
+    nextBtn.style.display  = 'none';
+    retryBtn.textContent   = 'Arís';
   }
+
   document.getElementById('final-score-num').textContent = score;
-  const ob = document.getElementById('over-best');
-  ob.textContent = score >= bestScore
-    ? (bestScore > 0 ? '★ Scór is fearr nua! ' + bestScore : '')
-    : 'Is fearr: ' + bestScore + ' focal';
+  document.getElementById('over-best').textContent = isNewBest
+    ? '★ Scór is fearr nua!'
+    : (bestScores[currentLevel] > 0 ? 'Is fearr: ' + bestScores[currentLevel] + ' focal' : '');
+
   show('over-screen');
 }
 
+function goNext() { startLevel(currentLevel + 1); }
+
+// ── Keyboard ──────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
   if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
 });
 
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildMenu();
 show('start-screen');
 </script>
 </body>
