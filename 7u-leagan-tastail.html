@@ -1916,7 +1916,7 @@ function buildMenu() {
   const wrap = document.getElementById('level-cards');
   wrap.innerHTML = '';
   LEVELS.forEach((lv, i) => {
-    const locked = i > unlockedLevel;
+    const locked = i > 0;
     const best   = bestScores[i];
     const card   = document.createElement('div');
     card.className = 'level-card' + (locked ? ' locked' : '');
