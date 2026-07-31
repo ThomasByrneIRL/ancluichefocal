@@ -225,7 +225,7 @@
   <p class="final-sub">focal ceart</p>
   <p class="best-note" id="over-best"></p>
   <button class="btn-primary"   id="btn-next"  onclick="goNext()"  style="display:none">Ar aghaidh →</button>
-  <button class="btn-secondary" id="btn-retry" onclick="startLevel(currentLevel)">Arís</button>
+  <button class="btn-secondary" id="btn-retry" onclick="startLevel(0)">Arís</button>
   <button class="btn-secondary" id="btn-menu"  onclick="showMenu()">Roghchlár</button>
 </div>
 
@@ -2124,13 +2124,14 @@ function endGame(survived) {
     document.getElementById('over-icon').textContent  = '🏆';
     document.getElementById('over-title').textContent = 'Comhghairdeas!';
     nextBtn.style.display  = 'none';
-    retryBtn.style.display = 'none';
+    retryBtn.style.display = 'inline-block';
+    retryBtn.textContent   = 'Arís ó thús';
   } else {
     document.getElementById('over-icon').textContent  = '💀';
     document.getElementById('over-title').textContent = 'Saol Amach!';
     nextBtn.style.display  = 'none';
     retryBtn.style.display = 'inline-block';
-    retryBtn.textContent   = 'Arís';
+    retryBtn.textContent   = currentLevel === 0 ? 'Arís' : 'Arís ó Leibhéal 1';
   }
 
   document.getElementById('final-score-num').textContent = score;
