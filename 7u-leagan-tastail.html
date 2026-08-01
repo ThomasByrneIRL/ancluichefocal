@@ -24,133 +24,60 @@
     h2 { font-size: 2rem; color: #53d8fb; }
     .subtitle { font-size: 1.1rem; color: #aaa; }
 
-    /* ── Level cards on start screen ── */
     .level-cards { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
     .level-card {
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 12px;
-      border: 2px solid #0f3460;
-      background: #0f3460;
-      color: #eee;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      width: 100%; padding: 14px 20px; border-radius: 12px;
+      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .level-card:hover { background: #1a4f8a; border-color: #53d8fb; }
-    .level-card.locked {
-      opacity: 0.35;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
+    .level-card.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
     .level-card .lc-left { text-align: left; }
     .level-card .lc-name { font-size: 1.05rem; font-weight: bold; }
     .level-card .lc-info { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
     .level-card .lc-best { font-size: 0.85rem; color: #ffc107; }
     .level-card .lc-lock { font-size: 1.2rem; opacity: 0.5; }
 
-    /* ── Game screen ── */
     #game-screen { gap: 14px; }
-
-    #hud {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      width: 100%;
-    }
-    #level-badge {
-      font-size: 0.8rem;
-      color: #53d8fb;
-      border: 1px solid #0f3460;
-      border-radius: 6px;
-      padding: 3px 8px;
-      white-space: nowrap;
-    }
-    #timer-display {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #53d8fb;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
-      min-width: 72px;
-    }
+    #hud { display: flex; align-items: center; justify-content: center; gap: 14px; width: 100%; }
+    #level-badge { font-size: 0.8rem; color: #53d8fb; border: 1px solid #0f3460; border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+    #timer-display { font-size: 2.2rem; font-weight: bold; color: #53d8fb; font-variant-numeric: tabular-nums; letter-spacing: 2px; min-width: 72px; }
     #timer-display.warning { color: #ffc107; }
     #timer-display.danger  { color: #e94560; }
     #score-wrap { display: flex; flex-direction: column; align-items: center; }
-    #score-display {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #4caf50;
-      min-width: 50px;
-      line-height: 1;
-    }
+    #score-display { font-size: 2.2rem; font-weight: bold; color: #4caf50; min-width: 50px; line-height: 1; }
     #score-label { font-size: 0.75rem; color: #888; }
     #lives-display { font-size: 1.3rem; letter-spacing: 3px; }
     .life-full { color: #e94560; }
     .life-lost { color: #2a2a45; }
+    .life-inf  { color: #e94560; font-size: 1.5rem; letter-spacing: 0; }
 
-    /* Word card */
     .card {
-      background: #16213e;
-      border-radius: 14px;
-      padding: 26px 24px;
-      width: 100%;
-      font-size: 1.9rem;
-      font-weight: bold;
-      color: #fff;
-      letter-spacing: 1px;
-      min-height: 88px;
+      background: #16213e; border-radius: 14px; padding: 26px 24px;
+      width: 100%; font-size: 1.9rem; font-weight: bold; color: #fff;
+      letter-spacing: 1px; min-height: 88px;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-      cursor: pointer;
+      transition: background 0.15s; cursor: pointer;
     }
     .card.flash-correct { background: #1b4d2e; }
     .card.flash-wrong   { background: #4d1b1b; }
     .card.flash-timeout { background: #3a2a00; }
 
-    /* Word timer bar */
-    #word-timer-wrap {
-      width: 100%;
-      height: 5px;
-      background: #0d1b3e;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    #word-timer-bar {
-      height: 100%;
-      background: #53d8fb;
-      border-radius: 3px;
-      width: 100%;
-      transform-origin: left;
-    }
+    #word-timer-wrap { width: 100%; height: 5px; background: #0d1b3e; border-radius: 3px; overflow: hidden; }
+    #word-timer-bar  { height: 100%; background: #53d8fb; border-radius: 3px; width: 100%; }
     #word-timer-bar.urgent { background: #e94560; }
 
-    #sound-btn {
-      font-size: 0.82rem;
-      color: #444;
-      cursor: pointer;
-      user-select: none;
-    }
+    #sound-btn { font-size: 0.82rem; color: #444; cursor: pointer; user-select: none; }
     #sound-btn:hover { color: #aaa; }
 
-    /* Choices */
     .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
-      width: 100%;
-      padding: 13px 18px;
-      border-radius: 10px;
-      border: 2px solid #0f3460;
-      background: #0f3460;
-      color: #eee;
-      font-size: 1rem;
-      cursor: pointer;
+      width: 100%; padding: 13px 18px; border-radius: 10px;
+      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      font-size: 1rem; cursor: pointer;
       transition: background 0.1s, border-color 0.1s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
     }
     .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
     .btn-text  { flex: 1; text-align: left; }
@@ -159,22 +86,16 @@
     .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
     .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
 
-    #pts-flash {
-      font-size: 1.3rem; font-weight: bold; color: #4caf50;
-      opacity: 0; transition: opacity 0.3s; height: 28px;
-    }
+    #pts-flash { font-size: 1.3rem; font-weight: bold; color: #4caf50; opacity: 0; transition: opacity 0.3s; height: 28px; }
 
-    /* Over / complete screen */
     .result-icon { font-size: 3rem; line-height: 1; }
     .final-score-num { font-size: 5rem; font-weight: bold; color: #53d8fb; line-height: 1; }
-    .final-sub       { font-size: 1rem; color: #aaa; }
-    .best-note       { font-size: 1rem; color: #ffc107; }
+    .final-sub  { font-size: 1rem; color: #aaa; }
+    .best-note  { font-size: 1rem; color: #ffc107; }
 
     .btn-primary, .btn-secondary {
-      border: none; border-radius: 10px;
-      padding: 13px 32px; font-size: 1.05rem;
-      cursor: pointer; font-weight: bold;
-      transition: background 0.2s;
+      border: none; border-radius: 10px; padding: 13px 32px;
+      font-size: 1.05rem; cursor: pointer; font-weight: bold; transition: background 0.2s;
     }
     .btn-primary   { background: #e94560; color: #fff; }
     .btn-primary:hover   { background: #c73652; }
@@ -224,8 +145,8 @@
   <div class="final-score-num" id="final-score-num">0</div>
   <p class="final-sub">focal ceart</p>
   <p class="best-note" id="over-best"></p>
-  <button class="btn-primary"   id="btn-next"  onclick="goNext()"  style="display:none">Ar aghaidh →</button>
-  <button class="btn-secondary" id="btn-retry" onclick="startLevel(0)">Arís</button>
+  <button class="btn-primary"   id="btn-next"  onclick="goNext()"       style="display:none">Ar aghaidh →</button>
+  <button class="btn-secondary" id="btn-retry" onclick="startLevel(0)"  style="display:none">Arís</button>
   <button class="btn-secondary" id="btn-menu"  onclick="showMenu()">Roghchlár</button>
 </div>
 
@@ -1868,25 +1789,18 @@ const DICT = {
 
 // ── Level config ──────────────────────────────────────────────────────────────
 const LEVELS = [
-  { num: 1, lives: 3, gameMs: 30000, label: 'Leibhéal 1', info: '3 shaol · 30 soic' },
-  { num: 2, lives: 2, gameMs: 45000, label: 'Leibhéal 2', info: '2 shaol · 45 soic' },
-  { num: 3, lives: 1, gameMs: 60000, label: 'Leibhéal 3', info: '1 shaol · 60 soic' },
+  { num: 1, lives: Infinity, gameMs: 30000, wordMs: 5000, label: 'Leibhéal 1', info: '∞ saol · 30 soic' },
+  { num: 2, lives: 3,        gameMs: 30000, wordMs: 5000, label: 'Leibhéal 2', info: '3 shaol · 30 soic' },
+  { num: 3, lives: 2,        gameMs: 45000, wordMs: 5000, label: 'Leibhéal 3', info: '2 shaol · 45 soic' },
+  { num: 4, lives: 1,        gameMs: 60000, wordMs: 5000, label: 'Leibhéal 4', info: '1 shaol · 60 soic' },
+  { num: 5, lives: 1,        gameMs: 60000, wordMs: 2500, label: 'Leibhéal 5', info: '1 shaol · 60 soic · 2.5 soic an focal' },
 ];
-const WORD_MS = 5000;
 const WORDS = Object.keys(DICT);
 
 // ── Persistent state ──────────────────────────────────────────────────────────
-let unlockedLevel = 0;
-let bestScores = [0, 0, 0];
+let bestScores = [0, 0, 0, 0, 0];
 function loadStorage() {
-  try { unlockedLevel = parseInt(localStorage.getItem('7u_unlocked') || '0'); } catch(e){}
-  try { for (let i = 0; i < 3; i++) bestScores[i] = parseInt(localStorage.getItem('7u_best_' + (i+1)) || '0'); } catch(e){}
-}
-function saveUnlocked(lvl) {
-  if (lvl > unlockedLevel) {
-    unlockedLevel = lvl;
-    try { localStorage.setItem('7u_unlocked', unlockedLevel); } catch(e){}
-  }
+  try { for (let i = 0; i < 5; i++) bestScores[i] = parseInt(localStorage.getItem('7u_best_' + (i+1)) || '0'); } catch(e){}
 }
 function saveBest(lvlIdx, s) {
   if (s > bestScores[lvlIdx]) {
@@ -1898,7 +1812,7 @@ loadStorage();
 
 // ── Runtime state ─────────────────────────────────────────────────────────────
 let currentLevel = 0;
-let score = 0, lives = 3;
+let score = 0, lives = Infinity;
 let gameEnd, wordEnd;
 let gameRAF, wordRAF;
 let correctIdx = 0, locked = false;
@@ -1923,7 +1837,7 @@ function buildMenu() {
     card.innerHTML =
       '<div class="lc-left">' +
         '<div class="lc-name">' + lv.label + '</div>' +
-        '<div class="lc-info">' + lv.info + ' · 5 soic an focal</div>' +
+        '<div class="lc-info">' + lv.info + '</div>' +
         (best > 0 ? '<div class="lc-best">Is fearr: ' + best + ' focal</div>' : '') +
       '</div>' +
       '<div class="lc-lock">' + (locked ? '🔒' : '') + '</div>';
@@ -1932,10 +1846,7 @@ function buildMenu() {
   });
 }
 
-function showMenu() {
-  buildMenu();
-  show('start-screen');
-}
+function showMenu() { buildMenu(); show('start-screen'); }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
 function playPron(word) {
@@ -1966,10 +1877,14 @@ function rnd(exclude) {
 }
 
 function updateLives() {
-  const maxLives = LEVELS[currentLevel].lives;
+  const lv = LEVELS[currentLevel];
   let h = '';
-  for (let i = 0; i < maxLives; i++)
-    h += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
+  if (lv.lives === Infinity) {
+    h = '<span class="life-inf">∞</span>';
+  } else {
+    for (let i = 0; i < lv.lives; i++)
+      h += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
+  }
   document.getElementById('lives-display').innerHTML = h;
 }
 
@@ -2020,32 +1935,33 @@ function nextWord() {
 
   playPron(word);
 
-  // Word timer
   cancelAnimationFrame(wordRAF);
-  wordEnd = Date.now() + WORD_MS;
+  wordEnd = Date.now() + LEVELS[currentLevel].wordMs;
   tickWord();
 }
 
 function tickWord() {
   const rem = wordEnd - Date.now();
   if (rem <= 0) {
-    // Timed out on this word — lose a life
     document.getElementById('word-timer-bar').style.width = '0%';
     document.getElementById('word-timer-bar').className = 'urgent';
     document.getElementById('word-card').className = 'card flash-timeout';
     const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
     btns.forEach(b => b.disabled = true);
     locked = true;
-    lives--;
-    updateLives();
-    if (lives <= 0) { setTimeout(endGame, 500); return; }
+    if (LEVELS[currentLevel].lives !== Infinity) {
+      lives--;
+      updateLives();
+      if (lives <= 0) { setTimeout(() => endGame(false), 500); return; }
+    }
     setTimeout(() => { locked = false; nextWord(); }, 500);
     return;
   }
-  const pct = (rem / WORD_MS) * 100;
+  const wordMs = LEVELS[currentLevel].wordMs;
+  const pct = (rem / wordMs) * 100;
   const bar = document.getElementById('word-timer-bar');
   bar.style.width = pct + '%';
-  bar.className   = rem <= 1500 ? 'urgent' : '';
+  bar.className   = rem <= Math.min(1500, wordMs * 0.4) ? 'urgent' : '';
   wordRAF = requestAnimationFrame(tickWord);
 }
 
@@ -2059,9 +1975,10 @@ function tickGame() {
   }
   const td = document.getElementById('timer-display');
   td.textContent = fmt(rem);
-  if      (rem <= 10000) td.className = 'danger';
-  else if (rem <= 20000) td.className = 'warning';
-  else                   td.className = '';
+  const lv = LEVELS[currentLevel];
+  if      (rem <= lv.gameMs * 0.17) td.className = 'danger';
+  else if (rem <= lv.gameMs * 0.34) td.className = 'warning';
+  else                               td.className = '';
   gameRAF = requestAnimationFrame(tickGame);
 }
 
@@ -2083,13 +2000,16 @@ function pick(idx) {
     document.getElementById('word-card').className = 'card flash-correct';
     setTimeout(() => { locked = false; nextWord(); }, 340);
   } else {
-    lives--;
-    updateLives();
+    const infinite = LEVELS[currentLevel].lives === Infinity;
+    if (!infinite) { lives--; updateLives(); }
     btns[idx].className = 'choice-btn selected-wrong';
     btns[correctIdx].className = 'choice-btn reveal-correct';
     document.getElementById('word-card').className = 'card flash-wrong';
-    if (lives <= 0) { setTimeout(() => endGame(false), 550); }
-    else            { setTimeout(() => { locked = false; nextWord(); }, 380); }
+    if (!infinite && lives <= 0) {
+      setTimeout(() => endGame(false), 550);
+    } else {
+      setTimeout(() => { locked = false; nextWord(); }, 380);
+    }
   }
 }
 
@@ -2114,13 +2034,12 @@ function endGame(survived) {
   const nextBtn  = document.getElementById('btn-next');
   const retryBtn = document.getElementById('btn-retry');
 
-  if (survived && currentLevel < 2) {
-    saveUnlocked(currentLevel + 1);
+  if (survived && currentLevel < LEVELS.length - 1) {
     document.getElementById('over-icon').textContent  = '🏆';
     document.getElementById('over-title').textContent = LEVELS[currentLevel].label + ' críochnaithe!';
     nextBtn.style.display  = 'inline-block';
     retryBtn.style.display = 'none';
-  } else if (survived && currentLevel === 2) {
+  } else if (survived && currentLevel === LEVELS.length - 1) {
     document.getElementById('over-icon').textContent  = '🏆';
     document.getElementById('over-title').textContent = 'Comhghairdeas!';
     nextBtn.style.display  = 'none';
