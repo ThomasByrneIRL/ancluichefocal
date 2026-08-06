@@ -141,7 +141,7 @@
     </div>
   </div>
   <button class="start-btn" onclick="startGame()">Tosaigh</button>
-  <p class="hint">5 saol an duine · 6 soic an focal · freagra laistigh de soicind amháin = +2 pointe · 21 pointe = +1 saol</p>
+  <p class="hint">3 shaol an duine · 5 soic an focal · freagra laistigh de soicind amháin = +2 pointe · 21 pointe = +1 saol</p>
   <p class="hint">↑ ↓ nó W / S chun freagra a roghnú</p>
 </div>
 
@@ -1825,9 +1825,9 @@ const DICT = {
 };
 
 const WORDS       = Object.keys(DICT);
-const WORD_MS     = 6000;
+const WORD_MS     = 5000;
 const BONUS_MS    = 1000;
-const LIVES_START = 5;
+const LIVES_START = 3;
 const PTS_PER_LIFE = 21;
 
 let players = [];
@@ -2059,8 +2059,9 @@ function endGame() {
 
 // ── Keyboard ──────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
-  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
+  const inInput = document.activeElement && document.activeElement.tagName === 'INPUT';
+  if (e.key === 'ArrowUp'   || (!inInput && (e.key === 'w' || e.key === 'W'))) { e.preventDefault(); pick(0); }
+  if (e.key === 'ArrowDown' || (!inInput && (e.key === 's' || e.key === 'S'))) { e.preventDefault(); pick(1); }
   if (e.key === 'Enter') {
     if (document.getElementById('start-screen').classList.contains('active')) startGame();
   }
