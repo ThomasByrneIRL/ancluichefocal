@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10ú – Comhchiallach</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e; color: #eee;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .screen { display: none; flex-direction: column; align-items: center;
+              justify-content: center; gap: 18px; text-align: center;
+              width: 100%; max-width: 560px; padding: 28px; }
+    .screen.active { display: flex; }
+
+    h1 { font-size: 3rem; color: #53d8fb; letter-spacing: 2px; }
+    .subtitle { font-size: 1rem; color: #aaa; }
+    .hint { font-size: 0.78rem; color: #444; }
+
+    /* ── Top bar ── */
+    #top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+    #lives-display .life-full { color: #e94560; }
+    #lives-display .life-lost { color: #333; }
+    #score-display { color: #53d8fb; font-weight: bold; }
+    #timer-display { color: #aaa; }
+
+    /* ── Game timer ── */
+    #game-timer-wrap { width: 100%; height: 6px; background: #0d1b3e; border-radius: 3px; overflow: hidden; }
+    #game-timer-bar  { height: 100%; background: #53d8fb; border-radius: 3px; width: 100%; transition: none; }
+    #game-timer-bar.urgent { background: #e94560; }
+
+    /* ── Word timer ── */
+    #word-timer-wrap { width: 100%; height: 4px; background: #0d1b3e; border-radius: 2px; overflow: hidden; margin-top: -10px; }
+    #word-timer-bar  { height: 100%; background: #53d8fb; border-radius: 2px; width: 100%; }
+    #word-timer-bar.urgent { background: #e94560; }
+
+    /* ── Card ── */
+    .card {
+      background: #16213e; border-radius: 14px; padding: 28px 24px 20px;
+      width: 100%; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      transition: background 0.15s; min-height: 100px; justify-content: center;
+    }
+    .card-word { font-size: 2.2rem; font-weight: bold; color: #fff; letter-spacing: 1px; }
+    .card-label { font-size: 0.75rem; color: #555; }
+    .card.flash-correct { background: #1b4d2e; }
+    .card.flash-wrong   { background: #4d1b1b; }
+    .card.flash-timeout { background: #3a2a00; }
+
+    #gloss {
+      font-size: 0.85rem; color: #888; min-height: 1.2em;
+      transition: opacity 0.3s; opacity: 0;
+    }
+    #gloss.show { opacity: 1; }
+
+    /* ── Choices ── */
+    .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .choice-btn {
+      width: 100%; padding: 14px 18px; border-radius: 10px;
+      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      font-size: 1.05rem; cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .key-hint { font-size: 1rem; opacity: 0.4; flex-shrink: 0; width: 1.2em; text-align: center; }
+    .btn-text  { flex: 1; text-align: left; }
+    .choice-btn:hover:not(:disabled) { background: #1a4f8a; border-color: #53d8fb; }
+    .choice-btn.selected-correct { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
+    .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
+    .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
+
+    /* ── Over screen ── */
+    .result-icon { font-size: 3rem; }
+    h2 { font-size: 1.8rem; color: #53d8fb; }
+    .score-box { background: #0f3460; border-radius: 12px; padding: 16px 32px; }
+    .score-num { font-size: 2.5rem; font-weight: bold; color: #fff; }
+    .score-lbl { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+    .best-line { font-size: 0.9rem; color: #777; }
+    .btn-row { display: flex; gap: 10px; }
+    .action-btn {
+      background: #e94560; color: #fff; border: none;
+      border-radius: 10px; padding: 12px 28px;
+      font-size: 1rem; cursor: pointer; font-weight: bold;
+      transition: background 0.2s;
+    }
+    .action-btn:hover { background: #c73652; }
+    .action-btn.secondary { background: #0f3460; }
+    .action-btn.secondary:hover { background: #1a4f8a; }
+  </style>
+</head>
+<body>
+
+<!-- ══ START ══════════════════════════════════════════════════════════════════ -->
+<div id="start-screen" class="screen active">
+  <h1>10ú</h1>
+  <p class="subtitle">Comhchiallach</p>
+  <p class="subtitle" style="color:#666;font-size:.9rem">Roghnaigh an focal is comhchiall leis an bhfocal a thaispeántar</p>
+  <button class="action-btn" onclick="startGame()">Tosaigh</button>
+  <p class="hint">2 nóiméad · 3 shaol · 5 soic an focal · ↑ ↓ nó W / S chun freagra a roghnú</p>
+</div>
+
+<!-- ══ GAME ═══════════════════════════════════════════════════════════════════ -->
+<div id="game-screen" class="screen">
+  <div id="top-bar">
+    <div id="lives-display"></div>
+    <div id="score-display">0</div>
+    <div id="timer-display">2:00</div>
+  </div>
+
+  <div id="game-timer-wrap"><div id="game-timer-bar"></div></div>
+  <div id="word-timer-wrap"><div id="word-timer-bar"></div></div>
+
+  <div id="word-card" class="card" onclick="replayPron()">
+    <div class="card-word" id="card-word">—</div>
+    <div class="card-label">🔊 cliceáil chun éisteacht arís</div>
+  </div>
+
+  <div id="gloss"></div>
+
+  <div class="choices">
+    <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
+    <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
+  </div>
+</div>
+
+<!-- ══ OVER ════════════════════════════════════════════════════════════════════ -->
+<div id="over-screen" class="screen">
+  <div class="result-icon" id="over-icon">⏱</div>
+  <h2 id="over-title">Am Istigh!</h2>
+  <div class="score-box">
+    <div class="score-num" id="final-score">0</div>
+    <div class="score-lbl">focal ceart</div>
+  </div>
+  <div class="best-line" id="best-line"></div>
+  <div class="btn-row">
+    <button class="action-btn" onclick="startGame()">Arís</button>
+    <button class="action-btn secondary" onclick="show('start-screen')">Roghchlár</button>
+  </div>
+</div>
+
+<script>
+// ── Synonym groups ─────────────────────────────────────────────────────────────
+const GROUPS = [
+  { words: ['fón', 'guthán', 'teilefón'],           en: 'phone' },
+  { words: ['sásta', 'áthasach', 'lúcháireach'],    en: 'happy, content' },
+  { words: ['brónach', 'dubhach'],                   en: 'sad' },
+  { words: ['tapa', 'gasta', 'luath', 'sciobtha'],  en: 'quick, fast' },
+  { words: ['álainn', 'gleoite', 'dathúil'],        en: 'beautiful, lovely' },
+  { words: ['beag', 'bídeach'],                      en: 'small, tiny' },
+  { words: ['mór', 'ollmhór'],                       en: 'big, huge' },
+  { words: ['cabhair', 'cuidiú', 'cúnamh'],         en: 'help' },
+  { words: ['leanbh', 'páiste'],                     en: 'child' },
+  { words: ['sean', 'aosta'],                        en: 'old, elderly' },
+  { words: ['maith', 'breá', 'togha'],              en: 'good, excellent' },
+  { words: ['rince', 'damhsa'],                      en: 'dance' },
+  { words: ['féach', 'breathnaigh', 'amharc'],      en: 'look, watch' },
+  { words: ['grá', 'cion', 'searc'],                en: 'love, affection' },
+  { words: ['eagla', 'faitíos'],                     en: 'fear' },
+  { words: ['fearg', 'fraoch'],                      en: 'anger, fury' },
+  { words: ['áthas', 'lúcháir', 'aoibhneas'],       en: 'joy, happiness' },
+  { words: ['buaigh', 'gnóthaigh'],                  en: 'win' },
+  { words: ['faigh', 'aimsigh'],                     en: 'find, locate' },
+  { words: ['farraige', 'muir'],                     en: 'sea' },
+  { words: ['báisteach', 'fearthainn'],              en: 'rain' },
+  { words: ['cara', 'comrádaí'],                     en: 'friend' },
+  { words: ['múinteoir', 'oide'],                    en: 'teacher' },
+  { words: ['obair', 'saothar'],                     en: 'work, effort' },
+  { words: ['codladh', 'suan'],                      en: 'sleep' },
+  { words: ['teach', 'tigh'],                        en: 'house, home' },
+  { words: ['ceol', 'port'],                         en: 'music, tune' },
+  { words: ['mall', 'moilliúil'],                    en: 'slow' },
+  { words: ['cosán', 'slí'],                         en: 'path, way' },
+  { words: ['suaimhneas', 'síocháin'],              en: 'peace, calm' },
+  { words: ['tús', 'tosach'],                        en: 'beginning, start' },
+  { words: ['deireadh', 'críoch'],                   en: 'end, finish' },
+  { words: ['troid', 'bruíon'],                      en: 'fight, quarrel' },
+  { words: ['deifir', 'brostú'],                     en: 'hurry, haste' },
+  { words: ['dún', 'druid'],                         en: 'close, shut' },
+  { words: ['te', 'brothallach'],                    en: 'hot, warm' },
+  { words: ['fliuch', 'báite'],                      en: 'wet, soaked' },
+  { words: ['crua', 'daingean'],                     en: 'hard, firm' },
+  { words: ['madra', 'gadhar'],                      en: 'dog' },
+  { words: ['capall', 'each'],                       en: 'horse' },
+  { words: ['bán', 'geal'],                          en: 'white, bright' },
+  { words: ['súil', 'rosc'],                         en: 'eye' },
+  { words: ['ceann', 'cloigeann'],                   en: 'head' },
+  { words: ['béal', 'gob'],                          en: 'mouth' },
+  { words: ['oscail', 'leathnaigh'],                 en: 'open' },
+  { words: ['caith', 'caitheamh'],                   en: 'spend, use' },
+];
+
+// ── Build pair list ───────────────────────────────────────────────────────────
+const PAIRS = [];
+GROUPS.forEach((g, gi) => {
+  for (let i = 0; i < g.words.length - 1; i++) {
+    for (let j = i + 1; j < g.words.length; j++) {
+      PAIRS.push({ a: g.words[i], b: g.words[j], en: g.en, gi });
+    }
+  }
+});
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const GAME_MS  = 120000;
+const WORD_MS  = 5000;
+const LIVES    = 3;
+const LS_KEY   = '10u_best';
+
+let score, lives, locked;
+let gameEnd, wordEnd;
+let gameRAF, wordRAF;
+let correctIdx, currentEn;
+let _ca = null, _clue = '';
+let glossTimer;
+
+// ── Screens ───────────────────────────────────────────────────────────────────
+function show(id) {
+  ['start-screen','game-screen','over-screen'].forEach(s =>
+    document.getElementById(s).classList.toggle('active', s === id));
+}
+
+// ── Audio ─────────────────────────────────────────────────────────────────────
+function playPron(word) {
+  if (word.includes(' ')) return; // skip phrases
+  if (_ca) { _ca.pause(); _ca = null; }
+  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  a.onerror = function(){};
+  a.play().catch(function(){});
+  _ca = a;
+}
+function replayPron() { if (_clue) playPron(_clue); }
+
+// ── Lives display ─────────────────────────────────────────────────────────────
+function updateLives() {
+  let h = '';
+  for (let i = 0; i < LIVES; i++)
+    h += '<span class="' + (i < lives ? 'life-full' : 'life-lost') + '">♥</span>';
+  document.getElementById('lives-display').innerHTML = h;
+}
+
+// ── Game timer ────────────────────────────────────────────────────────────────
+function tickGame() {
+  const rem = gameEnd - Date.now();
+  if (rem <= 0) { endGame(false); return; }
+  const pct = (rem / GAME_MS) * 100;
+  const bar = document.getElementById('game-timer-bar');
+  bar.style.width = pct + '%';
+  bar.className   = rem <= 20000 ? 'urgent' : '';
+  const secs = Math.ceil(rem / 1000);
+  document.getElementById('timer-display').textContent =
+    Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
+  gameRAF = requestAnimationFrame(tickGame);
+}
+
+// ── Word timer ────────────────────────────────────────────────────────────────
+function tickWord() {
+  const rem = wordEnd - Date.now();
+  if (rem <= 0) {
+    document.getElementById('word-timer-bar').style.width = '0%';
+    document.getElementById('word-card').className = 'card flash-timeout';
+    locked = true;
+    lives--;
+    updateLives();
+    if (lives <= 0) { setTimeout(() => endGame(false), 600); return; }
+    setTimeout(nextWord, 700);
+    return;
+  }
+  const bar = document.getElementById('word-timer-bar');
+  bar.style.width = (rem / WORD_MS * 100) + '%';
+  bar.className   = rem <= 1200 ? 'urgent' : '';
+  wordRAF = requestAnimationFrame(tickWord);
+}
+
+// ── Pick ──────────────────────────────────────────────────────────────────────
+function pick(idx) {
+  if (locked) return;
+  locked = true;
+  cancelAnimationFrame(wordRAF);
+
+  const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
+  btns.forEach(b => b.disabled = true);
+
+  if (idx === correctIdx) {
+    score++;
+    document.getElementById('score-display').textContent = score;
+    btns[idx].className = 'choice-btn selected-correct';
+    document.getElementById('word-card').className = 'card flash-correct';
+    showGloss(currentEn);
+    setTimeout(nextWord, 800);
+  } else {
+    lives--;
+    updateLives();
+    btns[idx].className = 'choice-btn selected-wrong';
+    btns[correctIdx].className = 'choice-btn reveal-correct';
+    document.getElementById('word-card').className = 'card flash-wrong';
+    showGloss(currentEn);
+    if (lives <= 0) { setTimeout(() => endGame(false), 800); return; }
+    setTimeout(nextWord, 950);
+  }
+}
+
+function showGloss(en) {
+  const el = document.getElementById('gloss');
+  el.textContent = '= \'' + en + '\'';
+  el.classList.add('show');
+  clearTimeout(glossTimer);
+  glossTimer = setTimeout(() => el.classList.remove('show'), 1000);
+}
+
+// ── Next word ─────────────────────────────────────────────────────────────────
+function nextWord() {
+  if (locked && lives <= 0) return;
+  locked = false;
+
+  const pair = PAIRS[Math.floor(Math.random() * PAIRS.length)];
+  const showA = Math.random() < 0.5;
+  const clue    = showA ? pair.a : pair.b;
+  const correct = showA ? pair.b : pair.a;
+  currentEn = pair.en;
+
+  // Distractor from a different group
+  let dg;
+  do { dg = GROUPS[Math.floor(Math.random() * GROUPS.length)]; }
+  while (dg === GROUPS[pair.gi]);
+  const distractor = dg.words[Math.floor(Math.random() * dg.words.length)];
+
+  const swap = Math.random() < 0.5;
+  correctIdx = swap ? 1 : 0;
+  const opts = swap ? [distractor, correct] : [correct, distractor];
+
+  _clue = clue;
+  document.getElementById('card-word').textContent = clue;
+  document.getElementById('word-card').className = 'card';
+  document.getElementById('gloss').classList.remove('show');
+
+  const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
+  btns.forEach((b, i) => {
+    b.querySelector('.btn-text').textContent = opts[i];
+    b.className = 'choice-btn';
+    b.disabled  = false;
+  });
+
+  playPron(clue);
+  cancelAnimationFrame(wordRAF);
+  wordEnd = Date.now() + WORD_MS;
+  tickWord();
+}
+
+// ── Start / End ───────────────────────────────────────────────────────────────
+function startGame() {
+  score = 0; lives = LIVES; locked = false;
+  document.getElementById('score-display').textContent = '0';
+  updateLives();
+  document.getElementById('gloss').classList.remove('show');
+  show('game-screen');
+  cancelAnimationFrame(gameRAF);
+  cancelAnimationFrame(wordRAF);
+  gameEnd = Date.now() + GAME_MS;
+  tickGame();
+  nextWord();
+}
+
+function endGame(won) {
+  cancelAnimationFrame(gameRAF);
+  cancelAnimationFrame(wordRAF);
+  if (_ca) { _ca.pause(); _ca = null; }
+
+  const best = parseInt(localStorage.getItem(LS_KEY) || '0');
+  const newBest = score > best;
+  if (newBest) localStorage.setItem(LS_KEY, score);
+
+  document.getElementById('over-icon').textContent  = lives <= 0 ? '💀' : '⏱';
+  document.getElementById('over-title').textContent = lives <= 0 ? 'Saol Amach!' : 'Am Istigh!';
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('best-line').textContent =
+    newBest ? '🏆 Taifead nua!' : 'Taifead: ' + Math.max(score, best);
+  show('over-screen');
+}
+
+// ── Keyboard ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') { e.preventDefault(); pick(0); }
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); pick(1); }
+  if (e.key === 'Enter') {
+    if (document.getElementById('start-screen').classList.contains('active')) startGame();
+    if (document.getElementById('over-screen').classList.contains('active'))  startGame();
+  }
+});
+
+show('start-screen');
+</script>
+</body>
+</html>
