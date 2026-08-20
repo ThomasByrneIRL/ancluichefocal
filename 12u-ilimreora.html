@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #1a1a2e; color: #eee;
+      background: #f5f5f0; color: #1a1a2e;
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
     }
@@ -19,12 +19,12 @@
 
     h1 { font-size: 3rem; color: #53d8fb; letter-spacing: 2px; }
     h2 { font-size: 1.8rem; color: #53d8fb; }
-    .subtitle { font-size: 1rem; color: #aaa; }
+    .subtitle { font-size: 1rem; color: #888; }
 
     /* ── Player count selector ── */
     .count-row {
       display: flex; align-items: center; gap: 16px;
-      background: #0f3460; border-radius: 12px; padding: 10px 20px;
+      background: #fff; border-radius: 12px; padding: 10px 20px;
     }
     .count-btn {
       background: none; border: 2px solid #53d8fb; color: #53d8fb;
@@ -32,7 +32,7 @@
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: background 0.15s;
     }
-    .count-btn:hover { background: #1a4f8a; }
+    .count-btn:hover { background: #fff5f6; }
     .count-btn:disabled { border-color: #333; color: #333; cursor: default; }
     #n-display { font-size: 1.1rem; font-weight: bold; color: #fff; min-width: 120px; }
 
@@ -44,7 +44,7 @@
     .name-field label { font-size: 0.82rem; }
     .name-field input {
       width: 100%; padding: 9px 13px; border-radius: 8px;
-      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #eee;
       font-size: 0.95rem; outline: none; transition: border-color 0.15s;
     }
     .name-field input:focus { border-color: #53d8fb; }
@@ -63,54 +63,54 @@
     }
     .panel {
       padding: 9px 13px; border-radius: 10px;
-      border: 2px solid #0f3460; background: #0d1b3e;
+      border: 2px solid #ddd; background: #f0f4f8;
       transition: border-color 0.2s, background 0.2s, opacity 0.2s;
       text-align: left;
     }
     .panel.dead { opacity: 0.3; }
-    .p-name { font-size: 0.9rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .p-lives { font-size: 0.9rem; color: #e94560; letter-spacing: 1px; margin-top: 4px; min-height: 1.1em; }
+    .p-name { font-size: 0.9rem; font-weight: bold; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-lives { font-size: 0.9rem; color: #c62828; letter-spacing: 1px; margin-top: 4px; min-height: 1.1em; }
 
     /* ── Turn indicator ── */
     #turn-indicator {
-      font-size: 1rem; color: #53d8fb; font-weight: bold;
+      font-size: 1rem; color: #1a6fb5; font-weight: bold;
       letter-spacing: 1px; min-height: 1.4em;
     }
 
     /* ── Word timer ── */
-    #word-timer-wrap { width: 100%; height: 5px; background: #0d1b3e; border-radius: 3px; overflow: hidden; }
+    #word-timer-wrap { width: 100%; height: 5px; background: #ddd; border-radius: 3px; overflow: hidden; }
     #word-timer-bar  { height: 100%; background: #53d8fb; border-radius: 3px; width: 100%; transition: none; }
     #word-timer-bar.urgent { background: #e94560; }
 
     /* ── Word card ── */
     .card {
-      background: #16213e; border-radius: 14px; padding: 24px;
+      background: #fff; border-radius: 14px; padding: 24px;
       width: 100%; font-size: 1.9rem; font-weight: bold; color: #fff;
       letter-spacing: 1px; min-height: 84px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
     }
-    .card.flash-correct { background: #1b4d2e; }
+    .card.flash-correct { background: #d4edda; }
     .card.flash-wrong   { background: #4d1b1b; }
-    .card.flash-timeout { background: #3a2a00; }
+    .card.flash-timeout { background: #fff3cd; }
     .card.turn-card     { background: #0f2a50; font-size: 1.2rem; color: #53d8fb; }
 
     #sound-btn { font-size: 0.82rem; color: #444; cursor: pointer; user-select: none; }
-    #sound-btn:hover { color: #aaa; }
+    #sound-btn:hover { color: #888; }
 
     /* ── Choices ── */
     .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
       width: 100%; padding: 12px 18px; border-radius: 10px;
-      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #eee;
       font-size: 1rem; cursor: pointer;
       transition: background 0.1s, border-color 0.1s;
       display: flex; align-items: center; gap: 12px;
     }
     .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
     .btn-text  { flex: 1; text-align: left; }
-    .choice-btn:hover:not(:disabled) { background: #1a4f8a; border-color: #53d8fb; }
-    .choice-btn.selected-correct { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
+    .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
+    .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
     .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
     .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
 
@@ -124,19 +124,19 @@
     #results-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .player-result {
       padding: 11px 14px; border-radius: 10px;
-      background: #0f3460; text-align: left; font-size: 0.9rem;
+      background: #fff; text-align: left; font-size: 0.9rem;
     }
     .player-result.winner { border: 2px solid #ffc107; }
     .player-result .pr-name { font-weight: bold; font-size: 1rem; }
-    .player-result .pr-detail { color: #aaa; font-size: 0.82rem; margin-top: 3px; }
+    .player-result .pr-detail { color: #888; font-size: 0.82rem; margin-top: 3px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-secondary {
-      background: #0f3460; color: #eee; border: none;
+      background: #fff; color: #eee; border: none;
       border-radius: 10px; padding: 12px 28px;
       font-size: 1rem; cursor: pointer; font-weight: bold;
       transition: background 0.2s;
     }
-    .btn-secondary:hover { background: #1a4f8a; }
+    .btn-secondary:hover { background: #fff5f6; }
   </style>
 </head>
 <body>
@@ -194,11 +194,11 @@ const LIVES_START = 3;
 
 // Player colour palette (border, bg, activeBorder, activeBg, labelColour)
 const PALETTE = [
-  { border: '#2e7d32', bg: '#0d2e1a', aborder: '#66bb6a', abg: '#1b4d2e', label: '#66bb6a' },
-  { border: '#c62828', bg: '#2e0d0d', aborder: '#ef5350', abg: '#4d1b1b', label: '#ef5350' },
-  { border: '#f9a825', bg: '#2e2500', aborder: '#ffd54f', abg: '#3a3000', label: '#ffd54f' },
-  { border: '#9e9e9e', bg: '#1e2030', aborder: '#e0e0e0', abg: '#2a2d40', label: '#e0e0e0' },
-  { border: '#1565c0', bg: '#0d1a2e', aborder: '#42a5f5', abg: '#1b3a5e', label: '#42a5f5' },
+  { border: '#2e7d32', bg: '#edf7ed', aborder: '#2e7d32', abg: '#d4edda', label: '#1a5c2e' },
+  { border: '#c62828', bg: '#fdf2f2', aborder: '#c62828', abg: '#f8d7da', label: '#7b1a28' },
+  { border: '#e07b00', bg: '#fdf9e6', aborder: '#e07b00', abg: '#fef3c7', label: '#7a3c00' },
+  { border: '#757575', bg: '#f5f5f5', aborder: '#757575', abg: '#e5e5e5', label: '#333' },
+  { border: '#1565c0', bg: '#eff4fb', aborder: '#1565c0', abg: '#d0e4f7', label: '#0d3a7a' },
 ];
 
 let N = 4;
@@ -206,6 +206,7 @@ let players = [], currentPlayer = 0;
 let wordEnd, wordStart, wordRAF;
 let correctIdx = 0, locked = false, flashTimer;
 let _ca = null, _currentWord = '';
+let finalChallenge = false, finalAttemptsLeft = 0;
 
 // ── Player count selector ─────────────────────────────────────────────────────
 function setN(n) {
@@ -277,7 +278,7 @@ function startGame() {
     name: (document.getElementById('name' + (i+1)).value.trim()) || ('Imreoir ' + (i+1)),
     lives: LIVES_START, score: 0
   }));
-  currentPlayer = 0; locked = false;
+  currentPlayer = 0; locked = false; finalChallenge = false; finalAttemptsLeft = 0;
   buildPanels();
   show('game-screen');
   beginTurn();
@@ -285,7 +286,7 @@ function startGame() {
 
 function rematch() {
   players.forEach(p => { p.lives = LIVES_START; p.score = 0; });
-  currentPlayer = 0; locked = false;
+  currentPlayer = 0; locked = false; finalChallenge = false; finalAttemptsLeft = 0;
   buildPanels();
   show('game-screen');
   beginTurn();
@@ -300,6 +301,13 @@ function nextAlive(from) {
     idx = (idx + 1) % N;
   }
   return from;
+}
+
+// ── Final challenge ──────────────────────────────────────────────────────────
+function startFinalChallenge() {
+  finalChallenge = true;
+  finalAttemptsLeft = players[currentPlayer].lives;
+  beginTurn();
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
@@ -330,7 +338,10 @@ function rnd(exclude) {
 function beginTurn() {
   locked = true;
   cancelAnimationFrame(wordRAF);
-  document.getElementById('word-card').textContent = players[currentPlayer].name + ' — do sheal!';
+  const fcMsg = finalChallenge
+    ? 'Dúshlán Deireanach! Iarrachtaí fágtha: ' + finalAttemptsLeft
+    : players[currentPlayer].name + ' — do sheal!';
+  document.getElementById('word-card').textContent = fcMsg;
   document.getElementById('word-card').className = 'card turn-card';
   document.getElementById('word-timer-bar').style.width = '100%';
   document.getElementById('word-timer-bar').className = '';
@@ -376,10 +387,16 @@ function tickWord() {
     const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
     btns.forEach(b => b.disabled = true);
     locked = true;
-    players[currentPlayer].lives--;
-    updatePanels();
-    if (countAlive() <= 1) { setTimeout(endGame, 700); return; }
-    setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+    if (finalChallenge) {
+      finalAttemptsLeft--;
+      if (finalAttemptsLeft <= 0) { setTimeout(() => endGame(false), 700); return; }
+      setTimeout(() => beginTurn(), 950);
+    } else {
+      players[currentPlayer].lives--;
+      updatePanels();
+      if (countAlive() <= 1) { setTimeout(() => startFinalChallenge(), 700); return; }
+      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+    }
     return;
   }
   const pct = (rem / WORD_MS) * 100;
@@ -400,23 +417,42 @@ function pick(idx) {
   btns.forEach(b => b.disabled = true);
 
   if (idx === correctIdx) {
-    const pts = elapsed < BONUS_MS ? 2 : 1;
-    players[currentPlayer].score += pts;
-    btns[idx].className = 'choice-btn selected-correct';
-    document.getElementById('word-card').className = 'card flash-correct';
-    showFlash(pts === 2 ? '⚡ +2' : '+1');
-    updatePanels();
-    setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 850);
-  } else {
-    players[currentPlayer].lives--;
-    btns[idx].className = 'choice-btn selected-wrong';
-    btns[correctIdx].className = 'choice-btn reveal-correct';
-    document.getElementById('word-card').className = 'card flash-wrong';
-    updatePanels();
-    if (countAlive() <= 1) {
-      setTimeout(endGame, 800);
+    if (finalChallenge) {
+      btns[idx].className = 'choice-btn selected-correct';
+      document.getElementById('word-card').className = 'card flash-correct';
+      showFlash('🏆 Buaite!');
+      setTimeout(() => endGame(true), 850);
     } else {
-      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+      const pts = elapsed < BONUS_MS ? 2 : 1;
+      players[currentPlayer].score += pts;
+      btns[idx].className = 'choice-btn selected-correct';
+      document.getElementById('word-card').className = 'card flash-correct';
+      showFlash(pts === 2 ? '⚡ +2' : '+1');
+      updatePanels();
+      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 850);
+    }
+  } else {
+    if (finalChallenge) {
+      finalAttemptsLeft--;
+      btns[idx].className = 'choice-btn selected-wrong';
+      btns[correctIdx].className = 'choice-btn reveal-correct';
+      document.getElementById('word-card').className = 'card flash-wrong';
+      if (finalAttemptsLeft <= 0) {
+        setTimeout(() => endGame(false), 800);
+      } else {
+        setTimeout(() => beginTurn(), 950);
+      }
+    } else {
+      players[currentPlayer].lives--;
+      btns[idx].className = 'choice-btn selected-wrong';
+      btns[correctIdx].className = 'choice-btn reveal-correct';
+      document.getElementById('word-card').className = 'card flash-wrong';
+      updatePanels();
+      if (countAlive() <= 1) {
+        setTimeout(() => startFinalChallenge(), 800);
+      } else {
+        setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+      }
     }
   }
 }
@@ -430,16 +466,20 @@ function showFlash(txt) {
 }
 
 // ── End game ──────────────────────────────────────────────────────────────────
-function endGame() {
+function endGame(won = true) {
   cancelAnimationFrame(wordRAF);
   locked = true;
+  finalChallenge = false;
   if (_ca) { _ca.pause(); _ca = null; }
 
   const ranked = players.map((p, i) => ({ ...p, idx: i }))
     .sort((a, b) => b.lives - a.lives || b.score - a.score);
 
-  const winner = ranked[0];
-  document.getElementById('over-title').textContent = winner.name + ' buaite! 🏆';
+  if (won) {
+    document.getElementById('over-title').textContent = ranked[0].name + ' buaite! 🏆';
+  } else {
+    document.getElementById('over-title').textContent = 'Cluiche Cothrom! 🤝';
+  }
 
   const cols = N <= 3 ? N : 2;
   const rg = document.getElementById('results-grid');

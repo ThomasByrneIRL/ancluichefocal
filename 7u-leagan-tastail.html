@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #1a1a2e;
+      background: #f5f5f0;
       color: #eee;
       min-height: 100vh;
       display: flex;
@@ -22,20 +22,20 @@
 
     h1 { font-size: 3.2rem; color: #53d8fb; letter-spacing: 2px; }
     h2 { font-size: 2rem; color: #53d8fb; }
-    .subtitle { font-size: 1.1rem; color: #aaa; }
+    .subtitle { font-size: 1.1rem; color: #888; }
 
     .level-cards { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
     .level-card {
       width: 100%; padding: 14px 20px; border-radius: 12px;
-      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #eee;
       cursor: pointer; transition: background 0.15s, border-color 0.15s;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .level-card:hover { background: #1a4f8a; border-color: #53d8fb; }
+    .level-card:hover { background: #fff5f6; border-color: #53d8fb; }
     .level-card.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
     .level-card .lc-left { text-align: left; }
     .level-card .lc-name { font-size: 1.05rem; font-weight: bold; }
-    .level-card .lc-info { font-size: 0.8rem; color: #aaa; margin-top: 2px; }
+    .level-card .lc-info { font-size: 0.8rem; color: #888; margin-top: 2px; }
     .level-card .lc-best { font-size: 0.85rem; color: #ffc107; }
     .level-card .lc-lock { font-size: 1.2rem; opacity: 0.5; }
 
@@ -54,35 +54,35 @@
     .life-inf  { color: #e94560; font-size: 1.5rem; letter-spacing: 0; }
 
     .card {
-      background: #16213e; border-radius: 14px; padding: 26px 24px;
+      background: #fff; border-radius: 14px; padding: 26px 24px;
       width: 100%; font-size: 1.9rem; font-weight: bold; color: #fff;
       letter-spacing: 1px; min-height: 88px;
       display: flex; align-items: center; justify-content: center;
       transition: background 0.15s; cursor: pointer;
     }
-    .card.flash-correct { background: #1b4d2e; }
+    .card.flash-correct { background: #d4edda; }
     .card.flash-wrong   { background: #4d1b1b; }
-    .card.flash-timeout { background: #3a2a00; }
+    .card.flash-timeout { background: #fff3cd; }
 
-    #word-timer-wrap { width: 100%; height: 5px; background: #0d1b3e; border-radius: 3px; overflow: hidden; }
+    #word-timer-wrap { width: 100%; height: 5px; background: #ddd; border-radius: 3px; overflow: hidden; }
     #word-timer-bar  { height: 100%; background: #53d8fb; border-radius: 3px; width: 100%; }
     #word-timer-bar.urgent { background: #e94560; }
 
     #sound-btn { font-size: 0.82rem; color: #444; cursor: pointer; user-select: none; }
-    #sound-btn:hover { color: #aaa; }
+    #sound-btn:hover { color: #888; }
 
     .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
       width: 100%; padding: 13px 18px; border-radius: 10px;
-      border: 2px solid #0f3460; background: #0f3460; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #eee;
       font-size: 1rem; cursor: pointer;
       transition: background 0.1s, border-color 0.1s;
       display: flex; align-items: center; gap: 12px;
     }
     .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
     .btn-text  { flex: 1; text-align: left; }
-    .choice-btn:hover:not(:disabled) { background: #1a4f8a; border-color: #53d8fb; }
-    .choice-btn.selected-correct { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
+    .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
+    .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
     .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
     .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
 
@@ -90,7 +90,7 @@
 
     .result-icon { font-size: 3rem; line-height: 1; }
     .final-score-num { font-size: 5rem; font-weight: bold; color: #53d8fb; line-height: 1; }
-    .final-sub  { font-size: 1rem; color: #aaa; }
+    .final-sub  { font-size: 1rem; color: #888; }
     .best-note  { font-size: 1rem; color: #ffc107; }
 
     .btn-primary, .btn-secondary {
@@ -99,8 +99,8 @@
     }
     .btn-primary   { background: #e94560; color: #fff; }
     .btn-primary:hover   { background: #c73652; }
-    .btn-secondary { background: #0f3460; color: #eee; }
-    .btn-secondary:hover { background: #1a4f8a; }
+    .btn-secondary { background: #fff; color: #eee; }
+    .btn-secondary:hover { background: #fff5f6; }
 
     .hint { font-size: 0.78rem; color: #444; margin-top: 4px; }
   </style>
