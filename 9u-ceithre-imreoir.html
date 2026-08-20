@@ -30,7 +30,7 @@
     .name-field label { font-size: 0.82rem; color: #888; }
     .name-field input {
       width: 100%; padding: 9px 13px; border-radius: 8px;
-      border: 2px solid #ddd; background: #fff; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #1a1a2e;
       font-size: 0.95rem; outline: none; transition: border-color 0.15s;
     }
     .name-field input:focus { border-color: #53d8fb; }
@@ -88,7 +88,7 @@
       transition: background 0.15s; cursor: pointer;
     }
     .card.flash-correct { background: #d4edda; }
-    .card.flash-wrong   { background: #4d1b1b; }
+    .card.flash-wrong   { background: #f8d7da; }
     .card.flash-timeout { background: #fff3cd; }
     .card.turn-card     { background: #0f2a50; font-size: 1.2rem; color: #53d8fb; }
 
@@ -99,7 +99,7 @@
     .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
       width: 100%; padding: 12px 18px; border-radius: 10px;
-      border: 2px solid #ddd; background: #fff; color: #eee;
+      border: 2px solid #ddd; background: #fff; color: #1a1a2e;
       font-size: 1rem; cursor: pointer;
       transition: background 0.1s, border-color 0.1s;
       display: flex; align-items: center; gap: 12px;
@@ -108,8 +108,8 @@
     .btn-text  { flex: 1; text-align: left; }
     .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
     .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
-    .choice-btn.selected-wrong   { background: #4d1b1b; border-color: #e94560; color: #e94560; }
-    .choice-btn.reveal-correct   { background: #1b4d2e; border-color: #4caf50; color: #4caf50; }
+    .choice-btn.selected-wrong   { background: #f8d7da; border-color: #e94560; color: #e94560; }
+    .choice-btn.reveal-correct   { background: #d4edda; border-color: #4caf50; color: #4caf50; }
 
     #pts-flash {
       font-size: 1.3rem; font-weight: bold; color: #4caf50;
@@ -128,7 +128,7 @@
     .player-result .pr-detail { color: #888; font-size: 0.82rem; margin-top: 3px; }
     .btn-row { display: flex; gap: 10px; }
     .btn-secondary {
-      background: #fff; color: #eee; border: none;
+      background: #fff; color: #1a1a2e; border: none;
       border-radius: 10px; padding: 12px 28px;
       font-size: 1rem; cursor: pointer; font-weight: bold;
       transition: background 0.2s;
