@@ -129,8 +129,7 @@ function showPtsFlash(pts) {
   el.textContent = '+' + pts + ' pt' + (pts > 1 ? 's' : '');
   el.style.opacity = '1';
   clearTimeout(flashTimer);
-  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 700);
-}
+  flashTimer = setTimeout(() => { el.style.opacity = '0'; };
 
 function playPron(word) {
   if (_ca) { _ca.pause(); _ca = null; }
