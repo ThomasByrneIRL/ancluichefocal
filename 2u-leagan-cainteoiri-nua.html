@@ -4,130 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>An Foclóir — Maireachtáil</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #16213e 100%);
-    background-attachment: fixed;
-    color: #eee; min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f4f8;
+    color: #1a1a2e;
+    min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
   }
+  body.flash-ok   { background: #bbf7d0; }
+  body.flash-bad  { background: #fecaca; }
+
   .screen { display: none; text-align: center; padding: 2rem; max-width: 520px; width: 100%; }
-  h1 {
-    font-size: 2.4rem; font-weight: 800;
-    background: linear-gradient(135deg, #e94560, #ff6b6b);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: .5rem; letter-spacing: -.01em;
-  }
-  .subtitle { color: #7a8aaa; margin-bottom: 2rem; font-size: .95rem; font-weight: 400; }
 
-  /* Score display */
+  /* ── Start screen ── */
+  .game-logo { font-size: 4rem; margin-bottom: .1rem; }
+  h1 { font-size: 2.6rem; font-weight: 900; color: #14532d; margin-bottom: .3rem; letter-spacing: -.01em; }
+  .subtitle { color: #64748b; margin-bottom: 1.8rem; font-size: .95rem; }
+  .rules-box {
+    background: #fff; border-radius: 16px; padding: 1.2rem 1.6rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem;
+    text-align: left; color: #334155; font-size: .95rem; line-height: 2;
+  }
+  .rules-box .hi  { color: #1d4ed8; font-weight: 600; }
+  .rules-box .lo  { color: #92400e; font-weight: 600; }
+  .rules-box .bad { color: #dc2626; font-weight: 600; }
+
+  /* ── Score / timer row ── */
   #score-display {
-    font-size: 4.5rem; font-weight: 800; color: #53d8fb;
-    letter-spacing: .04em; margin-bottom: .2rem;
-    font-variant-numeric: tabular-nums; line-height: 1;
-    text-shadow: 0 0 30px rgba(83,216,251,0.4);
+    font-size: 6rem; font-weight: 900; color: #14532d;
+    letter-spacing: -.02em; line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
-  #survival-time { font-size: .9rem; color: #556; margin-bottom: .8rem; font-variant-numeric: tabular-nums; }
-  #pts-flash { font-size: 1.4rem; font-weight: 700; color: #4caf50; height: 1.8rem; margin-bottom: .4rem; transition: opacity .3s; }
+  #survival-time { font-size: .9rem; color: #94a3b8; margin-bottom: .6rem; font-variant-numeric: tabular-nums; }
+  #pts-flash { font-size: 1.6rem; font-weight: 800; color: #16a34a; height: 2rem; margin-bottom: .3rem; transition: opacity .3s; }
 
-  /* Per-word countdown bar */
-  .word-timer-wrap { margin-bottom: 1.2rem; position: relative; height: 6px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
-  #word-timer-bar {
-    height: 6px; border-radius: 6px; background: linear-gradient(90deg, #53d8fb, #7b8cff);
-    width: 100%; transition: background .3s;
-    box-shadow: 0 0 8px rgba(83,216,251,0.5);
-  }
-  #word-timer-bar.urgent {
-    background: linear-gradient(90deg, #e94560, #ff6b6b);
-    box-shadow: 0 0 12px rgba(233,69,96,0.7);
-    animation: pulse-bar .5s ease-in-out infinite alternate;
-  }
-  @keyframes pulse-bar { from { opacity: 1; } to { opacity: .65; } }
+  /* ── Per-word timer bar ── */
+  .word-timer-wrap { margin-bottom: 1rem; height: 8px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
+  #word-timer-bar { height: 8px; border-radius: 8px; background: #16a34a; width: 100%; transition: background .3s; }
+  #word-timer-bar.urgent { background: #dc2626; animation: pulse-bar .45s ease-in-out infinite alternate; }
+  @keyframes pulse-bar { to { opacity: .5; } }
 
+  /* ── Word card ── */
   .card {
-    background: rgba(22, 33, 62, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(83,216,251,0.12);
-    border-radius: 20px; padding: 2.5rem 2rem 2rem;
-    margin-bottom: 1.2rem; min-height: 120px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05) inset;
-    transition: background .15s;
+    background: #fff; border-radius: 20px;
+    padding: 2.2rem 2rem; margin-bottom: 1rem;
+    min-height: 130px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+    transition: background .12s, box-shadow .12s;
   }
-  .card.flash-correct { background: rgba(26,58,26,0.9); border-color: rgba(76,175,80,0.3); }
-  .card.flash-dead    { background: rgba(58,26,26,0.9); border-color: rgba(233,69,96,0.3); }
+  .card.flash-correct { background: #16a34a; box-shadow: 0 4px 28px rgba(22,163,74,0.35); }
+  .card.flash-dead    { background: #dc2626; box-shadow: 0 4px 28px rgba(220,38,38,0.35); }
   #word-display {
-    font-size: 2.6rem; font-weight: 800; letter-spacing: .04em;
-    animation: word-in .18s cubic-bezier(.22,1,.36,1) both;
+    font-size: 3.8rem; font-weight: 900; letter-spacing: .01em; color: #1a1a2e;
   }
-  @keyframes word-in {
-    from { opacity: 0; transform: translateY(8px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0)   scale(1); }
-  }
+  .card.flash-correct #word-display,
+  .card.flash-dead    #word-display { color: #fff; }
 
+  /* ── Choices ── */
   .choices { display: flex; flex-direction: column; gap: .75rem; margin-bottom: .6rem; }
   .choice-btn {
-    width: 100%; padding: 1rem 1.2rem;
-    border: 1.5px solid rgba(83,216,251,0.15);
-    border-radius: 14px;
-    background: rgba(15,52,96,0.5);
-    color: #eee; font-size: 1.05rem; font-family: inherit; font-weight: 500;
+    width: 100%; padding: 1.1rem 1.4rem;
+    border: none; border-radius: 14px;
+    font-size: 1.05rem; font-family: inherit; font-weight: 600;
     cursor: pointer; text-align: left;
-    transition: border-color .15s, background .15s, transform .1s, box-shadow .15s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    line-height: 1.4;
+    transition: transform .1s, box-shadow .1s, opacity .1s;
+    display: flex; align-items: center; gap: 10px;
   }
-  .choice-btn:hover:not(:disabled) {
-    border-color: #53d8fb; background: rgba(26,79,138,0.6);
-    transform: translateY(-1px); box-shadow: 0 4px 16px rgba(83,216,251,0.15);
-  }
-  .choice-btn:active:not(:disabled) { transform: scale(.98); }
-  .choice-btn.selected-correct { border-color: #4caf50; background: rgba(26,58,26,0.8); color: #4caf50; font-weight: 700; }
-  .choice-btn.selected-wrong   { border-color: #e94560; background: rgba(58,26,26,0.8); color: #e94560; }
-  .choice-btn.reveal-correct   { border-color: #4caf50; background: rgba(26,58,26,0.8); color: #4caf50; }
+  #choice-a { background: #1d4ed8; color: #fff; box-shadow: 0 3px 12px rgba(29,78,216,0.35); }
+  #choice-b { background: #c2410c; color: #fff; box-shadow: 0 3px 12px rgba(194,65,12,0.35); }
+  .choice-btn:hover:not(:disabled) { transform: translateY(-2px); opacity: .92; }
+  .choice-btn:active:not(:disabled) { transform: scale(.97); }
+  .choice-btn.selected-correct { background: #16a34a !important; box-shadow: 0 3px 12px rgba(22,163,74,.4); }
+  .choice-btn.selected-wrong   { background: #dc2626 !important; box-shadow: none; opacity: .8; }
+  .choice-btn.reveal-correct   { background: #16a34a !important; box-shadow: 0 3px 12px rgba(22,163,74,.4); }
   .choice-btn:disabled { cursor: default; }
+  .key-hint { opacity: .55; flex-shrink: 0; width: 1.2em; text-align: center; }
+  .btn-text  { flex: 1; }
 
-  .hint { color: #445; font-size: .75rem; margin-top: .3rem; }
+  .hint { color: #94a3b8; font-size: .75rem; margin-top: .3rem; }
+
+  /* ── Start / restart button ── */
   .big-btn {
-    background: linear-gradient(135deg, #e94560, #c73652);
-    color: #fff; border: none; border-radius: 14px;
-    padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700;
-    font-family: inherit; cursor: pointer; margin-top: 1rem;
-    box-shadow: 0 4px 20px rgba(233,69,96,0.4);
+    background: #14532d; color: #fff; border: none; border-radius: 14px;
+    padding: 1rem 2.8rem; font-size: 1.15rem; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(20,83,45,0.35);
     transition: transform .15s, box-shadow .15s;
   }
-  .big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(233,69,96,0.5); }
+  .big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(20,83,45,0.4); }
   .big-btn:active { transform: scale(.97); }
 
-  /* Game over */
-  #over-score { font-size: 5rem; font-weight: 800; color: #53d8fb; margin: .3rem 0; letter-spacing: .04em; text-shadow: 0 0 30px rgba(83,216,251,0.4); }
-  #over-time-line { color: #556; font-size: .9rem; margin-bottom: .4rem; }
-  .over-label { color: #7a8aaa; font-size: 1rem; margin-bottom: .1rem; }
-  .best-wrap { color: #4caf50; font-size: 1.2rem; font-weight: 700; margin: .8rem 0 1.5rem; }
-  #over-correct-word { color: #ff9966; font-size: 1rem; margin-bottom: 1.5rem; }
+  /* ── Over screen ── */
+  #over-score { font-size: 5.5rem; font-weight: 900; color: #14532d; margin: .3rem 0; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  #over-time-line { color: #94a3b8; font-size: .9rem; margin-bottom: .4rem; }
+  .over-label { color: #64748b; font-size: 1rem; margin-bottom: .1rem; }
+  .best-wrap { color: #92400e; font-size: 1.1rem; font-weight: 700; margin: .8rem 0 1.5rem; }
+  #over-correct-word { color: #1d4ed8; font-size: 1rem; margin-bottom: 1.5rem; font-weight: 600; }
 </style>
 </head>
 <body>
 
 <div id="start-screen" class="screen">
-  <h1>⚔️ Maireachtáil</h1>
-  <p class="subtitle">Cluiche Marthanais | 🔊 Fuaim Chonnacht</p>
-  <p style="color:#aaa;margin-bottom:2rem;line-height:2">
+  <div class="game-logo">⚔️</div>
+  <h1>Maireachtáil</h1>
+  <p class="subtitle">Cluiche Marthanais &nbsp;·&nbsp; 🔊 Fuaim Chonnacht</p>
+  <div class="rules-box">
     Roghnaigh an sainmhíniú ceart.<br>
-    <span style="color:#53d8fb">4 soicind</span> an focal.<br>
-    Freagra mícheart nó am caite → <span style="color:#e94560">thart!</span><br>
-    Is mó pointí a fhaigheann tú as freagra tapa:<br>
-    <span style="color:#4caf50">3–4s fágtha = 4 pt &nbsp;·&nbsp; 2–3s = 3 pt</span><br>
-    <span style="color:#ffc107">1–2s = 2 pt &nbsp;·&nbsp; 0–1s = 1 pt</span><br>
-    <span style="color:#53d8fb">↑ barr &nbsp;·&nbsp; ↓ bun</span> le roghnú
-  </p>
+    <span class="hi">4 soicind</span> an focal &nbsp;·&nbsp; <span class="bad">freagra mícheart nó am caite → thart!</span><br>
+    Freagra níos tapúla = níos mó pointí:<br>
+    <span class="hi">3–4s = 4 pt &nbsp;·&nbsp; 2–3s = 3 pt</span> &nbsp;·&nbsp;
+    <span class="lo">1–2s = 2 pt &nbsp;·&nbsp; 0–1s = 1 pt</span>
+  </div>
   <button class="big-btn" onclick="initGame()">Tosaígh</button>
+  <p class="hint">↑ barr &nbsp;·&nbsp; ↓ bun le roghnú</p>
 </div>
 
 <div id="game-screen" class="screen">
@@ -316,6 +308,7 @@ function pick(idx) {
     showPtsFlash(pts);
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
+    document.body.classList.add('flash-ok'); setTimeout(()=>document.body.classList.remove('flash-ok'),250);
     setTimeout(nextWord, 400);
   } else {
     btns[idx].className = 'choice-btn selected-wrong';
