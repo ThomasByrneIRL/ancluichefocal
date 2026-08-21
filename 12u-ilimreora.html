@@ -81,8 +81,7 @@
 
     /* ── Word timer ── */
     #word-timer-wrap { width: 100%; height: 5px; background: #ddd; border-radius: 3px; overflow: hidden; }
-    #word-timer-bar  { height: 100%; background: #53d8fb; border-radius: 3px; width: 100%; transition: none; }
-    #word-timer-bar.urgent { background: #e94560; }
+    #word-timer-bar  { height: 100%; border-radius: 3px; width: 100%; transition: none; }
 
     /* ── Word card ── */
     .card {
@@ -247,7 +246,7 @@ function buildPanels() {
   panelsEl.innerHTML = Array.from({length: N}, (_, i) =>
     '<div class="panel" id="panel-' + i + '" style="border-color:' + PALETTE[i].border + ';background:' + PALETTE[i].bg + '">' +
       '<div class="p-header">' +
-        '<div class="p-name" id="p-name-' + i + '">' + players[i].name + '</div>' +
+        '<div class="p-name" id="p-name-' + i + '">' + players[i].name.toUpperCase() + '</div>' +
         '<div class="p-score-box" id="p-score-' + i + '" style="background:' + PALETTE[i].abg + '">0</div>' +
       '</div>' +
       '<div class="p-lives" id="p-lives-' + i + '">♥♥♥</div>' +
@@ -263,7 +262,7 @@ function updatePanels() {
     panel.style.borderColor = isActive ? c.aborder : c.border;
     panel.style.background  = isActive ? c.abg    : c.bg;
     panel.classList.toggle('dead', p.lives <= 0);
-    document.getElementById('p-name-' + i).textContent = p.name;
+    document.getElementById('p-name-' + i).textContent = p.name.toUpperCase();
     const lh = p.lives <= 0 ? '💀' : '♥'.repeat(Math.min(p.lives, 6)) + (p.lives > 6 ? '×' + p.lives : '');
     document.getElementById('p-lives-' + i).textContent = lh;
     document.getElementById('p-score-' + i).textContent = p.score;
@@ -352,7 +351,7 @@ function beginTurn() {
   document.getElementById('word-card').textContent = fcMsg;
   document.getElementById('word-card').className = 'card turn-card';
   document.getElementById('word-timer-bar').style.width = '100%';
-  document.getElementById('word-timer-bar').className = '';
+  document.getElementById('word-timer-bar').style.background = PALETTE[currentPlayer].border;
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => { b.querySelector('.btn-text').textContent = ''; b.disabled = true; });
   document.getElementById('pts-flash').style.opacity = '0';
@@ -410,7 +409,7 @@ function tickWord() {
   const pct = (rem / WORD_MS) * 100;
   const bar = document.getElementById('word-timer-bar');
   bar.style.width = pct + '%';
-  bar.className   = rem <= 1500 ? 'urgent' : '';
+  bar.style.background = PALETTE[currentPlayer].border;
   wordRAF = requestAnimationFrame(tickWord);
 }
 
@@ -495,7 +494,7 @@ function endGame(won = true) {
   rg.innerHTML = ranked.map((p, rank) =>
     '<div class="player-result' + (rank === 0 ? ' winner' : '') + '" ' +
     'style="border-color:' + PALETTE[p.idx].border + '">' +
-      '<div class="pr-name">' + p.name + (rank === 0 ? ' 🏆' : p.lives <= 0 ? ' 💀' : '') + '</div>' +
+      '<div class="pr-name">' + p.name.toUpperCase() + (rank === 0 ? ' 🏆' : p.lives <= 0 ? ' 💀' : '') + '</div>' +
       '<div class="pr-detail">Scór: ' + p.score + ' pt · Saolta: ' + Math.max(0, p.lives) + '</div>' +
     '</div>'
   ).join('');
