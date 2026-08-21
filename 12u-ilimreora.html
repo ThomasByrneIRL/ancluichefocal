@@ -207,7 +207,7 @@ let players = [], currentPlayer = 0;
 let wordEnd, wordStart, wordRAF;
 let correctIdx = 0, locked = false, flashTimer;
 let _ca = null, _currentWord = '';
-let finalChallenge = false, finalAttemptsLeft = 0;
+let survivalMode = false;
 
 // ── Player count selector ─────────────────────────────────────────────────────
 function setN(n) {
@@ -285,7 +285,7 @@ function startGame() {
     name: (document.getElementById('name' + (i+1)).value.trim()) || ('Imreoir ' + (i+1)),
     lives: LIVES_START, score: 0
   }));
-  currentPlayer = 0; locked = false; finalChallenge = false; finalAttemptsLeft = 0;
+  currentPlayer = 0; locked = false; survivalMode = false;
   buildPanels();
   show('game-screen');
   beginTurn();
@@ -293,7 +293,7 @@ function startGame() {
 
 function rematch() {
   players.forEach(p => { p.lives = LIVES_START; p.score = 0; });
-  currentPlayer = 0; locked = false; finalChallenge = false; finalAttemptsLeft = 0;
+  currentPlayer = 0; locked = false; survivalMode = false;
   buildPanels();
   show('game-screen');
   beginTurn();
@@ -310,11 +310,20 @@ function nextAlive(from) {
   return from;
 }
 
-// ── Final challenge ──────────────────────────────────────────────────────────
-function startFinalChallenge() {
-  finalChallenge = true;
-  finalAttemptsLeft = players[currentPlayer].lives;
-  beginTurn();
+// ── Survival helpers ─────────────────────────────────────────────────────────
+function maxElimScore() {
+  const scores = players.filter(p => p.lives <= 0).map(p => p.score);
+  return scores.length ? Math.max(...scores) : -1;
+}
+function enterSurvival(delay) {
+  survivalMode = true;
+  const si = players.findIndex(p => p.lives > 0);
+  currentPlayer = si;
+  if (players[si].score > maxElimScore()) {
+    setTimeout(() => endGame(true), delay);
+  } else {
+    setTimeout(() => beginTurn(), delay);
+  }
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
@@ -345,8 +354,8 @@ function rnd(exclude) {
 function beginTurn() {
   locked = true;
   cancelAnimationFrame(wordRAF);
-  const fcMsg = finalChallenge
-    ? 'DÚSHLÁN DEIREANACH! (' + finalAttemptsLeft + ')'
+  const fcMsg = survivalMode
+    ? 'DÚSHLÁN DEIREANACH!'
     : players[currentPlayer].name.toUpperCase() + '!';
   document.getElementById('word-card').textContent = fcMsg;
   document.getElementById('word-card').className = 'card turn-card';
@@ -394,16 +403,12 @@ function tickWord() {
     const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
     btns.forEach(b => b.disabled = true);
     locked = true;
-    if (finalChallenge) {
-      finalAttemptsLeft--;
-      if (finalAttemptsLeft <= 0) { setTimeout(() => endGame(false), 700); return; }
-      setTimeout(() => beginTurn(), 950);
-    } else {
-      players[currentPlayer].lives--;
-      updatePanels();
-      if (countAlive() <= 1) { setTimeout(() => startFinalChallenge(), 700); return; }
-      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
-    }
+    players[currentPlayer].lives--;
+    updatePanels();
+    if (countAlive() === 0) { setTimeout(() => endGame(false), 700); return; }
+    if (countAlive() === 1) { enterSurvival(700); return; }
+    if (survivalMode) { setTimeout(() => beginTurn(), 950); return; }
+    setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
     return;
   }
   const pct = (rem / WORD_MS) * 100;
@@ -423,43 +428,37 @@ function pick(idx) {
   btns.forEach(b => b.disabled = true);
 
   if (idx === correctIdx) {
-    if (finalChallenge) {
-      btns[idx].className = 'choice-btn selected-correct';
-      document.getElementById('word-card').className = 'card flash-correct';
-      showFlash('🏆 Buaite!');
+    const rem = wordEnd - Date.now();
+    const pts = pointsFor(rem);
+    players[currentPlayer].score += pts;
+    btns[idx].className = 'choice-btn selected-correct';
+    document.getElementById('word-card').className = 'card flash-correct';
+    updatePanels();
+    if (survivalMode && players[currentPlayer].score > maxElimScore()) {
+      showFlash('+' + pts + ' 🏆');
       setTimeout(() => endGame(true), 850);
     } else {
-      const rem = wordEnd - Date.now();
-      const pts = pointsFor(rem);
-      players[currentPlayer].score += pts;
-      btns[idx].className = 'choice-btn selected-correct';
-      document.getElementById('word-card').className = 'card flash-correct';
       showFlash('+' + pts + (pts >= 4 ? ' ⚡' : ''));
-      updatePanels();
-      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 850);
+      if (survivalMode) {
+        setTimeout(() => beginTurn(), 850);
+      } else {
+        setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 850);
+      }
     }
   } else {
-    if (finalChallenge) {
-      finalAttemptsLeft--;
-      btns[idx].className = 'choice-btn selected-wrong';
-      btns[correctIdx].className = 'choice-btn reveal-correct';
-      document.getElementById('word-card').className = 'card flash-wrong';
-      if (finalAttemptsLeft <= 0) {
-        setTimeout(() => endGame(false), 800);
-      } else {
-        setTimeout(() => beginTurn(), 950);
-      }
+    players[currentPlayer].lives--;
+    btns[idx].className = 'choice-btn selected-wrong';
+    btns[correctIdx].className = 'choice-btn reveal-correct';
+    document.getElementById('word-card').className = 'card flash-wrong';
+    updatePanels();
+    if (countAlive() === 0) {
+      setTimeout(() => endGame(false), 800);
+    } else if (countAlive() === 1) {
+      enterSurvival(800);
+    } else if (survivalMode) {
+      setTimeout(() => beginTurn(), 950);
     } else {
-      players[currentPlayer].lives--;
-      btns[idx].className = 'choice-btn selected-wrong';
-      btns[correctIdx].className = 'choice-btn reveal-correct';
-      document.getElementById('word-card').className = 'card flash-wrong';
-      updatePanels();
-      if (countAlive() <= 1) {
-        setTimeout(() => startFinalChallenge(), 800);
-      } else {
-        setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
-      }
+      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
     }
   }
 }
@@ -473,19 +472,21 @@ function showFlash(txt) {
 }
 
 // ── End game ──────────────────────────────────────────────────────────────────
-function endGame(won = true) {
+function endGame(won = false) {
   cancelAnimationFrame(wordRAF);
   locked = true;
-  finalChallenge = false;
+  survivalMode = false;
   if (_ca) { _ca.pause(); _ca = null; }
 
   const ranked = players.map((p, i) => ({ ...p, idx: i }))
     .sort((a, b) => b.score - a.score || b.lives - a.lives);
 
-  if (won) {
-    document.getElementById('over-title').textContent = ranked[0].name + ' buaite! 🏆';
+  const topScore = ranked[0].score;
+  const jointWinners = ranked.filter(p => p.score === topScore);
+  if (jointWinners.length === 1) {
+    document.getElementById('over-title').textContent = ranked[0].name.toUpperCase() + ' buaite! 🏆';
   } else {
-    document.getElementById('over-title').textContent = 'Cluiche Cothrom! 🤝';
+    document.getElementById('over-title').textContent = 'Comhscór! 🤝';
   }
 
   const cols = N <= 3 ? N : 2;
@@ -495,7 +496,7 @@ function endGame(won = true) {
     '<div class="player-result' + (rank === 0 ? ' winner' : '') + '" ' +
     'style="border-color:' + PALETTE[p.idx].border + '">' +
       '<div class="pr-name">' + p.name.toUpperCase() + (rank === 0 ? ' 🏆' : p.lives <= 0 ? ' 💀' : '') + '</div>' +
-      '<div class="pr-detail">Scór: ' + p.score + ' pt · Saolta: ' + Math.max(0, p.lives) + '</div>' +
+      '<div class="pr-detail">Scór: ' + p.score + ' · Saolta: ' + Math.max(0, p.lives) + '</div>' +
     '</div>'
   ).join('');
 
