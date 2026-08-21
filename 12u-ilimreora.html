@@ -199,8 +199,8 @@ const PALETTE = [
   { border: '#2e7d32', bg: '#edf7ed', aborder: '#2e7d32', abg: '#d4edda', label: '#1a5c2e' },
   { border: '#c62828', bg: '#fdf2f2', aborder: '#c62828', abg: '#f8d7da', label: '#7b1a28' },
   { border: '#e07b00', bg: '#fdf9e6', aborder: '#e07b00', abg: '#fef3c7', label: '#7a3c00' },
-  { border: '#757575', bg: '#f5f5f5', aborder: '#757575', abg: '#e5e5e5', label: '#333' },
   { border: '#1565c0', bg: '#eff4fb', aborder: '#1565c0', abg: '#d0e4f7', label: '#0d3a7a' },
+  { border: '#757575', bg: '#f5f5f5', aborder: '#757575', abg: '#e5e5e5', label: '#333' },
 ];
 
 let N = 4;
@@ -268,7 +268,9 @@ function updatePanels() {
     document.getElementById('p-lives-' + i).textContent = lh;
     document.getElementById('p-score-' + i).textContent = p.score;
   });
-  document.getElementById('turn-indicator').textContent = players[currentPlayer].name.toUpperCase() + '!';
+  const ti = document.getElementById('turn-indicator');
+  ti.textContent = players[currentPlayer].name.toUpperCase() + '!';
+  ti.style.color = PALETTE[currentPlayer].border;
 }
 
 // ── Screens ───────────────────────────────────────────────────────────────────
