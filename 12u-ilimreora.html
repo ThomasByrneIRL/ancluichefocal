@@ -206,7 +206,7 @@ let N = 4;
 let players = [], currentPlayer = 0;
 let wordEnd, wordStart, wordRAF;
 let correctIdx = 0, locked = false, flashTimer;
-let _ca = null, _currentWord = '';
+let _ca = null, _currentWord = '', _nextW = null, _nextAudio = null;
 let survivalMode = false;
 
 // ── Player count selector ─────────────────────────────────────────────────────
@@ -285,7 +285,7 @@ function startGame() {
     name: (document.getElementById('name' + (i+1)).value.trim()) || ('Imreoir ' + (i+1)),
     lives: LIVES_START, score: 0
   }));
-  currentPlayer = 0; locked = false; survivalMode = false;
+  currentPlayer = 0; locked = false; survivalMode = false; _nextW = null; _nextAudio = null;
   buildPanels();
   show('game-screen');
   beginTurn();
@@ -335,6 +335,15 @@ function playPron(word) {
   _ca = a;
 }
 function replayPron() { if (_currentWord) playPron(_currentWord); }
+function preloadNext() {
+  // Called inside pick() — user gesture context — to unlock audio for subsequent plays
+  _nextW = WORDS[Math.floor(Math.random() * WORDS.length)];
+  if (_ca) { _ca.pause(); _ca = null; }
+  _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(_nextW) + '.mp3');
+  _nextAudio.onerror = function(){};
+  _nextAudio.play().catch(function(){});
+  _ca = _nextAudio;
+}
 
 // ── Word helpers ──────────────────────────────────────────────────────────────
 function sh(arr) {
@@ -370,7 +379,8 @@ function beginTurn() {
 
 function nextWord() {
   if (locked) return;
-  const word    = WORDS[Math.floor(Math.random()*WORDS.length)];
+  const word    = _nextW || WORDS[Math.floor(Math.random()*WORDS.length)];
+  _nextW = null;
   const correct = DICT[word][0];
   const wrong   = DICT[rnd(word)][0];
   const opts    = sh([correct, wrong]);
@@ -388,7 +398,15 @@ function nextWord() {
     b.disabled  = false;
   });
 
-  playPron(word);
+  // Replay pre-loaded audio (already unlocked by pick()); fall back to fresh load
+  if (_nextAudio) {
+    const a = _nextAudio; _nextAudio = null;
+    a.currentTime = 0;
+    a.play().catch(function(){});
+    _ca = a;
+  } else {
+    playPron(word);
+  }
   cancelAnimationFrame(wordRAF);
   wordEnd = Date.now() + WORD_MS;
   tickWord();
@@ -439,6 +457,7 @@ function pick(idx) {
       setTimeout(() => endGame(true), 850);
     } else {
       showFlash('+' + pts + (pts >= 4 ? ' ⚡' : ''));
+      preloadNext();
       if (survivalMode) {
         setTimeout(() => beginTurn(), 850);
       } else {
@@ -453,12 +472,15 @@ function pick(idx) {
     updatePanels();
     if (countAlive() === 0) {
       setTimeout(() => endGame(false), 800);
-    } else if (countAlive() === 1) {
-      enterSurvival(800);
-    } else if (survivalMode) {
-      setTimeout(() => beginTurn(), 950);
     } else {
-      setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+      preloadNext();
+      if (countAlive() === 1) {
+        enterSurvival(800);
+      } else if (survivalMode) {
+        setTimeout(() => beginTurn(), 950);
+      } else {
+        setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
+      }
     }
   }
 }
