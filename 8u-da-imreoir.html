@@ -272,20 +272,31 @@ function updatePanels() {
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
-function playPron(word) {
+function playWord(word) {
   if (_ca) { _ca.pause(); _ca = null; }
   const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
   a.onerror = function(){};
   a.play().catch(function(){});
   _ca = a;
+  if (currentPlayer === 0) scheduleRepeat(a, word);
 }
-function replayPron() { if (_currentWord) playPron(_currentWord); }
+function scheduleRepeat(a, word) {
+  a.onended = function() {
+    if (_currentWord === word && _ca === a) {
+      setTimeout(function() {
+        if (_currentWord === word && _ca === a) { a.currentTime = 0; a.play().catch(function(){}); }
+      }, 350);
+    }
+  };
+}
+function replayPron() { if (_currentWord) playWord(_currentWord); }
 
 function preloadNext() {
   _nextW = WORDS[Math.floor(Math.random() * WORDS.length)];
   if (_ca) { _ca.pause(); _ca = null; }
   _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(_nextW) + '.mp3');
   _nextAudio.onerror = function(){};
+  _nextAudio.muted = true; // unlock iOS without audible bleed during transition
   _nextAudio.play().catch(function(){});
   _ca = _nextAudio;
 }
@@ -325,7 +336,7 @@ function beginTurn() {
   btns.forEach(b => { b.querySelector('.btn-text').textContent = ''; b.disabled = true; });
   document.getElementById('pts-flash').style.opacity = '0';
   updatePanels();
-  setTimeout(() => { locked = false; nextWord(); }, 900);
+  setTimeout(() => { locked = false; nextWord(); }, 1500);
 }
 
 function nextWord() {
@@ -336,12 +347,14 @@ function nextWord() {
     word = _nextW;
     _nextW = null;
     const a = _nextAudio; _nextAudio = null;
+    a.muted = false;
     a.currentTime = 0;
     a.play().catch(function(){});
     _ca = a;
+    if (currentPlayer === 0) scheduleRepeat(a, word);
   } else {
     word = WORDS[Math.floor(Math.random()*WORDS.length)];
-    playPron(word);
+    playWord(word);
   }
 
   const correct = DICT[word][0];
@@ -379,7 +392,7 @@ function tickWord() {
     const np = nextPlayer();
     if (np === -1) { setTimeout(endGame, 700); return; }
     currentPlayer = np;
-    setTimeout(beginTurn, 900);
+    setTimeout(beginTurn, 1000);
     return;
   }
   const pct = (rem / wms) * 100;
@@ -413,7 +426,7 @@ function pick(idx) {
     } else {
       preloadNext();
       currentPlayer = np;
-      setTimeout(beginTurn, 850);
+      setTimeout(beginTurn, 1000);
     }
   } else {
     players[currentPlayer].wordsLeft--;
@@ -427,7 +440,7 @@ function pick(idx) {
     } else {
       preloadNext();
       currentPlayer = np;
-      setTimeout(beginTurn, 950);
+      setTimeout(beginTurn, 1000);
     }
   }
 }
