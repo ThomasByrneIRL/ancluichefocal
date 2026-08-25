@@ -278,15 +278,7 @@ function playWord(word) {
   a.onerror = function(){};
   a.play().catch(function(){});
   _ca = a;
-  if (currentPlayer === 0) scheduleRepeat(a, word);
 }
-function scheduleRepeat(a, word) {
-  a.onended = function() {
-    if (_currentWord === word && _ca === a) {
-      setTimeout(function() {
-        if (_currentWord === word && _ca === a) { a.currentTime = 0; a.play().catch(function(){}); }
-      }, 350);
-    }
   };
 }
 function replayPron() { if (_currentWord) playWord(_currentWord); }
@@ -351,7 +343,6 @@ function nextWord() {
     a.currentTime = 0;
     a.play().catch(function(){});
     _ca = a;
-    if (currentPlayer === 0) scheduleRepeat(a, word);
   } else {
     word = WORDS[Math.floor(Math.random()*WORDS.length)];
     playWord(word);
