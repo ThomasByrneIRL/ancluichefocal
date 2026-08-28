@@ -341,6 +341,7 @@ function preloadNext() {
   if (_ca) { _ca.pause(); _ca = null; }
   _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(_nextW) + '.mp3');
   _nextAudio.onerror = function(){};
+  _nextAudio.muted = true; // silent unlock for iOS; unmuted when word appears
   _nextAudio.play().catch(function(){});
   _ca = _nextAudio;
 }
@@ -401,6 +402,7 @@ function nextWord() {
   // Replay pre-loaded audio (already unlocked by pick()); fall back to fresh load
   if (_nextAudio) {
     const a = _nextAudio; _nextAudio = null;
+    a.muted = false;
     a.currentTime = 0;
     a.play().catch(function(){});
     _ca = a;
