@@ -55,7 +55,8 @@
 <div id="over-screen" class="screen">
   <h1>Críochnaithe!</h1>
   <div id="final-score"></div>
-  <p style="color:#888;margin-bottom:2rem">focail cuimhnithe agat</p>
+  <p style="color:#888;margin-bottom:0.5rem">focail cuimhnithe agat</p>
+  <div id="high-score" style="font-size:1rem;color:#53d8fb;margin-bottom:2rem;min-height:1.4em;"></div>
   <button class="big-btn" onclick="initGame()">Arís</button>
 </div>
 <script>
@@ -1778,7 +1779,21 @@ function pw(){const s=[...seen];if(s.length>0&&Math.random()<0.4)return s[Math.f
 function nxt(){locked=false;cw=pw();document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();}
 function answer(isNew){if(locked)return;locked=true;const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
 function upd(){document.getElementById('score-val').textContent=score;const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
-function over(){document.getElementById('final-score').textContent=score;show('over-screen');}
+function over(){
+  document.getElementById('final-score').textContent=score;
+  try{
+    const key='ancluiche_taifead';
+    const prev=parseInt(localStorage.getItem(key)||'0',10);
+    const hsEl=document.getElementById('high-score');
+    if(score>prev){
+      localStorage.setItem(key,score);
+      hsEl.textContent='🏆 Taifead Nua: '+score;
+    } else {
+      hsEl.textContent='Taifead: '+prev;
+    }
+  }catch(e){}
+  show('over-screen');
+}
 function show(id){['start-screen','game-screen','over-screen'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')answer(true);if(e.key==='ArrowRight')answer(false);});
 show('start-screen');

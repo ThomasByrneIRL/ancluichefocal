@@ -1945,6 +1945,7 @@ function tickWord() {
   if (rem <= 0) {
     document.getElementById('word-timer-bar').style.width = '0%';
     document.getElementById('word-timer-bar').className = 'urgent';
+    playNo();
     document.getElementById('word-card').className = 'card flash-timeout';
     const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
     btns.forEach(b => b.disabled = true);
@@ -1996,12 +1997,14 @@ function pick(idx) {
     score++;
     document.getElementById('score-display').textContent = score;
     showFlash('+1');
+    playOk();
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
     setTimeout(() => { locked = false; nextWord(); }, 340);
   } else {
     const infinite = LEVELS[currentLevel].lives === Infinity;
     if (!infinite) { lives--; updateLives(); }
+    playNo();
     btns[idx].className = 'choice-btn selected-wrong';
     btns[correctIdx].className = 'choice-btn reveal-correct';
     document.getElementById('word-card').className = 'card flash-wrong';
@@ -2078,6 +2081,13 @@ document.addEventListener('keydown', e => {
 // ── Init ──────────────────────────────────────────────────────────────────────
 buildMenu();
 show('start-screen');
+
+// ── Sound feedback ───────────────────────────────────────────────────────────
+let _sfx=null;
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();return _sfx;}
+function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
+function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
+function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
 </script>
 </body>
 </html>
