@@ -220,6 +220,9 @@ function startGame() {
   _nextAudio = null; _nextW = null;
   updateHUD();
   show('game-screen');
+  // Preload the first word NOW, inside this gesture handler, so iOS unlocks audio
+  const first = WORDS_ALL[Math.floor(Math.random() * WORDS_ALL.length)];
+  preloadNext(first);
   nextWord();
 }
 
@@ -232,13 +235,19 @@ function nextWord() {
   if (lives <= 0) { endGame(); return; }
   locked = false; esPick = null; enPick = null;
 
-  const word = WORDS_ALL[Math.floor(Math.random() * WORDS_ALL.length)];
-  currentWord = word;
-
-  if (_nextW === word && _nextAudio) {
+  // Use the word that was pre-picked at gesture time (from startGame or a pick handler).
+  // If for some reason nothing was queued (e.g. after a timeout), fall back to a new random word.
+  let word;
+  if (_nextW && _nextAudio) {
+    word = _nextW;
     const a = _nextAudio; _nextAudio = null; _nextW = null;
     a.muted = false; a.currentTime = 0; a.play().catch(function(){}); _ca = a;
-  } else { playWord(word); }
+  } else {
+    _nextAudio = null; _nextW = null;
+    word = WORDS_ALL[Math.floor(Math.random() * WORDS_ALL.length)];
+    playWord(word); // may not play on iOS if called outside gesture, but timeout is an edge case
+  }
+  currentWord = word;
 
   const esRight = DICT_ES[word], esWrong = distES(word);
   const esOpts  = sh([esRight, esWrong]);
