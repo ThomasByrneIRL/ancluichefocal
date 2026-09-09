@@ -4,181 +4,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gaeilge → Spáinnis</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a2e;
-           min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .screen { display: none; flex-direction: column; align-items: center;
-              justify-content: center; gap: 18px; text-align: center;
-              width: 100%; max-width: 520px; padding: 24px; }
-    .screen.active { display: flex; }
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .screen { display: none; text-align: center; padding: 2rem; max-width: 520px; width: 100%; }
+  h1 { font-size: 2rem; color: #e94560; margin-bottom: .5rem; }
 
-    h1 { font-size: 2.4rem; color: #1a1a2e; letter-spacing: 1px; }
-    h2 { font-size: 1.8rem; color: #53d8fb; }
-    .flag { font-size: 2rem; }
-    .subtitle { font-size: 1rem; color: #888; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: .8rem; }
+  .stat-label { color: #888; font-size: .85rem; margin-right: .3rem; }
+  #round-badge { color: #1a6fb5; font-weight: bold; font-size: 1rem; }
+  #score-running { color: #4caf50; font-size: 1.4rem; font-weight: bold; }
+  #word-num { font-size: .9rem; color: #888; }
 
-    .start-btn {
-      background: #e94560; color: #fff; border: none; border-radius: 10px;
-      padding: 13px 36px; font-size: 1.05rem; font-weight: bold; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .start-btn:hover { background: #c73652; }
-    .hint { font-size: 0.78rem; color: #444; }
+  #progress-bar-bg { background: #fff; border-radius: 8px; height: 8px; width: 100%; overflow: hidden; margin-bottom: 1.2rem; }
+  #progress-bar { height: 8px; border-radius: 8px; background: #53d8fb; transition: width .3s; width: 0%; }
 
-    /* score bar */
-    #score-bar { width: 100%; display: flex; justify-content: space-between;
-                 align-items: center; }
-    #score-display { font-size: 1rem; font-weight: bold; color: #1a1a2e; }
-    #progress-display { font-size: 0.85rem; color: #888; }
+  .card { background: #fff; border-radius: 16px; padding: 2.5rem 2rem 2rem; margin-bottom: 1.2rem; min-height: 120px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px #0005; transition: background .15s; }
+  .card.flash-correct { background: #d4edda; }
+  .card.flash-wrong { background: #f8d7da; }
+  #word-display { font-size: 2.6rem; font-weight: bold; letter-spacing: .04em; }
 
-    /* timer */
-    #word-timer-wrap { width: 100%; height: 5px; background: #ddd;
-                       border-radius: 3px; overflow: hidden; }
-    #word-timer-bar  { height: 100%; background: #2e7d32; border-radius: 3px; width: 100%; }
+  .choices { display: flex; flex-direction: column; gap: .75rem; margin-bottom: .6rem; }
+  .choice-btn { width: 100%; padding: 1rem 1.2rem; border: 2px solid #ddd; border-radius: 12px; background: #fff; color: #1a1a2e; font-size: 1.05rem; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; line-height: 1.4; }
+  .choice-btn:hover:not(:disabled) { border-color: #53d8fb; background: #fff5f6; }
+  .choice-btn.selected-correct { border-color: #4caf50; background: #d4edda; color: #4caf50; font-weight: bold; }
+  .choice-btn.selected-wrong { border-color: #e94560; background: #f8d7da; color: #e94560; }
+  .choice-btn.reveal-correct { border-color: #4caf50; background: #d4edda; color: #4caf50; }
+  .choice-btn:disabled { cursor: default; }
+  .hint { color: #888; font-size: .75rem; margin-top: .3rem; }
 
-    /* word card */
-    .card { background: #fff; border-radius: 14px; padding: 26px 24px; width: 100%;
-            font-size: 1.9rem; font-weight: bold; color: #1a1a2e; letter-spacing: 1px;
-            min-height: 88px; display: flex; align-items: center; justify-content: center;
-            transition: background 0.15s; }
-    .card.flash-correct  { background: #d4edda; }
-    .card.flash-wrong    { background: #f8d7da; }
-    .card.flash-timeout  { background: #fff3cd; }
+  /* Mid-screen */
+  .round-result { font-size: 3.5rem; font-weight: bold; color: #53d8fb; margin: .4rem 0 1rem; }
+  .missed-list { text-align: left; background: #fff; border-radius: 12px; padding: 1rem 1.2rem; margin: .8rem 0 1.2rem; max-height: 200px; overflow-y: auto; }
+  .missed-list-label { font-size: .8rem; color: #888; margin-bottom: .5rem; }
+  .missed-item { font-size: .9rem; padding: .3rem 0; border-bottom: 1px solid #1e2a4a; display: flex; gap: .5rem; }
+  .missed-item:last-child { border-bottom: none; }
+  .missed-irish { color: #e94560; font-weight: bold; min-width: 90px; }
+  .missed-def { color: #888; }
+  .all-correct-msg { color: #4caf50; font-size: 1rem; margin: .5rem 0 1.2rem; }
 
-    #sound-btn { font-size: 0.82rem; color: #444; cursor: pointer; user-select: none; }
-    #sound-btn:hover { color: #888; }
+  /* Final score */
+  .final-score { font-size: 4.2rem; font-weight: bold; margin: .4rem 0 .5rem; letter-spacing: .05em; font-variant-numeric: tabular-nums; }
+  .final-score.improved { color: #4caf50; }
+  .final-score.flat-or-down { color: #53d8fb; }
+  .score-sub { color: #888; font-size: .85rem; margin-bottom: .4rem; }
+  .over-msg { font-size: .95rem; margin-top: .4rem; }
+  .over-msg.improved { color: #4caf50; }
+  .over-msg.flat-or-down { color: #888; }
 
-    /* choices */
-    .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-    .choice-btn { width: 100%; padding: 13px 18px; border-radius: 10px;
-                  border: 2px solid #ddd; background: #fff; color: #1a1a2e;
-                  font-size: 1rem; cursor: pointer;
-                  transition: background 0.1s, border-color 0.1s;
-                  display: flex; align-items: center; gap: 12px; }
-    .key-hint  { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
-    .btn-text  { flex: 1; text-align: left; }
-    .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
-    .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
-    .choice-btn.selected-wrong   { background: #f8d7da; border-color: #e94560; color: #e94560; }
-    .choice-btn.reveal-correct   { background: #d4edda; border-color: #4caf50; color: #4caf50; }
-
-    #pts-flash { font-size: 1.3rem; font-weight: bold; color: #4caf50;
-                 opacity: 0; transition: opacity 0.25s; height: 28px; }
-
-    /* over screen */
-    .result-icon { font-size: 3rem; }
-    .result-score { font-size: 2.5rem; font-weight: bold; color: #1a1a2e; }
-    .result-label { font-size: 0.95rem; color: #888; }
-    .btn-row { display: flex; gap: 10px; }
-    .btn-secondary { background: #fff; color: #1a1a2e; border: 2px solid #ddd;
-                     border-radius: 10px; padding: 12px 28px; font-size: 1rem;
-                     cursor: pointer; font-weight: bold; transition: background 0.2s; }
-    .btn-secondary:hover { background: #f5f5f0; }
-
-    /* complete screen */
-    #complete-screen .result-icon { font-size: 4rem; }
-    #complete-screen h2 { font-size: 2rem; color: #2a9d47; }
-  </style>
+  .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 1rem; }
+</style>
 </head>
 <body>
 
-<!-- START -->
-<div id="start-screen" class="screen active">
-  <div class="flag">🇮🇪 → 🇪🇸</div>
-  <h1>Gaeilge → Spáinnis</h1>
-  <p class="subtitle">Maireachtáil · Focal amháin mícheart = críoch</p>
-  <button class="start-btn" onclick="startGame()">Tosaigh</button>
-  <p class="hint">1000 focal · 4 soicind an focal · +2 phointe má fhreagraíonn tú laistigh de shoicind</p>
-  <p class="hint">↑ ↓ nó W / S chun freagra a roghnú</p>
+<div id="start-screen" class="screen">
+  <h1>🇮🇪 → 🇪🇸 Spáinnis</h1>
+  <p style="color:#aaa;font-size:.9rem;margin-bottom:1.5rem">2 Bhabhta · 20 Focal · 🔊 Fuaim Chonnacht</p>
+  <p style="color:#aaa;line-height:2;margin-bottom:2rem">
+    Roghnaigh an sainmhíniú ceart as Spáinnis.<br>
+    <span style="color:#53d8fb;font-weight:bold">Babhta 1:</span> 20 focal nua.<br>
+    <span style="color:#4caf50;font-weight:bold">Babhta 2:</span> Na focail chéanna i ndiaidh a chéile nua.<br>
+    Féach an bhfeabhsaíonn do scór!<br>
+    <span style="color:#53d8fb">↑ barr &nbsp;·&nbsp; ↓ bun</span> le roghnú
+  </p>
+  <button class="big-btn" onclick="initGame()">Tosaigh</button>
 </div>
 
-<!-- GAME -->
 <div id="game-screen" class="screen">
-  <div id="score-bar">
-    <div id="score-display">Scór: 0</div>
-    <div id="progress-display">0 / 1000</div>
+  <div class="stat-row">
+    <span id="round-badge">Babhta 1</span>
+    <span><span class="stat-label">Focal</span><span id="word-num">1 / 20</span></span>
+    <span><span class="stat-label">Ceart</span><span id="score-running">0</span></span>
   </div>
-  <div id="word-timer-wrap"><div id="word-timer-bar"></div></div>
-  <div id="word-card" class="card">—</div>
-  <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
+  <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+  <div class="card" id="word-card">
+    <div id="word-display"></div>
+  </div>
   <div class="choices">
-    <button class="choice-btn" id="choice-a" onclick="pick(0)">
-      <span class="key-hint">↑</span><span class="btn-text"></span>
-    </button>
-    <button class="choice-btn" id="choice-b" onclick="pick(1)">
-      <span class="key-hint">↓</span><span class="btn-text"></span>
-    </button>
+    <button class="choice-btn" id="choice-a" onclick="pick(0)"></button>
+    <button class="choice-btn" id="choice-b" onclick="pick(1)"></button>
   </div>
-  <div id="pts-flash">+2</div>
+  <p class="hint">↑ barr · ↓ bun</p>
 </div>
 
-<!-- OVER -->
+<div id="mid-screen" class="screen">
+  <h1>Babhta 1 ✓</h1>
+  <div class="round-result"><span id="mid-score">0</span> / 20</div>
+  <div id="mid-missed-wrap"></div>
+  <button class="big-btn" onclick="startRound2()">Babhta 2 →</button>
+</div>
+
 <div id="over-screen" class="screen">
-  <div class="result-icon">💀</div>
-  <h2>Críoch!</h2>
-  <div class="result-score" id="final-score">0</div>
-  <div class="result-label" id="final-progress">focal ceart</div>
-  <div class="btn-row">
-    <button class="start-btn" onclick="startGame()">Arís</button>
-    <button class="btn-secondary" onclick="show('start-screen')">Baile</button>
-  </div>
-</div>
-
-<!-- COMPLETE -->
-<div id="complete-screen" class="screen">
-  <div class="result-icon">🏆</div>
-  <h2>Críochnaithe!</h2>
-  <p class="subtitle">D'éirigh leat gach ceann de na 1000 focal a fhreagairt i gceart!</p>
-  <div class="result-score" id="complete-score">0</div>
-  <div class="result-label">pointe</div>
-  <div class="btn-row">
-    <button class="start-btn" onclick="startGame()">Arís</button>
-    <button class="btn-secondary" onclick="show('start-screen')">Baile</button>
-  </div>
+  <h1>Críochnaithe!</h1>
+  <p class="score-sub">Babhta 1 · Babhta 2</p>
+  <div class="final-score" id="final-score">0 - 0</div>
+  <p class="over-msg" id="over-msg"></p>
+  <button class="big-btn" onclick="initGame()" style="margin-top:1.5rem">Arís</button>
 </div>
 
 <script>
 const DICT_ES = {"ach": "pero", "adac": "artesa", "aer": "aire", "agus": "y", "aife": "reflujo", "aimsigh": "apuntar", "aimsiú": "objetivo", "aip": "aplicación", "amháin": "uno", "angadh": "pus", "anois": "ahora", "armáil": "brazo", "arú": "¡ah!", "asp": "áspid", "bairéad": "gorra", "bealach": "camino", "biorán": "alfiler", "bob": "corte de pelo", "borróg": "bollo", "bothán": "cabaña", "brac": "brazo", "brach": "pus", "brocais": "guarida", "bréagchuil": "mosca", "bréagfholt": "peluca", "bus": "autobús", "bá": "bahía", "bó": "vaca", "cailleach": "monja", "canna": "lata", "chomh": "cómo", "cromán": "cadera", "cuan": "bahía", "daid": "papá", "dair": "roble", "dearg": "rojo", "deich": "diez", "dhá": "dos", "dó": "dos", "ealaín": "arte", "eangach": "red", "eascann": "anguila", "easna": "costilla", "eidhneán": "hiedra", "eochair": "llave", "farraige": "mar", "fliuch": "mojado", "francach": "rata", "fáithim": "dobladillo", "fánas": "hueco", "fód": "césped", "fós": "todavía", "gadhar": "perro", "garsún": "chico", "gasúr": "niño", "giall": "mandíbula", "giotán": "trozo", "gnéas": "sexo", "gnú": "ñu", "grian": "sol", "gréasán": "red", "guma": "goma", "gunna": "pistola", "gás": "gas", "hap": "salto", "hata": "sombrero", "iomair": "remar", "iomlán": "todo", "jib": "foque", "lapa": "pata", "leaba": "cama", "leaid": "chico", "liamhás": "jamón", "luaithreamhán": "ceniza", "lá": "día", "láib": "barro", "léarscáil": "mapa", "mac": "hijo", "madra": "perro", "mapa": "mapa", "mianach": "mineral", "muir": "mar", "mullach": "cima", "móid": "voto", "ná": "ni", "oighear": "hielo", "ola": "aceite", "panna": "sartén", "pardóg": "bloc", "peaca": "pecado", "pis": "guisante", "pointe": "punto", "portach": "pantano", "ramhar": "gordo", "rosc": "ojo", "rum": "ron", "rámh": "remo", "seagal": "centeno", "sean": "viejo", "seangán": "hormiga", "slí": "camino", "stán": "hojalata", "sé": "seis", "súil": "ojo", "tae": "té", "tarra": "alquitrán", "tirim": "seco", "tobán": "tina", "tunna": "tonel", "ubh": "huevo", "uile": "todo", "ulchabhán": "búho", "veain": "furgoneta", "zú": "zoológico", "áilleagán": "juguete", "áirc": "arca", "ápa": "mono", "ár": "nuestro", "éag": "morir", "éamú": "emú", "íoc": "pagar", "abhras": "hilo", "acastóir": "eje", "acra": "acre", "acsón": "axón", "adamh": "átomo", "aerach": "aireado", "agar": "agar", "aghaidh": "cara", "agra": "traje", "aicne": "acné", "aidhe": "¡sí!", "aidhnín": "fusible", "aigéad": "ácido", "ainm": "nombre", "aint": "tía", "aintín": "tía", "allta": "salvaje", "almsa": "limosna", "aló": "áloe", "am": "tiempo", "ama": "yugo", "amadán": "tonto", "amhail": "como", "amhastraigh": "ladrar", "amhrán": "canción", "anam": "alma", "anas": "ano", "anraith": "sopa", "babhla": "cuenco", "babhta": "combate", "bacach": "cojo", "bainne": "leche", "balla": "pared", "banna": "banda", "bantiarna": "dama", "beartaigh": "reparto", "beoir": "cerveza", "beola": "labios", "bhuel": "bien", "bia": "comida", "biachlár": "menú", "bileog": "hoja", "bille": "factura", "bliain": "año", "bodhar": "sordo", "boireann": "roca", "bolla": "cuenco", "braich": "malta", "bratach": "bandera", "breosla": "combustible", "briathar": "palabra", "brod": "aguijón", "broim": "pedo", "broinn": "útero", "bromach": "potro", "bruth": "calor", "buaf": "sapo", "buain": "cosechar", "buaircín": "cono", "buama": "bomba", "bulla": "boya", "bum": "auge", "burra": "rebaba", "buíocán": "yema", "bábóg": "muñeca", "bácáil": "hornear", "bád": "bote", "bándearg": "rosa", "bídeach": "pequeño", "bíoma": "viga", "cad": "qué", "caill": "perder", "caillte": "perdido", "caillteanas": "pérdida", "cainneann": "puerro", "campa": "campamento", "ceathair": "cuatro", "ceilp": "kelp", "ceithre": "cuatro", "cillín": "celda", "ciúb": "cubo", "cora": "azud", "corc": "corcho", "corrlach": "probabilidades", "cos": "pie", "crann": "árbol", "crágán": "garra", "cré": "arcilla", "cuid": "parte", "cuing": "yugo", "cúig": "cinco", "cúlaí": "espalda", "damh": "ciervo", "de": "de", "dearnáil": "zurcir", "deasc": "escritorio", "deic": "cubierta", "deireanach": "último", "diúc": "duque", "dol": "bucle", "domhain": "profundo", "dorcha": "oscuro", "dos": "mechón", "dreancaid": "pulga", "dreoilín": "chochín", "druga": "droga", "dua": "trabajo", "duan": "poema", "ducht": "conducto", "duille": "hoja", "duilleog": "hoja", "dusta": "polvo", "dáileog": "dosis", "déach": "dual", "déan": "hacer", "déanach": "último", "dúr": "duro", "eagla": "miedo", "eala": "cisne", "eiteog": "ala", "fada": "largo", "fadálach": "lento", "fail": "anillo", "faithne": "verruga", "faitíos": "temor", "faraor": "ay", "feadán": "tubo", "feag": "junco", "feirm": "granja", "fia": "ciervo", "fiaile": "mala hierba", "fichillín": "peón", "file": "poeta", "fiuch": "hervir", "fiánta": "salvaje", "fiús": "fusible", "flosc": "flujo", "foc": "joder", "focal": "palabra", "foiche": "avispa", "foirm": "formulario", "forc": "tenedor", "formad": "envidia", "fréamh": "raíz", "fuacht": "frío", "fuar": "frío", "furasta": "fácil", "fáinne": "anillo", "fás": "crecer", "fásáil": "cara", "féachaint": "mirar", "féin": "mismo", "fíniúin": "vid", "fíon": "vino", "fíor": "verdadero", "fíric": "hecho", "gabhar": "cabra", "gaineamh": "arena", "gallúnach": "jabón", "gamhain": "ternero", "gaosán": "nariz", "gar": "cerca", "gealach": "luna", "gearb": "costra", "geata": "puerta", "giúiré": "jurado", "glae": "pegamento", "glasáil": "cerrar con llave", "gliú": "pegamento", "gliúáil": "pegar", "glúin": "rodilla", "gníomhas": "escritura", "gorm": "azul", "grá": "amor", "grúdaigh": "elaborar", "gual": "carbón", "géin": "gen", "halla": "sala", "hé": "¡eh!", "iarla": "conde", "iasacht": "préstamo", "iasc": "pez", "idé": "idea", "ifreann": "infierno", "intinn": "mente", "iomann": "himno", "iomaí": "muchos", "iomám": "imán", "jíp": "jeep", "júdó": "judo", "lag": "débil", "lampa": "lámpara", "lao": "ternero", "laofheoil": "ternera", "lata": "listón", "le": "con", "leabhar": "libro", "leamhan": "polilla", "leis": "también", "liath": "gris", "ligh": "lamer", "lionsa": "lente", "liúit": "laúd", "loch": "lago", "lom": "desnudo", "long": "barco", "lotnaid": "plaga", "láithreán": "sitio", "láma": "lama", "líon": "lino", "lúb": "bucle", "lúbán": "bucle", "maipín": "hisopo", "mairteoil": "carne de res", "mais": "masa", "maith": "bueno", "mall": "lento", "manach": "monje", "maol": "calvo", "marbh": "muerto", "meadhg": "suero", "meall": "pelota", "meirg": "óxido", "min": "harina", "minc": "visón", "mionn": "juramento", "miontas": "menta", "miotas": "mito", "muileann": "molino", "murlán": "perilla", "máta": "compañero", "méanfach": "bostezar", "mód": "modo", "naoi": "nueve", "nead": "nido", "neamhní": "cero", "nialas": "cero", "nuair": "cuando", "náid": "cero", "nód": "nodo", "nóta": "nota", "oidhre": "heredero", "oigheann": "horno", "olann": "lana", "olc": "mal", "ollmhór": "enorme", "orlach": "pulgada", "oscail": "abrir", "oscailte": "abierto", "osna": "suspirar", "pailm": "palma", "pian": "dolor", "piara": "par", "pinc": "rosa", "piorra": "pera", "plean": "plan", "pluais": "cueva", "pluma": "ciruela", "plásóg": "césped", "pol": "polo", "port": "melodía", "portán": "cangrejo", "proinn": "comida", "préachán": "cuervo", "puball": "tienda", "pumpa": "bomba", "pupa": "pupa", "páirceáil": "aparcar", "páirt": "parte", "pána": "cristal", "pápa": "papa", "píb": "pipa", "píce": "lucio", "póg": "beso", "pónaire": "alubia", "pónaí": "poni", "rafta": "balsa", "rang": "rango", "riamh": "siempre", "roghchlár": "menú", "roll": "rollo", "rolla": "rollo", "rolladh": "rodar", "rollóg": "rollo", "rothlam": "rodar", "ruaimneoir": "tintorero", "ráta": "tasa", "réal": "real", "réalta": "estrella", "rís": "arroz", "rópa": "cuerda", "rúibín": "rubí", "salachar": "suciedad", "salann": "sal", "scafa": "barco", "scamhóg": "pulmón", "sciathán": "ala", "scragall": "papel de aluminio", "seachtain": "semana", "sead": "nido", "searc": "amor", "seol": "vela", "siad": "ellos", "sin": "ese", "sinc": "zinc", "sios": "silbar", "slios": "lado", "smig": "barbilla", "snaidhm": "nudo", "sobal": "espuma", "socair": "fácil", "sochaí": "muchos", "spota": "mancha", "srón": "nariz", "stobhach": "estofado", "suíochán": "asiento", "sábháilte": "seguro", "sáil": "talón", "sáiste": "salvia", "sár": "zar", "séideog": "soplo", "séideán": "ráfaga", "síob": "ráfaga", "síoda": "seda", "síol": "semilla", "sópa": "jabón", "súiche": "hollín", "tacsaí": "taxi", "thar": "sobre", "tiarna": "señor", "tine": "fuego", "tinn": "dolorido", "tiúba": "tuba", "tiúin": "melodía", "tobar": "pozo", "toil": "voluntad", "toitcheo": "smog", "ton": "tono", "tonn": "ola", "treascair": "derribar", "tuinnín": "atún", "tuiseal": "caso", "tál": "azuela", "téacs": "texto", "téad": "cuerda", "téip": "cinta", "uaimh": "cueva", "uair": "hora", "uan": "cordero", "ubhchruth": "óvalo", "vata": "vatio", "volta": "voltio", "vása": "jarrón", "víosa": "visado", "vól": "ratón de campo", "vóta": "voto", "ádh": "suerte", "áiléar": "desván", "áith": "horno", "áth": "vado", "éan": "pájaro", "éasca": "luna", "íocón": "ícono", "óbó": "oboe", "ór": "oro", "úsáideoir": "usuario", "ab": "abad", "abhainn": "río", "adóib": "adobe", "ae": "hígado", "agáit": "ágata", "aicme": "género", "aicsím": "axioma", "aifid": "áfido", "aigéan": "océano", "ailínigh": "alinear", "aimíd": "amida", "aingeal": "ángel", "ainian": "anión", "ainís": "anís", "airéine": "arena", "aiseach": "axial", "aisteoir": "actor", "albam": "álbum", "algach": "algal", "altóir": "altar", "aláram": "alarma", "amhras": "duda", "ann": "allí", "anord": "caos", "anóid": "ánodo", "argóin": "discutir", "argón": "argón", "arán": "pan", "arís": "otra vez", "astar": "aster", "atall": "atolón", "atriail": "reintentar", "bagún": "tocino", "baile": "hogar", "baileach": "exacto", "bailí": "válido", "baintreach": "viuda", "baise": "tapete", "ball": "órgano", "banaltra": "enfermera", "baois": "locura", "barún": "barón", "bata": "palo", "bean": "mujer", "beo": "vivo", "bithóm": "bioma", "bitseach": "perra", "blais": "sabor", "bloc": "bloque", "blás": "florecer", "bléid": "hoja", "bod": "pene", "bogach": "pantano", "boilsc": "bulto", "bord": "mesa", "bran": "cuervo", "branda": "marca", "breab": "soborno", "breith": "nacimiento", "breitheamh": "juez", "breochloch": "pedernal", "bruis": "cepillo", "bruite": "ardiente", "bród": "orgullo", "bródúil": "orgulloso", "brúcht": "eructo", "brúid": "bruto", "bulaí": "matón", "bácáilte": "horneado", "báicéir": "panadero", "báigh": "ahogar", "báisín": "cuenca", "bán": "blanco", "bás": "muerte", "bí": "ser", "bíog": "piar", "bíosún": "bisonte", "bórás": "bórax", "bórón": "boro", "cab": "boca", "cabhlach": "flota", "cailc": "tiza", "cairt": "gráfico", "calóg": "copo", "camall": "camello", "canta": "trozo", "canáil": "canal", "canú": "canoa", "caoga": "cincuenta", "caolsráid": "callejón", "caolsáile": "fiordo", "caolán": "arroyo", "ceardaíocht": "artesanía", "cearr": "incorrecto", "ceoch": "neblinoso", "ceol": "música", "ciseal": "capa", "ciú": "cola", "ciúbach": "cúbico", "ciúáil": "hacer cola", "claíomh": "espada", "cleas": "truco", "cliceáil": "hacer clic", "confach": "rabioso", "craic": "grieta", "crochta": "granja pequeña", "cros": "cruz", "crosáil": "cruzar", "croí": "corazón", "cuachma": "bígaro", "cuarc": "cuark", "cuileann": "acebo", "cúigiú": "quinto", "cúirt": "tribunal", "dabht": "duda", "daidí": "papá", "damhsa": "baile", "daonna": "humano", "deamhan": "demonio", "dearcán": "bellota", "deatach": "humo", "deichiú": "décimo", "deoraíocht": "exilio", "dia": "un dios", "diabhal": "diablo", "ding": "cuña", "dlíthiúil": "legal", "doimhneacht": "profundidad", "donn": "marrón", "dornálaí": "boxeador", "draoi": "druida", "dreap": "escalar", "druilire": "taladro", "dráma": "drama", "dréachtaigh": "redactar", "drólann": "colon", "drón": "zángano", "dubh": "negro", "duánach": "renal", "dáil": "cita", "dé": "humo", "déirí": "lechería", "díle": "inundación", "eabhar": "marfil", "each": "caballo", "eachtrán": "alienígena", "ealta": "bandada", "eitleoir": "folleto", "faic": "golpe", "faireog": "glándula", "falsa": "falso", "faoi": "bajo", "fathach": "gigante", "fearg": "ira", "feargach": "enojado", "feo": "decaer", "fiabhras": "fiebre", "fiacail": "diente", "fiach": "cuervo", "figh": "tejer", "fiú": "valor", "fliúit": "flauta", "flóra": "flora", "fodhlí": "reglamento", "folamh": "vacío", "fronta": "frente", "fráma": "marco", "fuaim": "sonido", "fual": "orina", "fuil": "sangre", "fásta": "adulto", "fáth": "causa", "féar": "hierba", "féasóg": "barba", "fíonchaor": "uva", "fírinne": "verdad", "físeán": "vídeo", "fócas": "enfoque", "fórsáil": "fuerza", "gabhann": "libra", "gadaí": "ladrón", "gainne": "escama", "gaofar": "ventoso", "gaothach": "ventoso", "garrán": "arboleda", "gearr": "corto", "geireach": "graso", "giarsa": "vigueta", "gild": "gremio", "glan": "limpio", "glasán": "pinzón", "gleo": "ruido", "glóir": "gloria", "glór": "voz", "gort": "campo", "grianmhar": "soleado", "grua": "mejilla", "gráinne": "grano", "grúpa": "grupo", "grúpáil": "agrupar", "guth": "voz", "géineas": "género", "hart": "corazón", "húmas": "humus", "idéal": "ideal", "imigh": "ir", "imoibrigh": "reaccionar", "inchinn": "cerebro", "inneoin": "yunque", "inniu": "hoy", "inse": "bisagra", "iolar": "águila", "ionar": "túnica", "ionchur": "entrada", "iondúil": "habitual", "jíons": "vaqueros", "labhair": "hablar", "laistíos": "abajo", "lann": "espada", "lasair": "llama", "lastuas": "arriba", "leafaos": "pasta", "leannán": "amante", "leibhéal": "nivel", "limfe": "linfa", "linseáil": "linchar", "lipéad": "etiqueta", "liric": "letra", "log": "lugar", "logánta": "local", "loighic": "lógica", "loingeas": "barcos", "luach": "valor", "luaith": "cenizas", "luaithreach": "cenizas", "luamhán": "palanca", "lámhainn": "guante", "léine": "camisa", "léinseach": "alcance", "léir": "claro", "líomóid": "limón", "lítear": "litro", "lúipín": "altramuz", "maide": "palo", "mangó": "mango", "marbhna": "elegía", "marc": "caballo", "maíomh": "presumir", "meadaracht": "metro", "meangadh": "sonrisa", "measctha": "mezclado", "mianadóir": "minero", "milis": "dulce", "miongháire": "sonrisa", "miotal": "metal", "murnán": "tobillo", "méara": "alcalde", "mí": "mes", "míoltóg": "mosquito", "módúil": "modal", "mótar": "motor", "mún": "orina", "múnla": "molde", "namhaid": "enemigo", "naomh": "santo", "naoú": "noveno", "nathair": "serpiente", "neacht": "sobrina", "náire": "vergüenza", "néal": "nube", "ní": "cosa", "níolón": "nailon", "nóin": "nona", "nóinín": "margarita", "ocht": "ocho", "ocsaíd": "óxido", "oinniún": "cebolla", "oirthearach": "frente", "ológ": "aceituna", "ordú": "orden", "orgán": "órgano", "oíche": "noche", "painéal": "panel", "paiste": "parche", "panda": "panda", "pasta": "pasta", "picteilín": "píxel", "pingin": "penique", "pit": "vulva", "planda": "planta", "pluc": "mejilla", "plánáil": "planear", "pláta": "plato", "plúr": "harina", "ponc": "punto", "praghas": "precio", "preab": "empezar", "profa": "prueba", "prúna": "ciruela pasa", "páipéar": "papel", "páirtí": "fiesta", "páiste": "niño", "péineas": "pene", "péint": "pintura", "péitseog": "melocotón", "píotsa": "pizza", "póirse": "porche", "póitseáil": "cazar furtivamente", "radharc": "vista", "raiceáil": "destrozar", "raidhfil": "rifle", "raidió": "radio", "rainse": "rancho", "ramallae": "limo", "rince": "baile", "roisín": "resina", "rosta": "muñeca", "rugbaí": "rugby", "rásaí": "corredor", "rásúr": "maquinilla", "réad": "cosa", "rím": "rima", "rógaire": "pícaro", "salach": "sucio", "salm": "salmo", "scairf": "bufanda", "scamall": "nube", "scaoilte": "suelto", "scaoilteach": "suelto", "scaoth": "enjambre", "sceall": "concha", "sceimheal": "alero", "sceith": "vomitar", "scil": "habilidad", "sciorta": "falda", "sclábhaí": "esclavo", "scoilt": "partir", "sconna": "caño", "scríobh": "escribir", "scuid": "calamar", "scáinne": "madeja", "seacht": "siete", "seamhan": "semen", "seas": "estar de pie", "seasca": "sesenta", "seál": "chal", "seánra": "género", "sibhialta": "civil", "sioc": "escarcha", "siocair": "causa", "siorc": "tiburón", "sióg": "hada", "siúcra": "azúcar", "slabhra": "cadena", "slinn": "pizarra", "snaoisín": "rapé", "sneachtúil": "nevado", "soinneán": "explosión", "solad": "sólido", "soladach": "sólido", "solas": "luz", "sona": "feliz", "sonach": "sónico", "sparán": "monedero", "spásáil": "espacio", "spéirling": "tormenta", "spúnóg": "cuchara", "stoirm": "tormenta", "stát": "estado", "stíl": "estilo", "stór": "tienda", "sáiteán": "estaca", "séabra": "cebra", "séideánach": "ventoso", "séú": "sexto", "síocháin": "paz", "súiste": "mayal", "súlach": "jugo", "taibhse": "fantasma", "tairiscint": "oferta", "taos": "masa", "teach": "casa", "teagascóir": "tutor", "teanchair": "tenazas", "teideal": "título", "teorainn": "límite", "timthriall": "ciclo", "tlú": "tenazas", "tocsain": "toxina", "tocsaineach": "tóxico", "toit": "humo", "toiteach": "ahumado", "tolg": "sofá", "tonúil": "tonal", "traenáil": "entrenar", "treas": "tercero", "treocht": "tendencia", "treá": "lanza", "troitheán": "pedal", "trom": "pesado", "trí": "tres", "tríú": "tercero", "tuama": "tumba", "tuirseach": "cansado", "tuáille": "toalla", "tvuít": "tuit", "tvuíteáil": "tuitear", "tábla": "mesa", "tástáil": "probar", "téama": "tema", "túr": "torre", "uachtarlann": "lechería", "ubhagán": "ovario", "ucht": "pecho", "uillinn": "codo", "uinge": "onza", "uisce": "agua", "urghabh": "apoderarse", "urlaic": "vomitar", "urlár": "suelo", "vinil": "vinilo", "vióla": "viola", "vodca": "vodka", "válsa": "vals", "válsáil": "bailar el vals", "víreas": "virus", "víreasach": "viral", "vótálaí": "votante", "ágar": "augurio", "áitiúil": "local", "áladh": "herida", "éabann": "ébano", "éadach": "tela", "éadan": "frente", "éadrom": "ligero", "éigrit": "garceta", "éitheach": "mentira", "íoglú": "iglú", "íoróin": "ironía", "óg": "joven", "ómra": "ámbar", "óstán": "hotel", "úll": "manzana", "úth": "ubre", "abacht": "abadía", "abhóiséad": "avoceta", "achomharc": "apelación", "adamhach": "atómico", "adhain": "encender", "adhastar": "cabestro", "adhlactha": "enterrado", "aerbhealach": "vía aérea", "aibhinne": "avenida", "ailléil": "alelo", "ailse": "cáncer", "aimhneasach": "distal", "aimpéar": "amperio", "aiméibe": "ameba", "ainglis": "bocio", "aingíne": "angina", "ainmhí": "animal", "aintiún": "himno", "ainéal": "templar", "air": "arado", "airde": "altura", "airgead": "plata", "aisléim": "retroceso", "aisteoireacht": "actuación", "aitriam": "atrio", "alcaile": "álcali", "allasúil": "sudoroso", "allmhairigh": "importar", "almóinn": "almendra", "alpaca": "alpaca", "amaideacht": "idiotez", "amas": "ataque", "amasán": "putter", "amhaire": "woofer", "amplach": "hambriento", "analóg": "analógico", "ancaire": "ancla", "angóra": "angora", "ansmachtaí": "tirano", "antar": "antera", "anáil": "aliento", "armáid": "armada", "armúr": "armadura", "artaire": "arteria", "as": "fuera de", "ascaill": "axila", "aschur": "salida", "asma": "asma", "asáilia": "azalea", "atarraing": "redibujar", "athoscail": "reabrir", "atonúil": "atonal", "atéigh": "recalentar", "babún": "babuino", "bagairt": "amenaza", "baibín": "bobina", "bailé": "ballet", "baincéir": "banquero", "baineann": "femenino", "baineannach": "femenino", "bairdéir": "guardián", "banana": "plátano", "banbh": "lechón", "bandach": "rayado", "baol": "peligro", "basalt": "basalto", "bascaed": "cesta", "beachlann": "colmenar", "beart": "fardo"};
 
-const WORDS_ALL  = Object.keys(DICT_ES);
-const WORD_MS    = 4000;
-const BONUS_MS   = 1000;
+const WORDS_ALL   = Object.keys(DICT_ES);
+const ROUND_LENGTH = 20;
 
-let score = 0, wordStart = 0;
-let correctIdx = 0, locked = false;
-let wordRAF, flashTimer;
-let _ca = null, _currentWord = '';
-let remaining = new Set();
-let correctCount = 0;
-
-// ── Screens ──────────────────────────────────────────────────────────────────
-function show(id) {
-  ['start-screen','game-screen','over-screen','complete-screen'].forEach(s =>
-    document.getElementById(s).classList.toggle('active', s === id));
-}
-
-// ── Game init ─────────────────────────────────────────────────────────────────
-function startGame() {
-  score = 0;
-  correctCount = 0;
-  locked = false;
-  remaining = new Set(WORDS_ALL);
-  updateHUD();
-  show('game-screen');
-  nextWord();
-}
-
-// ── HUD ───────────────────────────────────────────────────────────────────────
-function updateHUD() {
-  document.getElementById('score-display').textContent = 'Scór: ' + score;
-  document.getElementById('progress-display').textContent =
-    correctCount + ' / 1000';
-}
+let round, roundWords, wordIndex, curScore, score1, score2;
+let missedR1 = [];
+let locked, correctIdx, currentWord;
+let _ca = null, _nextAudio = null, _nextW = null;
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
-let _nextAudio = null, _nextW = null;
-
 function playWord(word) {
   if (_ca) { _ca.pause(); _ca = null; }
   const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
@@ -186,7 +121,6 @@ function playWord(word) {
   a.play().catch(function(){});
   _ca = a;
 }
-function replayPron() { if (_currentWord) playWord(_currentWord); }
 function preloadNext(word) {
   if (_ca) { _ca.pause(); _ca = null; }
   _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
@@ -197,26 +131,65 @@ function preloadNext(word) {
   _nextW = word;
 }
 
-// ── Word helpers ───────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function sh(arr) {
-  for (let i = arr.length-1; i > 0; i--) {
+  const a = arr.slice();
+  for (let i = a.length-1; i > 0; i--) {
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [a[i],a[j]] = [a[j],a[i]];
   }
-  return arr;
-}
-function pickRandom(exclude) {
-  const pool = WORDS_ALL.filter(w => w !== exclude);
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-function pickFromRemaining() {
-  const arr = [...remaining];
-  return arr[Math.floor(Math.random() * arr.length)];
+  return a;
 }
 
-// ── Word flow ─────────────────────────────────────────────────────────────────
+function getDistractor(correctWord) {
+  const correctDef = DICT_ES[correctWord].toLowerCase();
+  let attempts = 0;
+  while (attempts < 20) {
+    const w = WORDS_ALL[Math.floor(Math.random()*WORDS_ALL.length)];
+    if (w !== correctWord && DICT_ES[w].toLowerCase() !== correctDef) return DICT_ES[w];
+    attempts++;
+  }
+  return DICT_ES[WORDS_ALL[0]];
+}
+
+// ── Game flow ─────────────────────────────────────────────────────────────────
+function initGame() {
+  round = 1;
+  roundWords = sh(WORDS_ALL).slice(0, ROUND_LENGTH);
+  wordIndex = 0; curScore = 0; score1 = 0; score2 = 0;
+  missedR1 = [];
+  locked = false;
+  _nextAudio = null; _nextW = null;
+  updateStats();
+  nextWord();
+  show('game-screen');
+}
+
+function startRound2() {
+  round = 2;
+  roundWords = sh(roundWords.slice());
+  wordIndex = 0; curScore = 0;
+  locked = false;
+  _nextAudio = null; _nextW = null;
+  updateStats();
+  nextWord();
+  show('game-screen');
+}
+
+function updateStats() {
+  document.getElementById('round-badge').textContent = 'Babhta ' + round;
+  document.getElementById('word-num').textContent = Math.min(wordIndex+1, ROUND_LENGTH) + ' / ' + ROUND_LENGTH;
+  document.getElementById('score-running').textContent = curScore;
+  document.getElementById('progress-bar').style.width = (wordIndex/ROUND_LENGTH*100) + '%';
+}
+
 function nextWord() {
-  if (locked) return;
+  if (wordIndex >= ROUND_LENGTH) {
+    if (round === 1) endRound1();
+    else endGame();
+    return;
+  }
+  locked = false;
 
   let word;
   if (_nextW && _nextAudio) {
@@ -225,125 +198,118 @@ function nextWord() {
     a.muted = false; a.currentTime = 0;
     a.play().catch(function(){}); _ca = a;
   } else {
-    word = pickFromRemaining();
+    word = roundWords[wordIndex];
     playWord(word);
   }
+  currentWord = roundWords[wordIndex];
 
-  const correct = DICT_ES[word];
-  const wrong   = DICT_ES[pickRandom(word)];
-  const opts    = sh([correct, wrong]);
-  correctIdx    = opts.indexOf(correct);
-  _currentWord  = word;
-  wordStart     = Date.now();
+  const correctDef = DICT_ES[currentWord];
+  const wrongDef   = getDistractor(currentWord);
+  correctIdx = Math.random() < 0.5 ? 0 : 1;
+  const choices = correctIdx === 0 ? [correctDef, wrongDef] : [wrongDef, correctDef];
 
-  document.getElementById('word-card').textContent = word;
-  document.getElementById('word-card').className   = 'card';
+  document.getElementById('word-display').textContent = currentWord;
+  document.getElementById('word-card').className = 'card';
 
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach((b, i) => {
-    b.querySelector('.btn-text').textContent = opts[i];
-    b.className = 'choice-btn'; b.disabled = false;
+    b.textContent = (i===0 ? '↑ ' : '↓ ') + choices[i];
+    b.className = 'choice-btn';
+    b.disabled = false;
   });
 
-  cancelAnimationFrame(wordRAF);
-  const wordEnd = Date.now() + WORD_MS;
-
-  function tick() {
-    const rem = wordEnd - Date.now();
-    if (rem <= 0) {
-      document.getElementById('word-timer-bar').style.width = '0%';
-      document.getElementById('word-card').className = 'card flash-timeout';
-      btns.forEach(b => b.disabled = true);
-      playNo();
-      locked = true;
-      setTimeout(endGame, 800);
-      return;
-    }
-    document.getElementById('word-timer-bar').style.width = (rem / WORD_MS * 100) + '%';
-    wordRAF = requestAnimationFrame(tick);
-  }
-  tick();
+  updateStats();
 }
 
-// ── Pick ───────────────────────────────────────────────────────────────────────
 function pick(idx) {
   if (locked) return;
   locked = true;
-  cancelAnimationFrame(wordRAF);
-
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => b.disabled = true);
 
   if (idx === correctIdx) {
-    const elapsed = Date.now() - wordStart;
-    const pts = elapsed < BONUS_MS ? 2 : 1;
-    score += pts;
-    remaining.delete(_currentWord);
-    correctCount++;
-    updateHUD();
+    curScore++;
     playOk();
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
-    showFlash(pts === 2 ? '⚡ +2' : '+1');
-
-    if (remaining.size === 0) {
-      setTimeout(gameComplete, 850);
-    } else {
-      const nextW = pickFromRemaining();
-      preloadNext(nextW);
-      setTimeout(() => { locked = false; nextWord(); }, 850);
-    }
   } else {
+    if (round === 1) missedR1.push(currentWord);
     playNo();
     btns[idx].className = 'choice-btn selected-wrong';
     btns[correctIdx].className = 'choice-btn reveal-correct';
     document.getElementById('word-card').className = 'card flash-wrong';
-    setTimeout(endGame, 900);
   }
+
+  // Preload next word audio from gesture context (iOS fix)
+  const nextIdx = wordIndex + 1;
+  if (nextIdx < ROUND_LENGTH) preloadNext(roundWords[nextIdx]);
+
+  wordIndex++;
+  updateStats();
+  setTimeout(nextWord, 900);
 }
 
-function showFlash(txt) {
-  const el = document.getElementById('pts-flash');
-  el.textContent = txt; el.style.opacity = '1';
-  clearTimeout(flashTimer);
-  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 800);
+// ── Intermission ───────────────────────────────────────────────────────────────
+function endRound1() {
+  score1 = curScore;
+  document.getElementById('mid-score').textContent = score1;
+
+  const wrap = document.getElementById('mid-missed-wrap');
+  if (missedR1.length === 0) {
+    wrap.innerHTML = '<p class="all-correct-msg">✓ Gach focal ceart — ar fheabhas!</p>';
+  } else {
+    let html = '<div class="missed-list"><p class="missed-list-label">Focail le cleachtadh sa 2ú babhta:</p>';
+    missedR1.forEach(w => {
+      html += '<div class="missed-item"><span class="missed-irish">' + w + '</span>'
+            + '<span class="missed-def">= ' + DICT_ES[w] + '</span></div>';
+    });
+    html += '</div>';
+    wrap.innerHTML = html;
+  }
+  show('mid-screen');
 }
 
-// ── End ────────────────────────────────────────────────────────────────────────
+// ── End game ───────────────────────────────────────────────────────────────────
 function endGame() {
-  cancelAnimationFrame(wordRAF);
-  locked = true;
-  if (_ca) { _ca.pause(); _ca = null; }
-  document.getElementById('final-score').textContent = score;
-  document.getElementById('final-progress').textContent =
-    correctCount + ' focal ceart as 1000';
+  score2 = curScore;
+  const improved = score2 > score1;
+  const sep = improved ? ' > ' : ' - ';
+  document.getElementById('final-score').textContent = score1 + sep + score2;
+  document.getElementById('final-score').className = 'final-score ' + (improved ? 'improved' : 'flat-or-down');
+
+  let msg, cls;
+  if (improved) {
+    msg = '↑ Feabhas de ' + (score2-score1) + ' focal — maith thú!';
+    cls = 'improved';
+  } else if (score2 === score1) {
+    msg = 'Scór cothrom — lean ort ag cleachtadh!';
+    cls = 'flat-or-down';
+  } else {
+    msg = '↓ Níos lú sa 2ú babhta — bain triail eile as!';
+    cls = 'flat-or-down';
+  }
+  document.getElementById('over-msg').textContent = msg;
+  document.getElementById('over-msg').className = 'over-msg ' + cls;
   show('over-screen');
 }
 
-function gameComplete() {
-  cancelAnimationFrame(wordRAF);
-  locked = true;
-  if (_ca) { _ca.pause(); _ca = null; }
-  document.getElementById('complete-score').textContent = score;
-  show('complete-screen');
+function show(id) {
+  ['start-screen','game-screen','mid-screen','over-screen'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
 }
 
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowUp')   { e.preventDefault(); pick(0); }
+  if (e.key==='ArrowDown') { e.preventDefault(); pick(1); }
+});
+
 // ── Sound ──────────────────────────────────────────────────────────────────────
-let _sfx = null;
+let _sfx=null;
 function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();return _sfx;}
 function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
 function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
 function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
-
-// ── Keyboard ───────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  const inInput = document.activeElement && document.activeElement.tagName === 'INPUT';
-  if (e.key === 'ArrowUp'   || (!inInput && (e.key==='w'||e.key==='W'))) { e.preventDefault(); pick(0); }
-  if (e.key === 'ArrowDown' || (!inInput && (e.key==='s'||e.key==='S'))) { e.preventDefault(); pick(1); }
-  if (e.key === 'Enter') {
-    if (document.getElementById('start-screen').classList.contains('active')) startGame();
-  }
-});
 
 show('start-screen');
 </script>
