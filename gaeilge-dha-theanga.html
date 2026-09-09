@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaeilge – Dhá Theanga</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a2e;
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .screen { display: none; flex-direction: column; align-items: center;
+              justify-content: center; gap: 14px; text-align: center;
+              width: 100%; max-width: 580px; padding: 24px; }
+    .screen.active { display: flex; }
+    h1 { font-size: 2.1rem; color: #1a1a2e; }
+    h2 { font-size: 1.6rem; color: #53d8fb; }
+    .subtitle { font-size: 0.88rem; color: #888; line-height: 1.7; }
+    .start-btn { background: #e94560; color: #fff; border: none; border-radius: 10px;
+      padding: 13px 36px; font-size: 1.05rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    .start-btn:hover { background: #c73652; }
+    .btn-secondary { background: #fff; color: #1a1a2e; border: 2px solid #ddd;
+      border-radius: 10px; padding: 11px 26px; font-size: 1rem; font-weight: bold;
+      cursor: pointer; transition: background 0.2s; }
+    .btn-secondary:hover { background: #f0f0f0; }
+    .btn-row { display: flex; gap: 10px; }
+
+    /* HUD */
+    #hud { width: 100%; display: flex; justify-content: space-between; align-items: center;
+           font-size: 0.9rem; }
+    #lives-display { color: #e94560; font-size: 1.1rem; letter-spacing: 2px; }
+    #score-display { font-weight: bold; color: #1a1a2e; }
+
+    /* Timer bar */
+    #timer-wrap { width: 100%; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
+    #timer-bar   { height: 100%; width: 100%; border-radius: 3px;
+                   background: #2a9d47; transition: background 0.3s; }
+
+    /* Word card */
+    .word-card { background: #fff; border-radius: 14px; padding: 20px 24px; width: 100%;
+      font-size: 1.9rem; font-weight: bold; color: #1a1a2e; letter-spacing: 1px;
+      min-height: 76px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; }
+    .word-card.flash-correct { background: #d4edda; }
+    .word-card.flash-partial { background: #fff3cd; }
+    .word-card.flash-wrong   { background: #f8d7da; }
+    .word-card.flash-timeout { background: #fff3cd; }
+
+    #sound-btn { font-size: 0.8rem; color: #888; cursor: pointer; user-select: none; }
+
+    /* Dual columns */
+    .dual-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lang-col { display: flex; flex-direction: column; gap: 8px; }
+    .col-label { font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
+                 letter-spacing: 1px; text-align: center; padding-bottom: 2px; }
+    .col-es .col-label { color: #c0392b; }
+    .col-en .col-label { color: #1565c0; }
+
+    .choice-btn { width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 2px solid #ddd; background: #fff; color: #1a1a2e; font-size: 0.93rem;
+      cursor: pointer; text-align: left; transition: background 0.1s, border-color 0.1s;
+      min-height: 54px; display: flex; align-items: center; gap: 8px; }
+    .choice-btn:hover:not(:disabled) { background: #f8f8f8; border-color: #aaa; }
+    .key-hint { font-size: 0.75rem; opacity: 0.4; flex-shrink: 0; min-width: 1.1em; }
+    .choice-btn.selected  { border-color: #1a6fb5; background: #eff4fb; }
+    .choice-btn.correct   { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
+    .choice-btn.wrong     { background: #f8d7da; border-color: #e94560; color: #c0392b; }
+    .choice-btn.reveal    { background: #d4edda; border-color: #4caf50; color: #2a6b3a; }
+
+    #pts-flash { font-size: 1.3rem; font-weight: bold; color: #4caf50;
+                 opacity: 0; transition: opacity 0.25s; height: 26px; }
+
+    /* Over screen */
+    .score-block { display: flex; gap: 20px; justify-content: center; align-items: center; }
+    .score-item  { text-align: center; }
+    .score-num   { font-size: 2rem; font-weight: bold; }
+    .score-lbl   { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .score-es    { color: #c0392b; }
+    .score-en    { color: #1565c0; }
+    .score-tot   { color: #1a1a2e; font-size: 2.3rem; }
+    .divider     { width: 1px; height: 50px; background: #ddd; }
+  </style>
+</head>
+<body>
+
+<!-- START -->
+<div id="start-screen" class="screen active">
+  <div style="font-size:2rem">🇮🇪 → 🇪🇸 + 🇬🇧</div>
+  <h1>Dhá Theanga</h1>
+  <p class="subtitle">
+    Roghnaigh an sainmhíniú ceart i Spáinnis <em>agus</em> i mBéarla.<br>
+    5 soicind · 5 shaol · Scór de réir luais<br><br>
+    <strong style="color:#1a1a2e">Méarchlár uimhreacha:</strong><br>
+    <span style="color:#c0392b">7</span> = Spáinnis barr &nbsp;·&nbsp;
+    <span style="color:#c0392b">1</span> = Spáinnis bun<br>
+    <span style="color:#1565c0">9</span> = Béarla barr &nbsp;·&nbsp;
+    <span style="color:#1565c0">3</span> = Béarla bun
+  </p>
+  <button class="start-btn" onclick="startGame()">Tosaigh</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen">
+  <div id="hud">
+    <div id="lives-display">♥♥♥♥♥</div>
+    <div id="score-display">Scór: 0</div>
+  </div>
+  <div id="timer-wrap"><div id="timer-bar"></div></div>
+  <div class="word-card" id="word-card">—</div>
+  <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
+
+  <div class="dual-grid">
+    <div class="lang-col col-es">
+      <div class="col-label">🇪🇸 Español</div>
+      <button class="choice-btn" id="es-0" onclick="pickES(0)">
+        <span class="key-hint">7</span><span class="btn-text"></span>
+      </button>
+      <button class="choice-btn" id="es-1" onclick="pickES(1)">
+        <span class="key-hint">1</span><span class="btn-text"></span>
+      </button>
+    </div>
+    <div class="lang-col col-en">
+      <div class="col-label">🇬🇧 English</div>
+      <button class="choice-btn" id="en-0" onclick="pickEN(0)">
+        <span class="key-hint">9</span><span class="btn-text"></span>
+      </button>
+      <button class="choice-btn" id="en-1" onclick="pickEN(1)">
+        <span class="key-hint">3</span><span class="btn-text"></span>
+      </button>
+    </div>
+  </div>
+  <div id="pts-flash">+5</div>
+</div>
+
+<!-- OVER -->
+<div id="over-screen" class="screen">
+  <div style="font-size:2.5rem">🏁</div>
+  <h2>Críochnaithe!</h2>
+  <div class="score-block">
+    <div class="score-item">
+      <div class="score-num score-es" id="over-es">0</div>
+      <div class="score-lbl">🇪🇸 Español</div>
+    </div>
+    <div class="divider"></div>
+    <div class="score-item">
+      <div class="score-num score-en" id="over-en">0</div>
+      <div class="score-lbl">🇬🇧 English</div>
+    </div>
+    <div class="divider"></div>
+    <div class="score-item">
+      <div class="score-num score-tot" id="over-tot">0</div>
+      <div class="score-lbl">Scór Iomlán</div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="start-btn" onclick="startGame()">Arís</button>
+    <button class="btn-secondary" onclick="show('start-screen')">Baile</button>
+  </div>
+</div>
+
+<script>
+const DICT_ES = {"ach": "pero", "adac": "artesa", "aer": "aire", "agus": "y", "aife": "reflujo", "aimsigh": "apuntar", "aimsiú": "objetivo", "aip": "aplicación", "amháin": "uno", "angadh": "pus", "anois": "ahora", "armáil": "brazo", "arú": "¡ah!", "asp": "áspid", "bairéad": "gorra", "bealach": "camino", "biorán": "alfiler", "bob": "corte de pelo", "borróg": "bollo", "bothán": "cabaña", "brac": "brazo", "brach": "pus", "brocais": "guarida", "bréagchuil": "mosca", "bréagfholt": "peluca", "bus": "autobús", "bá": "bahía", "bó": "vaca", "cailleach": "monja", "canna": "lata", "chomh": "cómo", "cromán": "cadera", "cuan": "bahía", "daid": "papá", "dair": "roble", "dearg": "rojo", "deich": "diez", "dhá": "dos", "dó": "dos", "ealaín": "arte", "eangach": "red", "eascann": "anguila", "easna": "costilla", "eidhneán": "hiedra", "eochair": "llave", "farraige": "mar", "fliuch": "mojado", "francach": "rata", "fáithim": "dobladillo", "fánas": "hueco", "fód": "césped", "fós": "todavía", "gadhar": "perro", "garsún": "chico", "gasúr": "niño", "giall": "mandíbula", "giotán": "trozo", "gnéas": "sexo", "gnú": "ñu", "grian": "sol", "gréasán": "red", "guma": "goma", "gunna": "pistola", "gás": "gas", "hap": "salto", "hata": "sombrero", "iomair": "remar", "iomlán": "todo", "jib": "foque", "lapa": "pata", "leaba": "cama", "leaid": "chico", "liamhás": "jamón", "luaithreamhán": "ceniza", "lá": "día", "láib": "barro", "léarscáil": "mapa", "mac": "hijo", "madra": "perro", "mapa": "mapa", "mianach": "mineral", "muir": "mar", "mullach": "cima", "móid": "voto", "ná": "ni", "oighear": "hielo", "ola": "aceite", "panna": "sartén", "pardóg": "bloc", "peaca": "pecado", "pis": "guisante", "pointe": "punto", "portach": "pantano", "ramhar": "gordo", "rosc": "ojo", "rum": "ron", "rámh": "remo", "seagal": "centeno", "sean": "viejo", "seangán": "hormiga", "slí": "camino", "stán": "hojalata", "sé": "seis", "súil": "ojo", "tae": "té", "tarra": "alquitrán", "tirim": "seco", "tobán": "tina", "tunna": "tonel", "ubh": "huevo", "uile": "todo", "ulchabhán": "búho", "veain": "furgoneta", "zú": "zoológico", "áilleagán": "juguete", "áirc": "arca", "ápa": "mono", "ár": "nuestro", "éag": "morir", "éamú": "emú", "íoc": "pagar", "abhras": "hilo", "acastóir": "eje", "acra": "acre", "acsón": "axón", "adamh": "átomo", "aerach": "aireado", "agar": "agar", "aghaidh": "cara", "agra": "traje", "aicne": "acné", "aidhe": "¡sí!", "aidhnín": "fusible", "aigéad": "ácido", "ainm": "nombre", "aint": "tía", "aintín": "tía", "allta": "salvaje", "almsa": "limosna", "aló": "áloe", "am": "tiempo", "ama": "yugo", "amadán": "tonto", "amhail": "como", "amhastraigh": "ladrar", "amhrán": "canción", "anam": "alma", "anas": "ano", "anraith": "sopa", "babhla": "cuenco", "babhta": "combate", "bacach": "cojo", "bainne": "leche", "balla": "pared", "banna": "banda", "bantiarna": "dama", "beartaigh": "reparto", "beoir": "cerveza", "beola": "labios", "bhuel": "bien", "bia": "comida", "biachlár": "menú", "bileog": "hoja", "bille": "factura", "bliain": "año", "bodhar": "sordo", "boireann": "roca", "bolla": "cuenco", "braich": "malta", "bratach": "bandera", "breosla": "combustible", "briathar": "palabra", "brod": "aguijón", "broim": "pedo", "broinn": "útero", "bromach": "potro", "bruth": "calor", "buaf": "sapo", "buain": "cosechar", "buaircín": "cono", "buama": "bomba", "bulla": "boya", "bum": "auge", "burra": "rebaba", "buíocán": "yema", "bábóg": "muñeca", "bácáil": "hornear", "bád": "bote", "bándearg": "rosa", "bídeach": "pequeño", "bíoma": "viga", "cad": "qué", "caill": "perder", "caillte": "perdido", "caillteanas": "pérdida", "cainneann": "puerro", "campa": "campamento", "ceathair": "cuatro", "ceilp": "kelp", "ceithre": "cuatro", "cillín": "celda", "ciúb": "cubo", "cora": "azud", "corc": "corcho", "corrlach": "probabilidades", "cos": "pie", "crann": "árbol", "crágán": "garra", "cré": "arcilla", "cuid": "parte", "cuing": "yugo", "cúig": "cinco", "cúlaí": "espalda", "damh": "ciervo", "de": "de", "dearnáil": "zurcir", "deasc": "escritorio", "deic": "cubierta", "deireanach": "último", "diúc": "duque", "dol": "bucle", "domhain": "profundo", "dorcha": "oscuro", "dos": "mechón", "dreancaid": "pulga", "dreoilín": "chochín", "druga": "droga", "dua": "trabajo", "duan": "poema", "ducht": "conducto", "duille": "hoja", "duilleog": "hoja", "dusta": "polvo", "dáileog": "dosis", "déach": "dual", "déan": "hacer", "déanach": "último", "dúr": "duro", "eagla": "miedo", "eala": "cisne", "eiteog": "ala", "fada": "largo", "fadálach": "lento", "fail": "anillo", "faithne": "verruga", "faitíos": "temor", "faraor": "ay", "feadán": "tubo", "feag": "junco", "feirm": "granja", "fia": "ciervo", "fiaile": "mala hierba", "fichillín": "peón", "file": "poeta", "fiuch": "hervir", "fiánta": "salvaje", "fiús": "fusible", "flosc": "flujo", "foc": "joder", "focal": "palabra", "foiche": "avispa", "foirm": "formulario", "forc": "tenedor", "formad": "envidia", "fréamh": "raíz", "fuacht": "frío", "fuar": "frío", "furasta": "fácil", "fáinne": "anillo", "fás": "crecer", "fásáil": "cara", "féachaint": "mirar", "féin": "mismo", "fíniúin": "vid", "fíon": "vino", "fíor": "verdadero", "fíric": "hecho", "gabhar": "cabra", "gaineamh": "arena", "gallúnach": "jabón", "gamhain": "ternero", "gaosán": "nariz", "gar": "cerca", "gealach": "luna", "gearb": "costra", "geata": "puerta", "giúiré": "jurado", "glae": "pegamento", "glasáil": "cerrar con llave", "gliú": "pegamento", "gliúáil": "pegar", "glúin": "rodilla", "gníomhas": "escritura", "gorm": "azul", "grá": "amor", "grúdaigh": "elaborar", "gual": "carbón", "géin": "gen", "halla": "sala", "hé": "¡eh!", "iarla": "conde", "iasacht": "préstamo", "iasc": "pez", "idé": "idea", "ifreann": "infierno", "intinn": "mente", "iomann": "himno", "iomaí": "muchos", "iomám": "imán", "jíp": "jeep", "júdó": "judo", "lag": "débil", "lampa": "lámpara", "lao": "ternero", "laofheoil": "ternera", "lata": "listón", "le": "con", "leabhar": "libro", "leamhan": "polilla", "leis": "también", "liath": "gris", "ligh": "lamer", "lionsa": "lente", "liúit": "laúd", "loch": "lago", "lom": "desnudo", "long": "barco", "lotnaid": "plaga", "láithreán": "sitio", "láma": "lama", "líon": "lino", "lúb": "bucle", "lúbán": "bucle", "maipín": "hisopo", "mairteoil": "carne de res", "mais": "masa", "maith": "bueno", "mall": "lento", "manach": "monje", "maol": "calvo", "marbh": "muerto", "meadhg": "suero", "meall": "pelota", "meirg": "óxido", "min": "harina", "minc": "visón", "mionn": "juramento", "miontas": "menta", "miotas": "mito", "muileann": "molino", "murlán": "perilla", "máta": "compañero", "méanfach": "bostezar", "mód": "modo", "naoi": "nueve", "nead": "nido", "neamhní": "cero", "nialas": "cero", "nuair": "cuando", "náid": "cero", "nód": "nodo", "nóta": "nota", "oidhre": "heredero", "oigheann": "horno", "olann": "lana", "olc": "mal", "ollmhór": "enorme", "orlach": "pulgada", "oscail": "abrir", "oscailte": "abierto", "osna": "suspirar", "pailm": "palma", "pian": "dolor", "piara": "par", "pinc": "rosa", "piorra": "pera", "plean": "plan", "pluais": "cueva", "pluma": "ciruela", "plásóg": "césped", "pol": "polo", "port": "melodía", "portán": "cangrejo", "proinn": "comida", "préachán": "cuervo", "puball": "tienda", "pumpa": "bomba", "pupa": "pupa", "páirceáil": "aparcar", "páirt": "parte", "pána": "cristal", "pápa": "papa", "píb": "pipa", "píce": "lucio", "póg": "beso", "pónaire": "alubia", "pónaí": "poni", "rafta": "balsa", "rang": "rango", "riamh": "siempre", "roghchlár": "menú", "roll": "rollo", "rolla": "rollo", "rolladh": "rodar", "rollóg": "rollo", "rothlam": "rodar", "ruaimneoir": "tintorero", "ráta": "tasa", "réal": "real", "réalta": "estrella", "rís": "arroz", "rópa": "cuerda", "rúibín": "rubí", "salachar": "suciedad", "salann": "sal", "scafa": "barco", "scamhóg": "pulmón", "sciathán": "ala", "scragall": "papel de aluminio", "seachtain": "semana", "sead": "nido", "searc": "amor", "seol": "vela", "siad": "ellos", "sin": "ese", "sinc": "zinc", "sios": "silbar", "slios": "lado", "smig": "barbilla", "snaidhm": "nudo", "sobal": "espuma", "socair": "fácil", "sochaí": "muchos", "spota": "mancha", "srón": "nariz", "stobhach": "estofado", "suíochán": "asiento", "sábháilte": "seguro", "sáil": "talón", "sáiste": "salvia", "sár": "zar", "séideog": "soplo", "séideán": "ráfaga", "síob": "ráfaga", "síoda": "seda", "síol": "semilla", "sópa": "jabón", "súiche": "hollín", "tacsaí": "taxi", "thar": "sobre", "tiarna": "señor", "tine": "fuego", "tinn": "dolorido", "tiúba": "tuba", "tiúin": "melodía", "tobar": "pozo", "toil": "voluntad", "toitcheo": "smog", "ton": "tono", "tonn": "ola", "treascair": "derribar", "tuinnín": "atún", "tuiseal": "caso", "tál": "azuela", "téacs": "texto", "téad": "cuerda", "téip": "cinta", "uaimh": "cueva", "uair": "hora", "uan": "cordero", "ubhchruth": "óvalo", "vata": "vatio", "volta": "voltio", "vása": "jarrón", "víosa": "visado", "vól": "ratón de campo", "vóta": "voto", "ádh": "suerte", "áiléar": "desván", "áith": "horno", "áth": "vado", "éan": "pájaro", "éasca": "luna", "íocón": "ícono", "óbó": "oboe", "ór": "oro", "úsáideoir": "usuario", "ab": "abad", "abhainn": "río", "adóib": "adobe", "ae": "hígado", "agáit": "ágata", "aicme": "género", "aicsím": "axioma", "aifid": "áfido", "aigéan": "océano", "ailínigh": "alinear", "aimíd": "amida", "aingeal": "ángel", "ainian": "anión", "ainís": "anís", "airéine": "arena", "aiseach": "axial", "aisteoir": "actor", "albam": "álbum", "algach": "algal", "altóir": "altar", "aláram": "alarma", "amhras": "duda", "ann": "allí", "anord": "caos", "anóid": "ánodo", "argóin": "discutir", "argón": "argón", "arán": "pan", "arís": "otra vez", "astar": "aster", "atall": "atolón", "atriail": "reintentar", "bagún": "tocino", "baile": "hogar", "baileach": "exacto", "bailí": "válido", "baintreach": "viuda", "baise": "tapete", "ball": "órgano", "banaltra": "enfermera", "baois": "locura", "barún": "barón", "bata": "palo", "bean": "mujer", "beo": "vivo", "bithóm": "bioma", "bitseach": "perra", "blais": "sabor", "bloc": "bloque", "blás": "florecer", "bléid": "hoja", "bod": "pene", "bogach": "pantano", "boilsc": "bulto", "bord": "mesa", "bran": "cuervo", "branda": "marca", "breab": "soborno", "breith": "nacimiento", "breitheamh": "juez", "breochloch": "pedernal", "bruis": "cepillo", "bruite": "ardiente", "bród": "orgullo", "bródúil": "orgulloso", "brúcht": "eructo", "brúid": "bruto", "bulaí": "matón", "bácáilte": "horneado", "báicéir": "panadero", "báigh": "ahogar", "báisín": "cuenca", "bán": "blanco", "bás": "muerte", "bí": "ser", "bíog": "piar", "bíosún": "bisonte", "bórás": "bórax", "bórón": "boro", "cab": "boca", "cabhlach": "flota", "cailc": "tiza", "cairt": "gráfico", "calóg": "copo", "camall": "camello", "canta": "trozo", "canáil": "canal", "canú": "canoa", "caoga": "cincuenta", "caolsráid": "callejón", "caolsáile": "fiordo", "caolán": "arroyo", "ceardaíocht": "artesanía", "cearr": "incorrecto", "ceoch": "neblinoso", "ceol": "música", "ciseal": "capa", "ciú": "cola", "ciúbach": "cúbico", "ciúáil": "hacer cola", "claíomh": "espada", "cleas": "truco", "cliceáil": "hacer clic", "confach": "rabioso", "craic": "grieta", "crochta": "granja pequeña", "cros": "cruz", "crosáil": "cruzar", "croí": "corazón", "cuachma": "bígaro", "cuarc": "cuark", "cuileann": "acebo", "cúigiú": "quinto", "cúirt": "tribunal", "dabht": "duda", "daidí": "papá", "damhsa": "baile", "daonna": "humano", "deamhan": "demonio", "dearcán": "bellota", "deatach": "humo", "deichiú": "décimo", "deoraíocht": "exilio", "dia": "un dios", "diabhal": "diablo", "ding": "cuña", "dlíthiúil": "legal", "doimhneacht": "profundidad", "donn": "marrón", "dornálaí": "boxeador", "draoi": "druida", "dreap": "escalar", "druilire": "taladro", "dráma": "drama", "dréachtaigh": "redactar", "drólann": "colon", "drón": "zángano", "dubh": "negro", "duánach": "renal", "dáil": "cita", "dé": "humo", "déirí": "lechería", "díle": "inundación", "eabhar": "marfil", "each": "caballo", "eachtrán": "alienígena", "ealta": "bandada", "eitleoir": "folleto", "faic": "golpe", "faireog": "glándula", "falsa": "falso", "faoi": "bajo", "fathach": "gigante", "fearg": "ira", "feargach": "enojado", "feo": "decaer", "fiabhras": "fiebre", "fiacail": "diente", "fiach": "cuervo", "figh": "tejer", "fiú": "valor", "fliúit": "flauta", "flóra": "flora", "fodhlí": "reglamento", "folamh": "vacío", "fronta": "frente", "fráma": "marco", "fuaim": "sonido", "fual": "orina", "fuil": "sangre", "fásta": "adulto", "fáth": "causa", "féar": "hierba", "féasóg": "barba", "fíonchaor": "uva", "fírinne": "verdad", "físeán": "vídeo", "fócas": "enfoque", "fórsáil": "fuerza", "gabhann": "libra", "gadaí": "ladrón", "gainne": "escama", "gaofar": "ventoso", "gaothach": "ventoso", "garrán": "arboleda", "gearr": "corto", "geireach": "graso", "giarsa": "vigueta", "gild": "gremio", "glan": "limpio", "glasán": "pinzón", "gleo": "ruido", "glóir": "gloria", "glór": "voz", "gort": "campo", "grianmhar": "soleado", "grua": "mejilla", "gráinne": "grano", "grúpa": "grupo", "grúpáil": "agrupar", "guth": "voz", "géineas": "género", "hart": "corazón", "húmas": "humus", "idéal": "ideal", "imigh": "ir", "imoibrigh": "reaccionar", "inchinn": "cerebro", "inneoin": "yunque", "inniu": "hoy", "inse": "bisagra", "iolar": "águila", "ionar": "túnica", "ionchur": "entrada", "iondúil": "habitual", "jíons": "vaqueros", "labhair": "hablar", "laistíos": "abajo", "lann": "espada", "lasair": "llama", "lastuas": "arriba", "leafaos": "pasta", "leannán": "amante", "leibhéal": "nivel", "limfe": "linfa", "linseáil": "linchar", "lipéad": "etiqueta", "liric": "letra", "log": "lugar", "logánta": "local", "loighic": "lógica", "loingeas": "barcos", "luach": "valor", "luaith": "cenizas", "luaithreach": "cenizas", "luamhán": "palanca", "lámhainn": "guante", "léine": "camisa", "léinseach": "alcance", "léir": "claro", "líomóid": "limón", "lítear": "litro", "lúipín": "altramuz", "maide": "palo", "mangó": "mango", "marbhna": "elegía", "marc": "caballo", "maíomh": "presumir", "meadaracht": "metro", "meangadh": "sonrisa", "measctha": "mezclado", "mianadóir": "minero", "milis": "dulce", "miongháire": "sonrisa", "miotal": "metal", "murnán": "tobillo", "méara": "alcalde", "mí": "mes", "míoltóg": "mosquito", "módúil": "modal", "mótar": "motor", "mún": "orina", "múnla": "molde", "namhaid": "enemigo", "naomh": "santo", "naoú": "noveno", "nathair": "serpiente", "neacht": "sobrina", "náire": "vergüenza", "néal": "nube", "ní": "cosa", "níolón": "nailon", "nóin": "nona", "nóinín": "margarita", "ocht": "ocho", "ocsaíd": "óxido", "oinniún": "cebolla", "oirthearach": "frente", "ológ": "aceituna", "ordú": "orden", "orgán": "órgano", "oíche": "noche", "painéal": "panel", "paiste": "parche", "panda": "panda", "pasta": "pasta", "picteilín": "píxel", "pingin": "penique", "pit": "vulva", "planda": "planta", "pluc": "mejilla", "plánáil": "planear", "pláta": "plato", "plúr": "harina", "ponc": "punto", "praghas": "precio", "preab": "empezar", "profa": "prueba", "prúna": "ciruela pasa", "páipéar": "papel", "páirtí": "fiesta", "páiste": "niño", "péineas": "pene", "péint": "pintura", "péitseog": "melocotón", "píotsa": "pizza", "póirse": "porche", "póitseáil": "cazar furtivamente", "radharc": "vista", "raiceáil": "destrozar", "raidhfil": "rifle", "raidió": "radio", "rainse": "rancho", "ramallae": "limo", "rince": "baile", "roisín": "resina", "rosta": "muñeca", "rugbaí": "rugby", "rásaí": "corredor", "rásúr": "maquinilla", "réad": "cosa", "rím": "rima", "rógaire": "pícaro", "salach": "sucio", "salm": "salmo", "scairf": "bufanda", "scamall": "nube", "scaoilte": "suelto", "scaoilteach": "suelto", "scaoth": "enjambre", "sceall": "concha", "sceimheal": "alero", "sceith": "vomitar", "scil": "habilidad", "sciorta": "falda", "sclábhaí": "esclavo", "scoilt": "partir", "sconna": "caño", "scríobh": "escribir", "scuid": "calamar", "scáinne": "madeja", "seacht": "siete", "seamhan": "semen", "seas": "estar de pie", "seasca": "sesenta", "seál": "chal", "seánra": "género", "sibhialta": "civil", "sioc": "escarcha", "siocair": "causa", "siorc": "tiburón", "sióg": "hada", "siúcra": "azúcar", "slabhra": "cadena", "slinn": "pizarra", "snaoisín": "rapé", "sneachtúil": "nevado", "soinneán": "explosión", "solad": "sólido", "soladach": "sólido", "solas": "luz", "sona": "feliz", "sonach": "sónico", "sparán": "monedero", "spásáil": "espacio", "spéirling": "tormenta", "spúnóg": "cuchara", "stoirm": "tormenta", "stát": "estado", "stíl": "estilo", "stór": "tienda", "sáiteán": "estaca", "séabra": "cebra", "séideánach": "ventoso", "séú": "sexto", "síocháin": "paz", "súiste": "mayal", "súlach": "jugo", "taibhse": "fantasma", "tairiscint": "oferta", "taos": "masa", "teach": "casa", "teagascóir": "tutor", "teanchair": "tenazas", "teideal": "título", "teorainn": "límite", "timthriall": "ciclo", "tlú": "tenazas", "tocsain": "toxina", "tocsaineach": "tóxico", "toit": "humo", "toiteach": "ahumado", "tolg": "sofá", "tonúil": "tonal", "traenáil": "entrenar", "treas": "tercero", "treocht": "tendencia", "treá": "lanza", "troitheán": "pedal", "trom": "pesado", "trí": "tres", "tríú": "tercero", "tuama": "tumba", "tuirseach": "cansado", "tuáille": "toalla", "tvuít": "tuit", "tvuíteáil": "tuitear", "tábla": "mesa", "tástáil": "probar", "téama": "tema", "túr": "torre", "uachtarlann": "lechería", "ubhagán": "ovario", "ucht": "pecho", "uillinn": "codo", "uinge": "onza", "uisce": "agua", "urghabh": "apoderarse", "urlaic": "vomitar", "urlár": "suelo", "vinil": "vinilo", "vióla": "viola", "vodca": "vodka", "válsa": "vals", "válsáil": "bailar el vals", "víreas": "virus", "víreasach": "viral", "vótálaí": "votante", "ágar": "augurio", "áitiúil": "local", "áladh": "herida", "éabann": "ébano", "éadach": "tela", "éadan": "frente", "éadrom": "ligero", "éigrit": "garceta", "éitheach": "mentira", "íoglú": "iglú", "íoróin": "ironía", "óg": "joven", "ómra": "ámbar", "óstán": "hotel", "úll": "manzana", "úth": "ubre", "abacht": "abadía", "abhóiséad": "avoceta", "achomharc": "apelación", "adamhach": "atómico", "adhain": "encender", "adhastar": "cabestro", "adhlactha": "enterrado", "aerbhealach": "vía aérea", "aibhinne": "avenida", "ailléil": "alelo", "ailse": "cáncer", "aimhneasach": "distal", "aimpéar": "amperio", "aiméibe": "ameba", "ainglis": "bocio", "aingíne": "angina", "ainmhí": "animal", "aintiún": "himno", "ainéal": "templar", "air": "arado", "airde": "altura", "airgead": "plata", "aisléim": "retroceso", "aisteoireacht": "actuación", "aitriam": "atrio", "alcaile": "álcali", "allasúil": "sudoroso", "allmhairigh": "importar", "almóinn": "almendra", "alpaca": "alpaca", "amaideacht": "idiotez", "amas": "ataque", "amasán": "putter", "amhaire": "woofer", "amplach": "hambriento", "analóg": "analógico", "ancaire": "ancla", "angóra": "angora", "ansmachtaí": "tirano", "antar": "antera", "anáil": "aliento", "armáid": "armada", "armúr": "armadura", "artaire": "arteria", "as": "fuera de", "ascaill": "axila", "aschur": "salida", "asma": "asma", "asáilia": "azalea", "atarraing": "redibujar", "athoscail": "reabrir", "atonúil": "atonal", "atéigh": "recalentar", "babún": "babuino", "bagairt": "amenaza", "baibín": "bobina", "bailé": "ballet", "baincéir": "banquero", "baineann": "femenino", "baineannach": "femenino", "bairdéir": "guardián", "banana": "plátano", "banbh": "lechón", "bandach": "rayado", "baol": "peligro", "basalt": "basalto", "bascaed": "cesta", "beachlann": "colmenar", "beart": "fardo"};
+const DICT_EN = {"ach": "but", "adac": "hod", "aer": "air", "agus": "and", "aife": "ebb", "aimsigh": "aim", "aimsiú": "aim", "aip": "app", "amháin": "one", "angadh": "pus", "anois": "now", "armáil": "arm", "arú": "ah!", "asp": "asp", "bairéad": "cap", "bealach": "way", "biorán": "pin", "bob": "bob", "borróg": "bun", "bothán": "hut", "brac": "arm", "brach": "pus", "brocais": "den", "bréagchuil": "fly", "bréagfholt": "wig", "bus": "bus", "bá": "bay", "bó": "cow", "cailleach": "nun", "canna": "can", "chomh": "how", "cromán": "hip", "cuan": "bay", "daid": "dad", "dair": "oak", "dearg": "red", "deich": "ten", "dhá": "two", "dó": "two", "ealaín": "art", "eangach": "net", "eascann": "eel", "easna": "rib", "eidhneán": "ivy", "eochair": "key", "farraige": "sea", "fliuch": "wet", "francach": "rat", "fáithim": "hem", "fánas": "gap", "fód": "sod", "fós": "yet", "gadhar": "dog", "garsún": "boy", "gasúr": "boy", "giall": "jaw", "giotán": "bit", "gnéas": "sex", "gnú": "gnu", "grian": "sun", "gréasán": "web", "guma": "gum", "gunna": "gun", "gás": "gas", "hap": "hop", "hata": "hat", "iomair": "row", "iomlán": "all", "jib": "jib", "lapa": "paw", "leaba": "bed", "leaid": "lad", "liamhás": "ham", "luaithreamhán": "ash", "lá": "day", "láib": "mud", "léarscáil": "map", "mac": "son", "madra": "dog", "mapa": "map", "mianach": "ore", "muir": "sea", "mullach": "top", "móid": "vow", "ná": "nor", "oighear": "ice", "ola": "oil", "panna": "pan", "pardóg": "pad", "peaca": "sin", "pis": "pea", "pointe": "dot", "portach": "bog", "ramhar": "fat", "rosc": "eye", "rum": "rum", "rámh": "oar", "seagal": "rye", "sean": "old", "seangán": "ant", "slí": "way", "stán": "tin", "sé": "six", "súil": "eye", "tae": "tea", "tarra": "tar", "tirim": "dry", "tobán": "tub", "tunna": "tun", "ubh": "egg", "uile": "all", "ulchabhán": "owl", "veain": "van", "zú": "zoo", "áilleagán": "toy", "áirc": "ark", "ápa": "ape", "ár": "our", "éag": "die", "éamú": "emu", "íoc": "pay", "abhras": "yarn", "acastóir": "axle", "acra": "acre", "acsón": "axon", "adamh": "atom", "aerach": "airy", "agar": "agar", "aghaidh": "face", "agra": "suit", "aicne": "acne", "aidhe": "aye!", "aidhnín": "fuse", "aigéad": "acid", "ainm": "name", "aint": "aunt", "aintín": "aunt", "allta": "wild", "almsa": "alms", "aló": "aloe", "am": "time", "ama": "yoke", "amadán": "fool", "amhail": "like", "amhastraigh": "bark", "amhrán": "song", "anam": "soul", "anas": "anus", "anraith": "soup", "babhla": "bowl", "babhta": "bout", "bacach": "lame", "bainne": "milk", "balla": "wall", "banna": "band", "bantiarna": "lady", "beartaigh": "cast", "beoir": "beer", "beola": "lips", "bhuel": "well", "bia": "food", "biachlár": "menu", "bileog": "leaf", "bille": "bill", "bliain": "year", "bodhar": "deaf", "boireann": "rock", "bolla": "bowl", "braich": "malt", "bratach": "flag", "breosla": "fuel", "briathar": "word", "brod": "goad", "broim": "fart", "broinn": "womb", "bromach": "colt", "bruth": "heat", "buaf": "toad", "buain": "reap", "buaircín": "cone", "buama": "bomb", "bulla": "buoy", "bum": "boom", "burra": "burr", "buíocán": "yolk", "bábóg": "doll", "bácáil": "bake", "bád": "boat", "bándearg": "pink", "bídeach": "tiny", "bíoma": "beam", "cad": "what", "caill": "lose", "caillte": "lost", "caillteanas": "loss", "cainneann": "leek", "campa": "camp", "ceathair": "four", "ceilp": "kelp", "ceithre": "four", "cillín": "cell", "ciúb": "cube", "cora": "weir", "corc": "cork", "corrlach": "odds", "cos": "foot", "crann": "tree", "crágán": "claw", "cré": "clay", "cuid": "part", "cuing": "yoke", "cúig": "five", "cúlaí": "back", "damh": "stag", "de": "from", "dearnáil": "darn", "deasc": "desk", "deic": "deck", "deireanach": "last", "diúc": "duke", "dol": "loop", "domhain": "deep", "dorcha": "dark", "dos": "tuft", "dreancaid": "flea", "dreoilín": "wren", "druga": "drug", "dua": "toil", "duan": "poem", "ducht": "duct", "duille": "leaf", "duilleog": "leaf", "dusta": "dust", "dáileog": "dose", "déach": "dual", "déan": "make", "déanach": "last", "dúr": "hard", "eagla": "fear", "eala": "swan", "eiteog": "wing", "fada": "long", "fadálach": "slow", "fail": "ring", "faithne": "wart", "faitíos": "fear", "faraor": "alas", "feadán": "tube", "feag": "rush", "feirm": "farm", "fia": "deer", "fiaile": "weed", "fichillín": "pawn", "file": "poet", "fiuch": "boil", "fiánta": "wild", "fiús": "fuse", "flosc": "flux", "foc": "fuck", "focal": "word", "foiche": "wasp", "foirm": "form", "forc": "fork", "formad": "envy", "fréamh": "root", "fuacht": "cold", "fuar": "cold", "furasta": "easy", "fáinne": "ring", "fás": "grow", "fásáil": "face", "féachaint": "look", "féin": "self", "fíniúin": "vine", "fíon": "wine", "fíor": "true", "fíric": "fact", "gabhar": "goat", "gaineamh": "sand", "gallúnach": "soap", "gamhain": "calf", "gaosán": "nose", "gar": "near", "gealach": "moon", "gearb": "scab", "geata": "gate", "giúiré": "jury", "glae": "glue", "glasáil": "lock", "gliú": "glue", "gliúáil": "glue", "glúin": "knee", "gníomhas": "deed", "gorm": "blue", "grá": "love", "grúdaigh": "brew", "gual": "coal", "géin": "gene", "halla": "hall", "hé": "hey!", "iarla": "earl", "iasacht": "loan", "iasc": "fish", "idé": "idea", "ifreann": "hell", "intinn": "mind", "iomann": "hymn", "iomaí": "many", "iomám": "imam", "jíp": "jeep", "júdó": "judo", "lag": "weak", "lampa": "lamp", "lao": "calf", "laofheoil": "veal", "lata": "lath", "le": "with", "leabhar": "book", "leamhan": "moth", "leis": "also", "liath": "grey", "ligh": "lick", "lionsa": "lens", "liúit": "lute", "loch": "lake", "lom": "bare", "long": "ship", "lotnaid": "pest", "láithreán": "site", "láma": "lama", "líon": "flax", "lúb": "loop", "lúbán": "loop", "maipín": "swab", "mairteoil": "beef", "mais": "mass", "maith": "good", "mall": "slow", "manach": "monk", "maol": "bald", "marbh": "dead", "meadhg": "whey", "meall": "ball", "meirg": "rust", "min": "meal", "minc": "mink", "mionn": "oath", "miontas": "mint", "miotas": "myth", "muileann": "mill", "murlán": "knob", "máta": "mate", "méanfach": "yawn", "mód": "mode", "naoi": "nine", "nead": "nest", "neamhní": "zero", "nialas": "zero", "nuair": "when", "náid": "zero", "nód": "node", "nóta": "note", "oidhre": "heir", "oigheann": "oven", "olann": "wool", "olc": "evil", "ollmhór": "huge", "orlach": "inch", "oscail": "open", "oscailte": "open", "osna": "sigh", "pailm": "palm", "pian": "pain", "piara": "peer", "pinc": "pink", "piorra": "pear", "plean": "plan", "pluais": "cave", "pluma": "plum", "plásóg": "lawn", "pol": "pole", "port": "tune", "portán": "crab", "proinn": "meal", "préachán": "crow", "puball": "tent", "pumpa": "pump", "pupa": "pupa", "páirceáil": "park", "páirt": "part", "pána": "pane", "pápa": "pope", "píb": "pipe", "píce": "pike", "póg": "kiss", "pónaire": "bean", "pónaí": "pony", "rafta": "raft", "rang": "rank", "riamh": "ever", "roghchlár": "menu", "roll": "roll", "rolla": "roll", "rolladh": "roll", "rollóg": "roll", "rothlam": "roll", "ruaimneoir": "dyer", "ráta": "rate", "réal": "real", "réalta": "star", "rís": "rice", "rópa": "rope", "rúibín": "ruby", "salachar": "dirt", "salann": "salt", "scafa": "ship", "scamhóg": "lung", "sciathán": "wing", "scragall": "foil", "seachtain": "week", "sead": "nest", "searc": "love", "seol": "sail", "siad": "they", "sin": "that", "sinc": "zinc", "sios": "hiss", "slios": "side", "smig": "chin", "snaidhm": "knot", "sobal": "foam", "socair": "easy", "sochaí": "many", "spota": "spot", "srón": "nose", "stobhach": "stew", "suíochán": "seat", "sábháilte": "safe", "sáil": "heel", "sáiste": "sage", "sár": "tsar", "séideog": "puff", "séideán": "gust", "síob": "gust", "síoda": "silk", "síol": "seed", "sópa": "soap", "súiche": "soot", "tacsaí": "taxi", "thar": "over", "tiarna": "lord", "tine": "fire", "tinn": "sore", "tiúba": "tuba", "tiúin": "tune", "tobar": "well", "toil": "will", "toitcheo": "smog", "ton": "tone", "tonn": "wave", "treascair": "fell", "tuinnín": "tuna", "tuiseal": "case", "tál": "adze", "téacs": "text", "téad": "rope", "téip": "tape", "uaimh": "cave", "uair": "hour", "uan": "lamb", "ubhchruth": "oval", "vata": "watt", "volta": "volt", "vása": "vase", "víosa": "visa", "vól": "vole", "vóta": "vote", "ádh": "luck", "áiléar": "loft", "áith": "kiln", "áth": "ford", "éan": "bird", "éasca": "moon", "íocón": "icon", "óbó": "oboe", "ór": "gold", "úsáideoir": "user", "ab": "abbot", "abhainn": "river", "adóib": "adobe", "ae": "liver", "agáit": "agate", "aicme": "genus", "aicsím": "axiom", "aifid": "aphid", "aigéan": "ocean", "ailínigh": "align", "aimíd": "amide", "aingeal": "angel", "ainian": "anion", "ainís": "anise", "airéine": "arena", "aiseach": "axial", "aisteoir": "actor", "albam": "album", "algach": "algal", "altóir": "altar", "aláram": "alarm", "amhras": "doubt", "ann": "there", "anord": "chaos", "anóid": "anode", "argóin": "argue", "argón": "argon", "arán": "bread", "arís": "again", "astar": "aster", "atall": "atoll", "atriail": "retry", "bagún": "bacon", "baile": "home.", "baileach": "exact", "bailí": "valid", "baintreach": "widow", "baise": "baize", "ball": "organ", "banaltra": "nurse", "baois": "folly", "barún": "baron", "bata": "stick", "bean": "woman", "beo": "alive", "bithóm": "biome", "bitseach": "bitch", "blais": "taste", "bloc": "block", "blás": "bloom", "bléid": "blade", "bod": "penis", "bogach": "swamp", "boilsc": "bulge", "bord": "table", "bran": "raven", "branda": "brand", "breab": "bribe", "breith": "birth", "breitheamh": "judge", "breochloch": "flint", "bruis": "brush", "bruite": "fiery", "bród": "pride", "bródúil": "proud", "brúcht": "belch", "brúid": "brute", "bulaí": "bully", "bácáilte": "baked", "báicéir": "baker", "báigh": "drown", "báisín": "basin", "bán": "white", "bás": "death", "bí": "to be", "bíog": "chirp", "bíosún": "bison", "bórás": "borax", "bórón": "boron", "cab": "mouth", "cabhlach": "fleet", "cailc": "chalk", "cairt": "chart", "calóg": "flake", "camall": "camel", "canta": "chunk", "canáil": "canal", "canú": "canoe", "caoga": "fifty", "caolsráid": "alley", "caolsáile": "fjord", "caolán": "creek", "ceardaíocht": "craft", "cearr": "wrong", "ceoch": "foggy", "ceol": "music", "ciseal": "layer", "ciú": "queue", "ciúbach": "cubic", "ciúáil": "queue", "claíomh": "sword", "cleas": "trick", "cliceáil": "click", "confach": "rabid", "craic": "crack", "crochta": "croft", "cros": "cross", "crosáil": "cross", "croí": "heart", "cuachma": "whelk", "cuarc": "quark", "cuileann": "holly", "cúigiú": "fifth", "cúirt": "court", "dabht": "doubt", "daidí": "daddy", "damhsa": "dance", "daonna": "human", "deamhan": "demon", "dearcán": "acorn", "deatach": "smoke", "deichiú": "tenth", "deoraíocht": "exile", "dia": "a god", "diabhal": "devil", "ding": "wedge", "dlíthiúil": "legal", "doimhneacht": "depth", "donn": "brown", "dornálaí": "boxer", "draoi": "druid", "dreap": "climb", "druilire": "drill", "dráma": "drama", "dréachtaigh": "draft", "drólann": "colon", "drón": "drone", "dubh": "black", "duánach": "renal", "dáil": "tryst", "dé": "smoke", "déirí": "dairy", "díle": "flood", "eabhar": "ivory", "each": "horse", "eachtrán": "alien", "ealta": "flock", "eitleoir": "flyer", "faic": "whack", "faireog": "gland", "falsa": "false", "faoi": "under", "fathach": "giant", "fearg": "anger", "feargach": "angry", "feo": "decay", "fiabhras": "fever", "fiacail": "tooth", "fiach": "raven", "figh": "weave", "fiú": "worth", "fliúit": "flute", "flóra": "flora", "fodhlí": "bylaw", "folamh": "empty", "fronta": "front", "fráma": "frame", "fuaim": "sound", "fual": "urine", "fuil": "blood", "fásta": "adult", "fáth": "cause", "féar": "grass", "féasóg": "beard", "fíonchaor": "grape", "fírinne": "truth", "físeán": "video", "fócas": "focus", "fórsáil": "force", "gabhann": "pound", "gadaí": "thief", "gainne": "scale", "gaofar": "windy", "gaothach": "windy", "garrán": "grove", "gearr": "short", "geireach": "fatty", "giarsa": "joist", "gild": "guild", "glan": "clean", "glasán": "finch", "gleo": "noise", "glóir": "glory", "glór": "voice", "gort": "field", "grianmhar": "sunny", "grua": "cheek", "gráinne": "grain", "grúpa": "group", "grúpáil": "group", "guth": "voice", "géineas": "genus", "hart": "heart", "húmas": "humus", "idéal": "ideal", "imigh": "to go", "imoibrigh": "react", "inchinn": "brain", "inneoin": "anvil", "inniu": "today", "inse": "hinge", "iolar": "eagle", "ionar": "tunic", "ionchur": "input", "iondúil": "usual", "jíons": "jeans", "labhair": "speak", "laistíos": "below", "lann": "sword", "lasair": "flame", "lastuas": "above", "leafaos": "paste", "leannán": "lover", "leibhéal": "level", "limfe": "lymph", "linseáil": "lynch", "lipéad": "label", "liric": "lyric", "log": "place", "logánta": "local", "loighic": "logic", "loingeas": "ships", "luach": "value", "luaith": "ashes", "luaithreach": "ashes", "luamhán": "lever", "lámhainn": "glove", "léine": "shirt", "léinseach": "reach", "léir": "clear", "líomóid": "lemon", "lítear": "litre", "lúipín": "lupin", "maide": "stick", "mangó": "mango", "marbhna": "elegy", "marc": "horse", "maíomh": "boast", "meadaracht": "meter", "meangadh": "smile", "measctha": "mixed", "mianadóir": "miner", "milis": "sweet", "miongháire": "smile", "miotal": "metal", "murnán": "ankle", "méara": "mayor", "mí": "month", "míoltóg": "midge", "módúil": "modal", "mótar": "motor", "mún": "urine", "múnla": "mould", "namhaid": "enemy", "naomh": "saint", "naoú": "ninth", "nathair": "snake", "neacht": "niece", "náire": "shame", "néal": "cloud", "ní": "thing", "níolón": "nylon", "nóin": "nones", "nóinín": "daisy", "ocht": "eight", "ocsaíd": "oxide", "oinniún": "onion", "oirthearach": "front", "ológ": "olive", "ordú": "order", "orgán": "organ", "oíche": "night", "painéal": "panel", "paiste": "patch", "panda": "panda", "pasta": "pasta", "picteilín": "pixel", "pingin": "penny", "pit": "vulva", "planda": "plant", "pluc": "cheek", "plánáil": "plane", "pláta": "plate", "plúr": "flour", "ponc": "point", "praghas": "price", "preab": "start", "profa": "proof", "prúna": "prune", "páipéar": "paper", "páirtí": "party", "páiste": "child", "péineas": "penis", "péint": "paint", "péitseog": "peach", "píotsa": "pizza", "póirse": "porch", "póitseáil": "poach", "radharc": "sight", "raiceáil": "wreck", "raidhfil": "rifle", "raidió": "radio", "rainse": "ranch", "ramallae": "slime", "rince": "dance", "roisín": "resin", "rosta": "wrist", "rugbaí": "rugby", "rásaí": "racer", "rásúr": "razor", "réad": "thing", "rím": "rhyme", "rógaire": "rogue", "salach": "dirty", "salm": "psalm", "scairf": "scarf", "scamall": "cloud", "scaoilte": "loose", "scaoilteach": "loose", "scaoth": "swarm", "sceall": "shell", "sceimheal": "eaves", "sceith": "vomit", "scil": "skill", "sciorta": "skirt", "sclábhaí": "slave", "scoilt": "split", "sconna": "spout", "scríobh": "write", "scuid": "squid", "scáinne": "skein", "seacht": "seven", "seamhan": "semen", "seas": "stand", "seasca": "sixty", "seál": "shawl", "seánra": "genre", "sibhialta": "civil", "sioc": "frost", "siocair": "cause", "siorc": "shark", "sióg": "fairy", "siúcra": "sugar", "slabhra": "chain", "slinn": "slate", "snaoisín": "snuff", "sneachtúil": "snowy", "soinneán": "blast", "solad": "solid", "soladach": "solid", "solas": "light", "sona": "happy", "sonach": "sonic", "sparán": "purse", "spásáil": "space", "spéirling": "storm", "spúnóg": "spoon", "stoirm": "storm", "stát": "state", "stíl": "style", "stór": "store", "sáiteán": "stake", "séabra": "zebra", "séideánach": "gusty", "séú": "sixth", "síocháin": "peace", "súiste": "flail", "súlach": "juice", "taibhse": "ghost", "tairiscint": "offer", "taos": "dough", "teach": "house", "teagascóir": "tutor", "teanchair": "tongs", "teideal": "title", "teorainn": "limit", "timthriall": "cycle", "tlú": "tongs", "tocsain": "toxin", "tocsaineach": "toxic", "toit": "smoke", "toiteach": "smoky", "tolg": "couch", "tonúil": "tonal", "traenáil": "train", "treas": "third", "treocht": "trend", "treá": "spear", "troitheán": "pedal", "trom": "heavy", "trí": "three", "tríú": "third", "tuama": "grave", "tuirseach": "tired", "tuáille": "towel", "tvuít": "tweet", "tvuíteáil": "tweet", "tábla": "table", "tástáil": "taste", "téama": "theme", "túr": "tower", "uachtarlann": "dairy", "ubhagán": "ovary", "ucht": "chest", "uillinn": "elbow", "uinge": "ounce", "uisce": "water", "urghabh": "seize", "urlaic": "vomit", "urlár": "floor", "vinil": "vinyl", "vióla": "viola", "vodca": "vodka", "válsa": "waltz", "válsáil": "waltz", "víreas": "virus", "víreasach": "viral", "vótálaí": "voter", "ágar": "augur", "áitiúil": "local", "áladh": "wound", "éabann": "ebony", "éadach": "cloth", "éadan": "front", "éadrom": "light", "éigrit": "egret", "éitheach": "lying", "íoglú": "igloo", "íoróin": "irony", "óg": "young", "ómra": "amber", "óstán": "hotel", "úll": "apple", "úth": "udder", "abacht": "abbacy", "abhóiséad": "avocet", "achomharc": "appeal", "adamhach": "atomic", "adhain": "kindle", "adhastar": "halter", "adhlactha": "buried", "aerbhealach": "airway", "aibhinne": "avenue", "ailléil": "allele", "ailse": "cancer", "aimhneasach": "distal", "aimpéar": "ampere", "aiméibe": "amoeba", "ainglis": "goitre", "aingíne": "angina", "ainmhí": "animal", "aintiún": "anthem", "ainéal": "anneal", "air": "plough", "airde": "height", "airgead": "silver", "aisléim": "recoil", "aisteoireacht": "acting", "aitriam": "atrium", "alcaile": "alkali", "allasúil": "sweaty", "allmhairigh": "import", "almóinn": "almond", "alpaca": "alpaca", "amaideacht": "idiocy", "amas": "attack", "amasán": "putter", "amhaire": "woofer", "amplach": "hungry", "analóg": "analog", "ancaire": "anchor", "angóra": "angora", "ansmachtaí": "tyrant", "antar": "anther", "anáil": "breath", "armáid": "armada", "armúr": "armour", "artaire": "artery", "as": "out of", "ascaill": "armpit", "aschur": "output", "asma": "asthma", "asáilia": "azalea", "atarraing": "redraw", "athoscail": "reopen", "atonúil": "atonal", "atéigh": "reheat", "babún": "baboon", "bagairt": "threat", "baibín": "bobbin", "bailé": "ballet", "baincéir": "banker", "baineann": "female", "baineannach": "female", "bairdéir": "warder", "banana": "banana", "banbh": "piglet", "bandach": "banded", "baol": "danger", "basalt": "basalt", "bascaed": "basket", "beachlann": "apiary", "beart": "bundle"};
+
+const WORDS_ALL = Object.keys(DICT_ES);
+const WORD_MS   = 5000;
+const LIVES_START = 5;
+
+function pointsFor(elapsed) {
+  if (elapsed <= 1000) return 5;
+  if (elapsed <= 2000) return 4;
+  if (elapsed <= 3000) return 3;
+  if (elapsed <= 4000) return 2;
+  return 1;
+}
+
+let score, lives, esCorrect, enCorrect;
+let correctEsIdx, correctEnIdx;
+let esPick, enPick;
+let locked, wordStart, wordRAF, flashTimer;
+let currentWord = '';
+let _ca = null, _nextAudio = null, _nextW = null;
+
+// ── Audio ─────────────────────────────────────────────────────────────────────
+function playWord(word) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  a.onerror = function(){};  a.play().catch(function(){}); _ca = a;
+}
+function replayPron() { if (currentWord) playWord(currentWord); }
+function preloadNext(word) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  _nextAudio.onerror = function(){};
+  _nextAudio.muted = true;
+  _nextAudio.play().catch(function(){}); _ca = _nextAudio; _nextW = word;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function sh(arr) {
+  const a = arr.slice();
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function distES(ex) {
+  const d = DICT_ES[ex].toLowerCase();
+  for (let i=0;i<30;i++){const w=WORDS_ALL[Math.floor(Math.random()*WORDS_ALL.length)];if(w!==ex&&DICT_ES[w].toLowerCase()!==d)return DICT_ES[w];}
+  return DICT_ES[WORDS_ALL[0]];
+}
+function distEN(ex) {
+  const d = DICT_EN[ex].toLowerCase();
+  for (let i=0;i<30;i++){const w=WORDS_ALL[Math.floor(Math.random()*WORDS_ALL.length)];if(w!==ex&&DICT_EN[w].toLowerCase()!==d)return DICT_EN[w];}
+  return DICT_EN[WORDS_ALL[0]];
+}
+
+// ── Game ──────────────────────────────────────────────────────────────────────
+function startGame() {
+  score = 0; lives = LIVES_START; esCorrect = 0; enCorrect = 0;
+  _nextAudio = null; _nextW = null;
+  updateHUD();
+  show('game-screen');
+  // Preload the first word NOW, inside this gesture handler, so iOS unlocks audio
+  const first = WORDS_ALL[Math.floor(Math.random() * WORDS_ALL.length)];
+  preloadNext(first);
+  nextWord();
+}
+
+function updateHUD() {
+  document.getElementById('lives-display').textContent = '♥'.repeat(Math.max(0,lives)) + '♡'.repeat(Math.max(0,LIVES_START-lives));
+  document.getElementById('score-display').textContent = 'Scór: ' + score;
+}
+
+function nextWord() {
+  if (lives <= 0) { endGame(); return; }
+  locked = false; esPick = null; enPick = null;
+
+  // Use the word that was pre-picked at gesture time (from startGame or a pick handler).
+  // If for some reason nothing was queued (e.g. after a timeout), fall back to a new random word.
+  let word;
+  if (_nextW && _nextAudio) {
+    word = _nextW;
+    const a = _nextAudio; _nextAudio = null; _nextW = null;
+    a.muted = false; a.currentTime = 0; a.play().catch(function(){}); _ca = a;
+  } else {
+    _nextAudio = null; _nextW = null;
+    word = WORDS_ALL[Math.floor(Math.random() * WORDS_ALL.length)];
+    playWord(word); // may not play on iOS if called outside gesture, but timeout is an edge case
+  }
+  currentWord = word;
+
+  const esRight = DICT_ES[word], esWrong = distES(word);
+  const esOpts  = sh([esRight, esWrong]);
+  correctEsIdx  = esOpts.indexOf(esRight);
+
+  const enRight = DICT_EN[word], enWrong = distEN(word);
+  const enOpts  = sh([enRight, enWrong]);
+  correctEnIdx  = enOpts.indexOf(enRight);
+
+  document.getElementById('word-card').textContent = word;
+  document.getElementById('word-card').className   = 'word-card';
+
+  ['es-0','es-1'].forEach((id,i) => {
+    const b = document.getElementById(id);
+    b.querySelector('.btn-text').textContent = esOpts[i];
+    b.className = 'choice-btn'; b.disabled = false;
+  });
+  ['en-0','en-1'].forEach((id,i) => {
+    const b = document.getElementById(id);
+    b.querySelector('.btn-text').textContent = enOpts[i];
+    b.className = 'choice-btn'; b.disabled = false;
+  });
+
+  document.getElementById('pts-flash').style.opacity = '0';
+  wordStart = Date.now();
+  cancelAnimationFrame(wordRAF);
+  tickTimer();
+}
+
+function tickTimer() {
+  const rem = WORD_MS - (Date.now() - wordStart);
+  if (rem <= 0) {
+    document.getElementById('timer-bar').style.width = '0%';
+    document.getElementById('timer-bar').style.background = '#e94560';
+    document.getElementById('word-card').className = 'word-card flash-timeout';
+    ['es-0','es-1','en-0','en-1'].forEach(id => document.getElementById(id).disabled = true);
+    playNo(); locked = true; lives--;
+    updateHUD();
+    if (lives <= 0) { setTimeout(endGame, 800); return; }
+    setTimeout(nextWord, 900);
+    return;
+  }
+  const pct = rem / WORD_MS * 100;
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = rem > 2000 ? '#2a9d47' : rem > 1000 ? '#e07b00' : '#e94560';
+  wordRAF = requestAnimationFrame(tickTimer);
+}
+
+// ── Picks ─────────────────────────────────────────────────────────────────────
+function pickES(idx) {
+  if (locked || esPick !== null) return;
+  esPick = idx;
+  document.getElementById('es-' + idx).className = 'choice-btn selected';
+  preloadNextWord();
+  maybeCheck();
+}
+function pickEN(idx) {
+  if (locked || enPick !== null) return;
+  enPick = idx;
+  document.getElementById('en-' + idx).className = 'choice-btn selected';
+  preloadNextWord();
+  maybeCheck();
+}
+function preloadNextWord() {
+  // Only preload once, on first pick (gesture context)
+  if (_nextAudio || _nextW) return;
+  const next = WORDS_ALL[Math.floor(Math.random()*WORDS_ALL.length)];
+  preloadNext(next);
+}
+
+function maybeCheck() {
+  if (esPick === null || enPick === null) return;
+  locked = true;
+  cancelAnimationFrame(wordRAF);
+  ['es-0','es-1','en-0','en-1'].forEach(id => document.getElementById(id).disabled = true);
+
+  const elapsed = Date.now() - wordStart;
+  const esOk = esPick === correctEsIdx;
+  const enOk = enPick === correctEnIdx;
+  const bothOk = esOk && enOk;
+
+  // Feedback
+  document.getElementById('es-' + esPick).className = 'choice-btn ' + (esOk ? 'correct' : 'wrong');
+  if (!esOk) document.getElementById('es-' + correctEsIdx).className = 'choice-btn reveal';
+  document.getElementById('en-' + enPick).className = 'choice-btn ' + (enOk ? 'correct' : 'wrong');
+  if (!enOk) document.getElementById('en-' + correctEnIdx).className = 'choice-btn reveal';
+
+  document.getElementById('word-card').className = 'word-card ' +
+    (bothOk ? 'flash-correct' : (!esOk && !enOk) ? 'flash-wrong' : 'flash-partial');
+
+  if (esOk) esCorrect++;
+  if (enOk) enCorrect++;
+
+  if (bothOk) {
+    const pts = pointsFor(elapsed);
+    score += pts;
+    playOk();
+    showFlash('+' + pts + (pts === 5 ? ' ⚡' : ''));
+  } else {
+    lives--;
+    playNo();
+  }
+
+  updateHUD();
+  if (lives <= 0) { setTimeout(endGame, 900); return; }
+  setTimeout(nextWord, 1000);
+}
+
+function showFlash(txt) {
+  const el = document.getElementById('pts-flash');
+  el.textContent = txt; el.style.opacity = '1';
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 900);
+}
+
+// ── End ───────────────────────────────────────────────────────────────────────
+function endGame() {
+  cancelAnimationFrame(wordRAF);
+  if (_ca) { _ca.pause(); _ca = null; }
+  document.getElementById('over-es').textContent  = esCorrect;
+  document.getElementById('over-en').textContent  = enCorrect;
+  document.getElementById('over-tot').textContent = score;
+  show('over-screen');
+}
+
+// ── Sound ─────────────────────────────────────────────────────────────────────
+let _sfx=null;
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();return _sfx;}
+function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
+function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
+function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
+
+// ── Keyboard (numpad + arrows) ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === '7' || e.code === 'Numpad7') { e.preventDefault(); pickES(0); }
+  if (e.key === '1' || e.code === 'Numpad1') { e.preventDefault(); pickES(1); }
+  if (e.key === '9' || e.code === 'Numpad9') { e.preventDefault(); pickEN(0); }
+  if (e.key === '3' || e.code === 'Numpad3') { e.preventDefault(); pickEN(1); }
+});
+
+// ── Screens ───────────────────────────────────────────────────────────────────
+function show(id) {
+  ['start-screen','game-screen','over-screen'].forEach(s =>
+    document.getElementById(s).classList.toggle('active', s === id));
+}
+show('start-screen');
+</script>
+</body>
+</html>
