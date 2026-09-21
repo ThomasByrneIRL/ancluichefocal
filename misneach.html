@@ -63,17 +63,14 @@
                font-size: 1.05rem; font-weight: bold; cursor: pointer;
                transition: opacity .15s, transform .1s; }
     .dec-btn:active { transform: scale(.97); }
-    #btn-take   { background: #2a9d47; color: #fff; }
-    #btn-double { background: #e94560; color: #fff; }
+    #btn-take   { background: #1565c0; color: #fff; }
+    #btn-double { background: #2a9d47; color: #fff; }
 
     /* Hint */
     .hint { color: #aaa; font-size: .75rem; margin-top: .2rem; margin-bottom: .8rem; }
 
-    /* Quit button */
-    #btn-quit { background: transparent; border: 1px solid #ccc; color: #999;
-                border-radius: 10px; padding: .5rem 1.4rem; font-size: .85rem;
-                cursor: pointer; margin-top: .5rem; }
-    #btn-quit:hover { background: #f0f0f0; }
+    /* Over screen extras */
+    #over-bust-detail { color: #e94560; font-size: 1rem; margin-bottom: .4rem; }
 
     /* Start / Over screens */
     .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px;
@@ -129,18 +126,17 @@
   <p class="hint" id="hint-keys">↑ barr · ↓ bun</p>
 
   <div id="decision">
-    <button class="dec-btn" id="btn-take"   onclick="takeIt()">💰 Tóg é!</button>
-    <button class="dec-btn" id="btn-double" onclick="doubleIt()">🎲 Dhá oiread!</button>
+    <button class="dec-btn" id="btn-take"   onclick="takeIt()">Críochnaithe anseo</button>
+    <button class="dec-btn" id="btn-double" onclick="doubleIt()">Focal Eile!</button>
   </div>
-
-  <button id="btn-quit" onclick="endGame()">Éirigh as</button>
 </div>
 
 <!-- ── OVER ── -->
 <div id="over-screen" class="screen">
-  <h1>🏁 Críochnaithe!</h1>
-  <p class="over-label">Scór Baincéadta</p>
+  <h1 id="over-header">🏁 Críochnaithe!</h1>
+  <p class="over-label" id="over-label">Scór Baincéadta</p>
   <div id="over-score">0</div>
+  <div id="over-bust-detail"></div>
   <div id="over-chain"></div>
   <div class="best-wrap">🏆 Taifead: <span id="best-display">0</span> pt</div>
   <button class="big-btn" onclick="initGame()">Arís</button>
@@ -259,7 +255,7 @@ function tickWord() {
   if (rem <= 0) {
     document.getElementById('word-timer-bar').style.width = '0%';
     ['choice-a','choice-b'].forEach(id => document.getElementById(id).disabled = true);
-    bust('Am caite!');
+    bust();
     return;
   }
   document.getElementById('word-timer-bar').style.width = (rem / WORD_MS * 100) + '%';
@@ -290,7 +286,7 @@ function pick(idx) {
     // Wrong
     document.getElementById('choice-' + (idx === 0 ? 'a' : 'b')).className = 'choice-btn selected-wrong';
     document.getElementById('choice-' + (idx === 0 ? 'b' : 'a')).className = 'choice-btn reveal-correct';
-    bust(null);
+    bust();
   }
 }
 
@@ -300,20 +296,16 @@ function showDecision() {
   document.getElementById('choices').style.display = 'none';
   document.getElementById('hint-keys').style.display = 'none';
   document.getElementById('decision').style.display = 'flex';
-  document.getElementById('btn-take').textContent   = '💰 Tóg é! (+' + chainValue + ' pt)';
-  document.getElementById('btn-double').textContent = '🎲 Dhá oiread! (→ ' + (chainValue*2) + ' pt)';
+  document.getElementById('btn-take').textContent   = 'Críochnaithe anseo (+' + chainValue + ' pt)';
+  document.getElementById('btn-double').textContent = 'Focal Eile! (→ ' + (chainValue*2) + ' pt)';
   document.getElementById('word-timer-bar').style.width = '0%';
 }
 
 function takeIt() {
   if (phase !== 'deciding') return;
   totalScore += chainValue;
-  chainValue = 1; chainStep = 0;
-  updateChainUI();
-  flashPts('+' + (totalScore));
   playOk();
-  document.getElementById('word-card').className = 'card';
-  setTimeout(nextWord, 600);
+  setTimeout(() => endGame('quit'), 400);
 }
 
 function doubleIt() {
@@ -325,16 +317,12 @@ function doubleIt() {
 }
 
 // ── Bust ──
-function bust(reason) {
+function bust() {
   playNo();
   document.getElementById('word-card').className = 'card flash-bust';
-  const lost = chainValue > 1 || totalScore > 0;
-  const prev = totalScore;
-  totalScore = 0; chainValue = 1; chainStep = 0;
-  updateChainUI();
-  if (lost && prev > 0) flashPts('−' + prev + ' 🔥', '#e94560');
-  else if (lost)        flashPts('×1 🔥', '#e94560');
-  setTimeout(nextWord, 1000);
+  document.getElementById('choices').style.display = 'none';
+  document.getElementById('decision').style.display = 'none';
+  setTimeout(() => endGame('bust'), 1200);
 }
 
 // ── Flash ──
@@ -348,14 +336,26 @@ function flashPts(txt, color) {
 }
 
 // ── End ──
-function endGame() {
+function endGame(reason) {
   cancelAnimationFrame(wordRAF);
   if (_ca) { _ca.pause(); _ca = null; }
+
+  const isBust = reason === 'bust';
+  // On bust: score they were risking is gone, total stays (was already 0 if never banked)
+  // Show the chainValue they lost for drama
+  const lostStake = isBust ? chainValue : 0;
+  if (isBust) { totalScore = 0; }
+
   try {
     if (totalScore > bestScore) { bestScore = totalScore; localStorage.setItem('misneach_best', bestScore); }
   } catch(e) {}
-  document.getElementById('over-score').textContent = totalScore;
-  document.getElementById('over-chain').textContent = maxChain > 1 ? 'Slabhra is faide: ' + maxChain + ' pt' : '';
+
+  document.getElementById('over-header').textContent  = isBust ? '💥 Cailleadh é!' : '🏆 Críochnaithe!';
+  document.getElementById('over-label').textContent   = isBust ? 'Scór Deiridh' : 'Scór Baincéadta';
+  document.getElementById('over-score').textContent   = totalScore;
+  document.getElementById('over-bust-detail').textContent =
+    isBust && lostStake > 1 ? 'Bhí ' + lostStake + ' pt i gcontúirt 🔥' : '';
+  document.getElementById('over-chain').textContent   = maxChain > 1 ? 'Slabhra is airde: ' + maxChain + ' pt' : '';
   document.getElementById('best-display').textContent = bestScore;
   show('over-screen');
 }
