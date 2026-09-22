@@ -150,6 +150,16 @@ const DICT = {"a": ["his, its"], "ab": ["abbot"], "abacas": ["abacus (calculatin
 const WORDS  = Object.keys(DICT);
 const WORD_MS = 5000;
 
+// Chain sequence — pure doubling except we snap to round millions at three thresholds
+const CHAIN_SEQ = [1,2,4,8,16,32,64,128,256,512,
+                   1000,2000,4000,8000,16000,32000,64000,128000,256000,512000,
+                   1000000,2000000,4000000,8000000,16000000,32000000,64000000,128000000,256000000,512000000,
+                   1000000000];
+function nextChain(v) {
+  const i = CHAIN_SEQ.indexOf(v);
+  return (i >= 0 && i < CHAIN_SEQ.length - 1) ? CHAIN_SEQ[i + 1] : v * 2;
+}
+
 let totalScore = 0, bestScore = 0, chainValue = 1, maxChain = 1;
 let chainStep  = 0;   // how many consecutive corrects in current streak
 let phase = 'answering';   // 'answering' | 'deciding'
@@ -297,7 +307,7 @@ function showDecision() {
   document.getElementById('hint-keys').style.display = 'none';
   document.getElementById('decision').style.display = 'flex';
   document.getElementById('btn-take').textContent   = 'Críochnaithe anseo (+' + chainValue + ' pt)';
-  document.getElementById('btn-double').textContent = 'Focal Eile! (→ ' + (chainValue*2) + ' pt)';
+  document.getElementById('btn-double').textContent = 'Focal Eile! (→ ' + nextChain(chainValue) + ' pt)';
   document.getElementById('word-timer-bar').style.width = '0%';
 }
 
@@ -310,7 +320,7 @@ function takeIt() {
 
 function doubleIt() {
   if (phase !== 'deciding') return;
-  chainValue *= 2;
+  chainValue = nextChain(chainValue);
   updateChainUI();
   document.getElementById('word-card').className = 'card';
   setTimeout(nextWord, 400);
