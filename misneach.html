@@ -126,8 +126,8 @@
   <p class="hint" id="hint-keys">↑ barr · ↓ bun</p>
 
   <div id="decision">
-    <button class="dec-btn" id="btn-take"   onclick="takeIt()">Críochnaithe anseo</button>
-    <button class="dec-btn" id="btn-double" onclick="doubleIt()">Focal Eile!</button>
+    <button class="dec-btn" id="btn-take"   onclick="takeIt()"   tabindex="-1">Críochnaithe Anseo!</button>
+    <button class="dec-btn" id="btn-double" onclick="doubleIt()" tabindex="-1">Focal Eile!</button>
   </div>
 </div>
 
@@ -379,18 +379,21 @@ function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);
 
 // ── Keyboard ──
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('over-screen').style.display === 'block') {
-    e.preventDefault(); initGame(); return;
+  const deciding = document.getElementById('decision').style.display === 'flex';
+  const overUp   = document.getElementById('over-screen').style.display === 'block';
+
+  if (overUp) {
+    if (e.key === 'Enter') { e.preventDefault(); initGame(); }
+    return;
   }
-  if (phase === 'answering') {
-    if (e.key === 'ArrowUp'   || e.key === '1') { e.preventDefault(); pick(0); }
-    if (e.key === 'ArrowDown' || e.key === '2') { e.preventDefault(); pick(1); }
-  } else if (phase === 'deciding') {
-    if (e.key === 'ArrowUp'   || e.key === '1')  { e.preventDefault(); takeIt(); }
-    if (e.key === 'ArrowDown' || e.key === '2')  { e.preventDefault(); doubleIt(); }
-    if (e.key === 'Enter')                        { e.preventDefault(); doubleIt(); }
-    if (e.key === 'Escape')                       { e.preventDefault(); takeIt(); }
+  if (deciding) {
+    if (e.key === 'Enter'  || e.key === 'ArrowDown' || e.key === '2') { e.preventDefault(); doubleIt(); }
+    if (e.key === 'Escape' || e.key === 'ArrowUp'   || e.key === '1') { e.preventDefault(); takeIt(); }
+    return;
   }
+  // answering phase
+  if (e.key === 'ArrowUp'   || e.key === '1') { e.preventDefault(); pick(0); }
+  if (e.key === 'ArrowDown' || e.key === '2') { e.preventDefault(); pick(1); }
 });
 
 show('start-screen');
