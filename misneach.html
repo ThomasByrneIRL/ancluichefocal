@@ -36,9 +36,12 @@
     #handoff-leader { font-size: 1rem; color: #555; margin-bottom: 1.4rem;
                       background: #fff; border-radius: 12px; padding: .8rem 1rem;
                       box-shadow: 0 1px 6px rgba(0,0,0,.07); min-height: 2.8rem;
-                      display: flex; align-items: center; justify-content: center; }
+                      display: block; line-height: 1.6; }
     #player-hud { font-size: 1rem; margin-bottom: .2rem; min-height: 1.4rem; }
-    #target-hud { font-size: .8rem; color: #888; margin-bottom: .5rem; min-height: 1.1rem; }
+    #target-hud { font-size: .95rem; font-weight: bold; letter-spacing: .4px;
+                  background: #fff; border-radius: 10px; padding: .55rem .9rem;
+                  box-shadow: 0 1px 6px rgba(0,0,0,.08); margin-bottom: .7rem;
+                  line-height: 1.5; display: none; }
     #banked-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1px;
                     color: #aaa; margin-bottom: .1rem; }
     #banked-score { font-size: 3.4rem; font-weight: bold; color: #1a1a2e;
@@ -294,7 +297,7 @@ function initGame(){
     const n=pn(currentPlayerIdx),c=pc(currentPlayerIdx);
     document.getElementById('player-hud').innerHTML='<span style="color:'+c+';font-weight:bold">'+n+'</span>';
     document.getElementById('player-hud').style.display='block';
-    if(leaderIdx>=0){const ln=pn(leaderIdx),lc=pc(leaderIdx);document.getElementById('target-hud').innerHTML='Sprioc: <span style="color:'+lc+'">'+ln+'</span> — '+fmt(leaderScore)+' pt';document.getElementById('target-hud').style.display='block';}
+    if(leaderIdx>=0){const ln=pn(leaderIdx),lc=pc(leaderIdx);document.getElementById('target-hud').innerHTML='AN SC&Oacute;R IS AIRDE ANOIS &mdash; <span style="color:'+lc+';font-size:1.15rem">'+ln+'</span> LE <span style="font-size:1.15rem">'+fmt(leaderScore)+'</span> pt';document.getElementById('target-hud').style.display='block';}
     else{document.getElementById('target-hud').style.display='none';}
   } else {
     document.getElementById('player-hud').style.display='none';
