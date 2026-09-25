@@ -258,7 +258,7 @@ function buildNameFields(n){
 }
 function setupDone(){
   numPlayers=selectedCount;playerNames=[];playerScores=new Array(numPlayers).fill(-1);
-  for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i)||{}).value||'';playerNames.push(v.trim()||('Imreoir '+(i+1)));}
+  for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i)||{}).value||'';playerNames.push((v.trim()||('Imreoir '+(i+1))).toUpperCase());}
   leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;beginHandoff();
 }
 
