@@ -272,11 +272,11 @@ function playWord(word) {
 
 /* ── Sound FX ── */
 let _sfx = null;
-function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();return _sfx;}
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
 function _pt(hz,g,type,dur,del){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.type=type;o.frequency.value=hz;gn.gain.setValueAtTime(g,c.currentTime+del);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+del+dur);o.connect(gn);gn.connect(c.destination);o.start(c.currentTime+del);o.stop(c.currentTime+del+dur);}catch(e){}}
-function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
-function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
-function playVictory(){_pt(523,.2,'sine',.3,0);_pt(659,.2,'sine',.3,.18);_pt(784,.25,'sine',.5,.36);_pt(1047,.2,'sine',.6,.6);}
+function playOk(){_pt(523,.55,'sine',.22,0);_pt(659,.65,'sine',.2,.12);}
+function playNo(){_pt(220,.45,'sawtooth',.18,0);_pt(150,.5,'sawtooth',.14,.08);}
+function playVictory(){_pt(523,.55,'sine',.3,0);_pt(659,.55,'sine',.3,.18);_pt(784,.6,'sine',.5,.36);_pt(1047,.55,'sine',.6,.6);}
 
 /* ══════════ MODE SELECTION ══════════ */
 function goStart() { show('start-screen'); }
