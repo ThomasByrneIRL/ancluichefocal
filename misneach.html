@@ -243,7 +243,7 @@ function updateChainUI(){
 }
 
 // ── Solo ──
-function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[-1];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;beginHandoff();}
+function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[-1];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;preloadFor(WORDS[Math.floor(Math.random()*WORDS.length)]);initGame();}
 
 // ── Multi setup ──
 function startMulti(){mode='multi';selectedCount=2;buildNameFields(2);show('setup-screen');}
@@ -418,7 +418,7 @@ function showResult(isBust){
   }
   show('result-screen');
 }
-function restartSolo(){_nextAudio=null;_nextWord=null;beginHandoff();}
+function restartSolo(){_nextAudio=null;_nextWord=null;preloadFor(WORDS[Math.floor(Math.random()*WORDS.length)]);initGame();}
 function nextPlayer(){currentPlayerIdx++;_nextAudio=null;_nextWord=null;beginHandoff();}
 
 // ── Leaderboard ──
