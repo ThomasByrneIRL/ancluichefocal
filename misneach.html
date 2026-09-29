@@ -227,7 +227,7 @@ const ALL_SCREENS=['start-screen','setup-screen','handoff-screen','game-screen',
 function show(id){ALL_SCREENS.forEach(s=>document.getElementById(s).style.display=s===id?'block':'none');currentScreen=id;}
 
 function playPron(word){if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}
-function preloadFor(word){if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.onerror=function(){};a.muted=true;a.play().catch(function(){});_nextAudio=a;_nextWord=word;_ca=a;}
+function preloadFor(word){if(_nextAudio){_nextAudio.pause();_nextAudio=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.onerror=function(){};a.muted=true;a.play().catch(function(){});_nextAudio=a;_nextWord=word;}
 
 function rnd(ex){let w;do{w=WORDS[Math.floor(Math.random()*WORDS.length)];}while(w===ex);return w;}
 function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -315,7 +315,7 @@ function nextWord(){
   document.getElementById('choices').style.display='flex';
   document.getElementById('hint-keys').style.display='block';
   let word;
-  if(_nextWord&&_nextAudio){word=_nextWord;const a=_nextAudio;_nextAudio=null;_nextWord=null;a.muted=false;a.currentTime=0;a.play().catch(function(){});_ca=a;}
+  if(_nextWord&&_nextAudio){word=_nextWord;const a=_nextAudio;_nextAudio=null;_nextWord=null;if(_ca){_ca.pause();_ca=null;}a.muted=false;a.currentTime=0;a.play().catch(function(){});_ca=a;}
   else{word=WORDS[Math.floor(Math.random()*WORDS.length)];playPron(word);}
   currentWord=word;
   const correct=DICT[word][0],wrong=DICT[rnd(word)][0],opts=sh([correct,wrong]);
