@@ -21,8 +21,10 @@
   .btns { display: flex; gap: 1rem; justify-content: center; }
   .btn { flex: 1; max-width: 160px; padding: 1rem 1.5rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform .1s; }
   .btn:active { transform: scale(.95); }
-  #btn-new { background: #fff; color: #0d6ebd; border: 2px solid #53d8fb; }
-  #btn-seen { background: #fff; color: #c0396e; border: 2px solid #e94560; }
+  #btn-new { background: #fff; color: #0d6ebd; border: 2px solid #53d8fb; transition: background .1s, color .1s; }
+  #btn-seen { background: #fff; color: #c0396e; border: 2px solid #e94560; transition: background .1s, color .1s; }
+  #btn-new.selected { background: #53d8fb; color: #fff; }
+  #btn-seen.selected { background: #e94560; color: #fff; }
   .word-timer-wrap { height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; margin-bottom: 1.2rem; }
   #word-timer-bar { height: 6px; border-radius: 3px; background: #2a9d47; width: 100%; transition: background .3s; }
   #word-timer-bar.urgent { background: #e94560; }
@@ -1777,14 +1779,14 @@ let wordDeadline, wordTimerRAF;
 let _cx=null;
 function gx(){if(!_cx)_cx=new(window.AudioContext||window.webkitAudioContext)();if(_cx.state==='suspended')_cx.resume();return _cx;}
 function pt(f,d,t,g,dl){try{const c=gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
-function playOk(){pt(523,.55,'sine',.22,0);pt(659,.65,'sine',.2,.12);}
-function playNo(){pt(220,.45,'sawtooth',.18,0);pt(150,.5,'sawtooth',.14,.08);}
+function playOk(){pt(523,.37,'sine',.22,0);pt(659,.43,'sine',.2,.12);}
+function playNo(){pt(220,.30,'sawtooth',.18,0);pt(150,.33,'sawtooth',.14,.08);}
 function sh(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function initGame(){score=0;lives=3;seen=new Set();queue=sh(POOL);locked=false;upd();nxt();show('game-screen');}
 function pw(){const s=[...seen];if(s.length>0&&Math.random()<0.4)return s[Math.floor(Math.random()*s.length)];if(queue.length===0)queue=sh(POOL.filter(w=>!seen.has(w)));if(queue.length===0)queue=sh(POOL);return queue.pop();}
-function nxt(){locked=false;cw=pw();document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
+function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');cw=pw();document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;lives--;playNo();document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
-function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
+function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
 function upd(){document.getElementById('score-val').textContent=score;const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
 function over(){
   document.getElementById('final-score').textContent=score;
