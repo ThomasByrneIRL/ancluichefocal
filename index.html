@@ -1778,11 +1778,11 @@ let score,lives,seen,queue,cw,locked;
 let wordDeadline, wordTimerRAF;
 let _cx=null;
 function gx(){if(!_cx)_cx=new(window.AudioContext||window.webkitAudioContext)();if(_cx.state==='suspended')_cx.resume();return _cx;}
-function pt(f,d,t,g,dl){try{const c=gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
+function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+buf+dl);gn.gain.setValueAtTime(g,c.currentTime+buf+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+buf+dl+d);o.start(c.currentTime+buf+dl);o.stop(c.currentTime+buf+dl+d);}catch(e){}}
 function playOk(){pt(523,.37,'sine',.22,0);pt(659,.43,'sine',.2,.12);}
 function playNo(){pt(220,.30,'sawtooth',.18,0);pt(150,.33,'sawtooth',.14,.08);}
 function sh(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function initGame(){score=0;lives=3;seen=new Set();queue=sh(POOL);locked=false;upd();nxt();show('game-screen');}
+function initGame(){score=0;lives=3;seen=new Set();queue=sh(POOL);locked=false;upd();gx();show('game-screen');nxt();}
 function pw(){const s=[...seen];if(s.length>0&&Math.random()<0.4)return s[Math.floor(Math.random()*s.length)];if(queue.length===0)queue=sh(POOL.filter(w=>!seen.has(w)));if(queue.length===0)queue=sh(POOL);return queue.pop();}
 function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;_pendingWord=pw();preloadPron(_pendingWord);lives--;playNo();document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
@@ -1807,7 +1807,7 @@ function show(id){['start-screen','game-screen','over-screen'].forEach(s=>{docum
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')answer(true);if(e.key==='ArrowRight')answer(false);});
 show('start-screen');
 let _ca=null,_nextPronAudio=null,_nextPronWord=null,_pendingWord=null;
-function preloadPron(word){if(_nextPronAudio){_nextPronAudio.pause();_nextPronAudio=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.onerror=function(){};a.muted=true;a.play().catch(function(){});_nextPronAudio=a;_nextPronWord=word;}
+function preloadPron(word){if(_nextPronAudio){_nextPronAudio.pause();_nextPronAudio=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.preload='auto';a.onerror=function(){};a.muted=true;a.play().catch(function(){});_nextPronAudio=a;_nextPronWord=word;}
 function playPron(){if(!cw)return;if(_nextPronAudio&&_nextPronWord===cw){const a=_nextPronAudio;_nextPronAudio=null;_nextPronWord=null;if(_ca){_ca.pause();_ca=null;}a.muted=false;a.currentTime=0;a.play().catch(function(){});_ca=a;}else{if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(cw)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}}
 </script>
 </body>
