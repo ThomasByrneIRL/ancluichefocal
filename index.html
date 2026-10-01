@@ -34,6 +34,40 @@
   #final-score { font-size: 4rem; font-weight: bold; color: #2a9d47; margin: 1rem 0; }
   #audio-btn { background:none;border:none;color:#888;font-size:1.4rem;cursor:pointer;padding:4px 8px;margin-top:6px;transition:color .2s; }
   #audio-btn:hover { color:#53d8fb; }
+
+  /* multiplayer */
+  .mode-wrap { display:flex; gap:1rem; justify-content:center; margin-top:1.2rem; }
+  .mode-btn { flex:1; max-width:160px; padding:.9rem 1rem; border:none; border-radius:12px;
+    font-size:1.15rem; font-weight:bold; cursor:pointer; background:#1a1a2e; color:#fff;
+    font-family:Georgia,'Times New Roman',serif; transition:opacity .2s; }
+  .mode-btn:hover { opacity:.82; }
+  .cnt-row { display:flex; align-items:center; justify-content:center; gap:1rem; margin:1.2rem 0; }
+  .cnt-btn { width:38px;height:38px;border-radius:50%;border:2px solid #e94560;background:#fff;
+    color:#e94560;font-size:1.3rem;font-weight:bold;cursor:pointer;line-height:1; }
+  .cnt-btn:hover { background:#e94560;color:#fff; }
+  #cnt-val { font-size:1.5rem; font-weight:bold; min-width:2rem; text-align:center; }
+  .player-fields { display:flex; flex-direction:column; gap:.6rem; margin:.8rem 0 1.4rem; }
+  .player-row { display:flex; align-items:center; gap:.7rem; }
+  .pdot { width:14px;height:14px;border-radius:50%;flex-shrink:0; }
+  .player-row input { flex:1;padding:.55rem .8rem;border-radius:8px;
+    border:1.5px solid #ccc;font-size:1rem;outline:none; }
+  .player-row input:focus { border-color:#e94560; }
+  /* handoff */
+  #handoff-screen .player-chip { font-size:2rem; font-weight:bold; margin:1.2rem 0; }
+  #handoff-screen .leader-note { color:#888; font-size:.95rem; margin-bottom:1.8rem; }
+  /* result */
+  #result-score { font-size:3.5rem; font-weight:bold; color:#2a9d47; margin:.6rem 0; }
+  #result-player { font-size:1.5rem; font-weight:bold; margin-bottom:.3rem; }
+  /* game player hud */
+  #player-hud { font-size:.9rem; color:#888; margin-bottom:.5rem; min-height:1.3em; }
+  /* final leaderboard */
+  .lb-row { display:flex; align-items:center; gap:.7rem; padding:.55rem .8rem;
+    border-radius:10px; background:#fff; margin:.4rem 0; font-size:1.05rem; }
+  .lb-rank { font-size:1.1rem; min-width:1.4rem; }
+  .lb-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+  .lb-name { flex:1; font-weight:bold; text-align:left; }
+  .lb-score { font-weight:bold; color:#2a9d47; }
+  .lb-winner { border:2px solid gold; }
 </style>
 </head>
 <body>
@@ -41,9 +75,40 @@
   <h1>🧠 Cuimhne Bhriathartha</h1>
   <p class="subtitle">An bhfaca tú an focal seo cheana? &nbsp;| 🔊 Fuaim Chonnacht</p>
   <p style="color:#888;margin-bottom:2rem;line-height:1.7">Feicfidh tú focal amáin ag an am.<br>Cliceáil <strong style="color:#53d8fb">NUA</strong> nó <strong style="color:#ff6b9d">FEICTHE</strong>.<br>Cloisfidh tú an focal go huathoibríoch.<br>3 shaol agat.</p>
-  <button class="big-btn" onclick="initGame()">Tosaígh</button>
+  <div class="mode-wrap">
+    <button class="mode-btn" onclick="startSolo()">Aonair</button>
+    <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
+  </div>
+</div>
+<!-- SETUP SCREEN -->
+<div id="setup-screen" class="screen">
+  <h1>Il-imreoir</h1>
+  <p style="color:#888;margin-bottom:.8rem">Cé mhéad imreoir?</p>
+  <div class="cnt-row">
+    <button class="cnt-btn" onclick="adjCount(-1)">−</button>
+    <span id="cnt-val">2</span>
+    <button class="cnt-btn" onclick="adjCount(1)">+</button>
+  </div>
+  <div class="player-fields" id="player-fields"></div>
+  <button class="big-btn" id="setup-go" onclick="setupDone()">Ar Aghaidh</button>
+</div>
+<!-- HANDOFF SCREEN -->
+<div id="handoff-screen" class="screen">
+  <h1>Do sheal!</h1>
+  <div class="player-chip" id="handoff-name"></div>
+  <div class="leader-note" id="handoff-leader"></div>
+  <button class="big-btn" onclick="handoffStart()">Tosaigh</button>
+</div>
+<!-- RESULT SCREEN -->
+<div id="result-screen" class="screen">
+  <h1>Críochnaithe!</h1>
+  <div id="result-player"></div>
+  <div id="result-score"></div>
+  <p style="color:#888;margin-bottom:1.8rem">focail cuimhnithe</p>
+  <button class="big-btn" id="result-next-btn"></button>
 </div>
 <div id="game-screen" class="screen">
+  <div id="player-hud"></div>
   <div class="stats">
     <div><span class="stat-label">Scór</span><span id="score-val">0</span></div>
     <div><span class="stat-label">Saolta</span><span id="lives-val">❤️❤️❤️</span></div>
@@ -63,7 +128,15 @@
   <div id="final-score"></div>
   <p style="color:#888;margin-bottom:0.5rem">focail cuimhnithe agat</p>
   <div id="high-score" style="font-size:1rem;color:#53d8fb;margin-bottom:2rem;min-height:1.4em;"></div>
-  <button class="big-btn" onclick="initGame()">Arís</button>
+  <div id="over-btns">
+    <button class="big-btn" onclick="initGame()">Arís</button>
+  </div>
+</div>
+<!-- FINAL LEADERBOARD -->
+<div id="final-screen" class="screen">
+  <h1>Clárbhord</h1>
+  <div id="leaderboard" style="margin:1.2rem 0 1.8rem;"></div>
+  <button class="big-btn" onclick="goStart()">Baile</button>
 </div>
 <script>
 const POOL=[...new Set(["Aibreán",
@@ -1773,42 +1846,68 @@ const POOL=[...new Set(["Aibreán",
 "úrscéal",
 "úsáid",
 "úsáideach"])];
+const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const WORD_MS = 3000;
 let score,lives,seen,queue,cw,locked;
 let wordDeadline, wordTimerRAF;
+let mode='solo',numPlayers=1,playerNames=[],playerScores=[],currentPlayerIdx=0,leaderIdx=-1,leaderScore=0;
+let selectedCount=2,currentScreen='start-screen';
 let _cx=null;
 function gx(){if(!_cx)_cx=new(window.AudioContext||window.webkitAudioContext)();if(_cx.state==='suspended')_cx.resume();return _cx;}
 function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+buf+dl);gn.gain.setValueAtTime(g,c.currentTime+buf+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+buf+dl+d);o.start(c.currentTime+buf+dl);o.stop(c.currentTime+buf+dl+d);}catch(e){}}
 function playOk(){pt(523,.37,'sine',.22,0);pt(659,.43,'sine',.2,.12);}
 function playNo(){pt(220,.30,'sawtooth',.18,0);pt(150,.33,'sawtooth',.14,.08);}
 function sh(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function initGame(){score=0;lives=3;seen=new Set();queue=sh(POOL);locked=false;upd();gx();show('game-screen');nxt();}
+function initGame(){score=0;lives=3;seen=new Set();queue=sh(POOL);locked=false;upd();
+  const hud=document.getElementById('player-hud');
+  if(mode==='multi'){const col=PCOLS[currentPlayerIdx%PCOLS.length];hud.innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';}else{hud.innerHTML='';}
+  gx();show('game-screen');nxt();}
 function pw(){const s=[...seen];if(s.length>0&&Math.random()<0.4)return s[Math.floor(Math.random()*s.length)];if(queue.length===0)queue=sh(POOL.filter(w=>!seen.has(w)));if(queue.length===0)queue=sh(POOL);return queue.pop();}
 function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;if(_ca){_ca.pause();_ca=null;}lives--;playNo();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
 function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
 function upd(){document.getElementById('score-val').textContent=score;const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
 function over(){
+  cancelAnimationFrame(wordTimerRAF);
+  if(mode==='multi'){
+    playerScores[currentPlayerIdx]=score;
+    if(score>leaderScore){leaderScore=score;leaderIdx=currentPlayerIdx;}
+    showResult();
+    return;
+  }
+  // solo
   document.getElementById('final-score').textContent=score;
   try{
     const key='ancluiche_taifead';
     const prev=parseInt(localStorage.getItem(key)||'0',10);
     const hsEl=document.getElementById('high-score');
-    if(score>prev){
-      localStorage.setItem(key,score);
-      hsEl.textContent='🏆 Taifead Nua: '+score;
-    } else {
-      hsEl.textContent='Taifead: '+prev;
-    }
+    if(score>prev){localStorage.setItem(key,score);hsEl.textContent='🏆 Taifead Nua: '+score;}
+    else{hsEl.textContent='Taifead: '+prev;}
   }catch(e){}
+  document.getElementById('over-btns').innerHTML='<button class="big-btn" onclick="initGame()">Arís</button>&nbsp;&nbsp;<button class="big-btn" style="background:#1a1a2e" onclick="goStart()">Baile</button>';
   show('over-screen');
 }
-function show(id){['start-screen','game-screen','over-screen'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')answer(true);if(e.key==='ArrowRight')answer(false);});
+function show(id){['start-screen','setup-screen','handoff-screen','game-screen','result-screen','over-screen','final-screen'].forEach(s=>{const el=document.getElementById(s);if(el)el.style.display=s===id?'block':'none';});currentScreen=id;}
+document.addEventListener('keydown',e=>{
+  if(currentScreen==='game-screen'){if(e.key==='ArrowLeft')answer(true);if(e.key==='ArrowRight')answer(false);}
+  if(currentScreen==='handoff-screen'&&e.key==='Enter')handoffStart();
+});
 show('start-screen');
 let _ca=null,_nextPronAudio=null,_nextPronWord=null,_pendingWord=null;
 function preloadPron(word){if(_nextPronAudio){_nextPronAudio.pause();_nextPronAudio=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(word)+'.mp3');a.preload='auto';a.onerror=function(){};a.muted=true;a.play().catch(function(){});_nextPronAudio=a;_nextPronWord=word;}
 function playPron(){if(!cw)return;if(_nextPronAudio&&_nextPronWord===cw){const a=_nextPronAudio;_nextPronAudio=null;_nextPronWord=null;if(_ca){_ca.pause();_ca=null;}a.muted=false;a.currentTime=0;a.play().catch(function(){});_ca=a;}else{if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(cw)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}}
+
+// ── multiplayer helpers ──────────────────────────────────────────────────────
+function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;queue=sh(POOL);seen=new Set();gx();preloadPron(pw());initGame();}
+function startMulti(){mode='multi';show('setup-screen');buildSetup();}
+function adjCount(d){selectedCount=Math.max(2,Math.min(6,selectedCount+d));document.getElementById('cnt-val').textContent=selectedCount;buildSetup();}
+function buildSetup(){const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" /></div>';}}
+function setupDone(){numPlayers=selectedCount;playerNames=[];for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i).value.trim()||('Imreoir '+(i+1))).toUpperCase();playerNames.push(v);}playerScores=new Array(numPlayers).fill(0);leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;showHandoff();}
+function showHandoff(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('handoff-name').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';let lnote='';if(leaderIdx>=0){const lc=PCOLS[leaderIdx%PCOLS.length];lnote='Ceannaire: <strong style="color:'+lc+'">'+playerNames[leaderIdx]+'</strong> — '+leaderScore+' pointe';}document.getElementById('handoff-leader').innerHTML=lnote;show('handoff-screen');}
+function handoffStart(){queue=sh(POOL);seen=new Set();gx();preloadPron(pw());initGame();}
+function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';document.getElementById('result-score').textContent=score;const nextIdx=currentPlayerIdx+1;const btn=document.getElementById('result-next-btn');if(nextIdx<numPlayers){btn.textContent='Pas chuig '+playerNames[nextIdx];btn.onclick=function(){currentPlayerIdx=nextIdx;showHandoff();};}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
+function showFinal(){const sorted=[...playerNames.map((n,i)=>({n,s:playerScores[i],i}))].sort((a,b)=>b.s-a.s);const lb=document.getElementById('leaderboard');lb.innerHTML='';sorted.forEach((p,rank)=>{const col=PCOLS[p.i%PCOLS.length];const winner=rank===0;lb.innerHTML+='<div class="lb-row'+(winner?' lb-winner':'')+'"><span class="lb-rank">'+(winner?'🏆':(rank+1)+'.')+' </span><div class="lb-dot" style="background:'+col+'"></div><span class="lb-name">'+p.n+'</span><span class="lb-score">'+p.s+'</span></div>';});show('final-screen');}
+function goStart(){mode='solo';show('start-screen');}
 </script>
 </body>
 </html>
