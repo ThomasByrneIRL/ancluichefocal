@@ -171,7 +171,7 @@ let _cx=null;
 function gx(){if(!_cx)_cx=new(window.AudioContext||window.webkitAudioContext)();if(_cx.state==='suspended')_cx.resume();return _cx;}
 function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+buf+dl);gn.gain.setValueAtTime(g,c.currentTime+buf+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+buf+dl+d);o.start(c.currentTime+buf+dl);o.stop(c.currentTime+buf+dl+d);}catch(e){}}
 function playOk(){pt(523,.25,'sine',.22,0);pt(659,.3,'sine',.2,.10);}
-function playNo(){pt(220,.22,'sawtooth',.18,0);pt(150,.25,'sawtooth',.14,.07);}
+function playNo(){pt(220,.22,'sawtooth',.144,0);pt(150,.25,'sawtooth',.112,.07);}
 
 // ── state ────────────────────────────────────────────────────────────────────
 let score,gameDeadline,wordDeadline,gameTimerRAF,wordTimerRAF;
@@ -252,6 +252,7 @@ function tickWord(){
 function answerQ(chosen,btn){
   if(locked)return;
   locked=true;
+  gx();
   cancelAnimationFrame(wordTimerRAF);
   document.getElementById('word-bar').style.width='0%';
   choiceBtns.forEach(b=>b.disabled=true);
@@ -275,8 +276,11 @@ function onTimeout(){
   if(locked)return;
   locked=true;
   cancelAnimationFrame(wordTimerRAF);
+  score-=2;
+  playNo();
   choiceBtns.forEach(b=>b.disabled=true);
-  setTimeout(()=>{if(gameDeadline-Date.now()>0)nextWord();},150);
+  updScore();
+  setTimeout(()=>{if(gameDeadline-Date.now()>0)nextWord();},200);
 }
 
 function updScore(){
@@ -330,6 +334,13 @@ document.addEventListener('keydown',e=>{
 });
 
 show('start-screen');
+
+// ── iOS AudioContext pre-warm on very first touch ─────────────────────────────
+(function(){
+  function warmAudio(){gx();document.removeEventListener('touchstart',warmAudio);document.removeEventListener('mousedown',warmAudio);}
+  document.addEventListener('touchstart',warmAudio,{passive:true});
+  document.addEventListener('mousedown',warmAudio,{passive:true});
+})();
 </script>
 </body>
 </html>
