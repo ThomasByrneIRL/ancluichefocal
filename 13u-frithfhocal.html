@@ -105,7 +105,7 @@ h1{font-size:2.8rem;color:#e94560;margin-bottom:.2rem;}
     <button class="mode-btn" onclick="startSolo()">Aonair</button>
     <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
   </div>
-  <p class="hint">2 nóiméad · 3 shaol · 5 soic an focal · ↑↓ chun freagra a roghnú</p>
+  <p class="hint">60 soicind · 3 shaol · 5 soic an focal · +4/3/2/1 pointe de réir luais</p>
   <p class="attr">Sonraí: Pota Focal Gluais (Michal Měchura) · CC BY-NC-SA 4.0</p>
 </div>
 
@@ -186,7 +186,7 @@ h1{font-size:2.8rem;color:#e94560;margin-bottom:.2rem;}
 
 <script>
 const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
-const GAME_MS=120000,WORD_MS=5000,LIVES=3;
+const GAME_MS=60000,WORD_MS=5000,LIVES=3;
 const LS_KEY='13u_best';
 
 const PAIRS=[
@@ -305,6 +305,7 @@ function playOk(){pt(523,.25,'sine',.22,0);pt(659,.3,'sine',.2,.10);}
 function playNo(){pt(220,.22,'sawtooth',.144,0);pt(150,.25,'sawtooth',.112,.07);}
 function playPron(w){if(!w||w.includes(' '))return;if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(w)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}
 function replayPron(){if(_clue)playPron(_clue);}
+function pointsFor(remMs){const s=remMs/1000;if(s>=3)return 4;if(s>=2)return 3;if(s>=1)return 2;return 1;}
 // iOS pre-warm
 (function(){function w(){gx();document.removeEventListener('touchstart',w);document.removeEventListener('mousedown',w);}document.addEventListener('touchstart',w,{passive:true});document.addEventListener('mousedown',w,{passive:true});})();
 
@@ -325,7 +326,7 @@ function tickGame(){const rem=gameEnd-Date.now();if(rem<=0){endGame();return;}co
 function tickWord(){const rem=wordEnd-Date.now();if(rem<=0){document.getElementById('word-bar').style.width='0%';if(!locked){locked=true;lives--;playNo();document.getElementById('word-card').className='card flash-timeout';updLives();if(lives<=0){setTimeout(endGame,600);return;}setTimeout(nextWord,700);}return;}document.getElementById('word-bar').style.width=(rem/WORD_MS*100)+'%';wordRAF=requestAnimationFrame(tickWord);}
 
 // ── pick ──────────────────────────────────────────────────────────────────────
-function pick(idx){if(locked)return;gx();locked=true;cancelAnimationFrame(wordRAF);const ba=document.getElementById('choice-a'),bb=document.getElementById('choice-b');ba.disabled=true;bb.disabled=true;if(idx===correctIdx){score++;document.getElementById('score-display').textContent=score;playOk();[ba,bb][idx].classList.add('ok');document.getElementById('word-card').className='card flash-correct';showGloss();setTimeout(nextWord,700);}else{lives--;updLives();playNo();[ba,bb][idx].classList.add('ng');[ba,bb][correctIdx].classList.add('rv');document.getElementById('word-card').className='card flash-wrong';showGloss();if(lives<=0){setTimeout(endGame,800);return;}setTimeout(nextWord,900);}}
+function pick(idx){if(locked)return;gx();locked=true;cancelAnimationFrame(wordRAF);const ba=document.getElementById('choice-a'),bb=document.getElementById('choice-b');ba.disabled=true;bb.disabled=true;if(idx===correctIdx){const pts=pointsFor(wordEnd-Date.now());score+=pts;document.getElementById('score-display').textContent=score;playOk();[ba,bb][idx].classList.add('ok');document.getElementById('word-card').className='card flash-correct';showGloss();setTimeout(nextWord,700);}else{lives--;updLives();playNo();[ba,bb][idx].classList.add('ng');[ba,bb][correctIdx].classList.add('rv');document.getElementById('word-card').className='card flash-wrong';showGloss();if(lives<=0){setTimeout(endGame,800);return;}setTimeout(nextWord,900);}}
 function showGloss(){if(!currentGloss)return;const el=document.getElementById('gloss');el.textContent='= \''+currentGloss+'\'';el.classList.add('show');clearTimeout(glossTimer);glossTimer=setTimeout(()=>el.classList.remove('show'),1200);}
 
 // ── next word ─────────────────────────────────────────────────────────────────
