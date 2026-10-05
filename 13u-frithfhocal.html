@@ -348,7 +348,7 @@ function nextWord(){
   const opts=swap?[dist,correct]:[correct,dist];
   _clue=clue;
   document.getElementById('card-word').textContent=clue;
-  document.getElementById('card-en').textContent=clueEn?'('+clueEn+')':'';
+  document.getElementById('card-en').textContent='';
   document.getElementById('word-card').className='card';
   document.getElementById('gloss').classList.remove('show');
   const ba=document.getElementById('choice-a'),bb=document.getElementById('choice-b');
