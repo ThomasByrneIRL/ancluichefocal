@@ -147,7 +147,7 @@
     </div>
   </div>
   <button class="start-btn" onclick="startGame()">Tosaigh</button>
-  <p class="hint">Cainteoir Nua: 6 soicind · +3 pointe · Gaeilgeoir: 4 soicind · +1 pointe · 15 focal an duine</p>
+  <p class="hint">Cainteoir Nua: 6 soicind · +2 pointe · Gaeilgeoir: 4 soicind · +1 pointe · 15 focal an duine</p>
   <p class="hint">↑ ↓ nó W / S chun freagra a roghnú</p>
 </div>
 
@@ -182,7 +182,7 @@
     <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
     <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
   </div>
-  <div id="pts-flash">+3</div>
+  <div id="pts-flash">+2</div>
 </div>
 
 <!-- ══ OVER SCREEN ════════════════════════════════════════════════════════════ -->
@@ -204,7 +204,7 @@ const DICT = {"a": ["his, its"], "ab": ["abbot"], "abacas": ["abacus (calculatin
 const WORDS      = Object.keys(DICT);
 const ROLES      = ['Cainteoir Nua', 'Gaeilgeoir'];
 const WORD_MS    = [6000, 4000];   // per player
-const PTS        = [3, 1];         // per player
+const PTS        = [2, 1];         // per player
 const WORDS_EACH = 15;
 
 const PALETTE = [
