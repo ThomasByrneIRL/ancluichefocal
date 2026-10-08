@@ -1882,7 +1882,7 @@ function over(){
   // solo
   document.getElementById('final-score').textContent=score;
   try{
-    const key='ancluiche_taifead';
+    const key='ancluiche_taifead_14';
     const prev=parseInt(localStorage.getItem(key)||'0',10);
     const hsEl=document.getElementById('high-score');
     if(score>prev){localStorage.setItem(key,score);hsEl.textContent='🏆 Taifead Nua: '+score;}
