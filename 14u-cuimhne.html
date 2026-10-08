@@ -112,6 +112,7 @@
   <div id="player-hud"></div>
   <div class="stats">
     <div><span class="stat-label">Scór</span><span id="score-val">0</span></div>
+    <div><span class="stat-label">Saol</span><span id="lives-val" style="font-size:2rem">❤️</span></div>
     <div><span class="stat-label">Am</span><span id="timer-val">1:00</span></div>
   </div>
   <div class="word-timer-wrap"><div id="word-timer-bar"></div></div>
@@ -1869,7 +1870,7 @@ function pw(){const s=[...seen];if(s.length>0&&Math.random()<0.4)return s[Math.f
 function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;if(_ca){_ca.pause();_ca=null;}lives--;playNo();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
 function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
-function upd(){document.getElementById('score-val').textContent=score;}
+function upd(){document.getElementById('score-val').textContent=score;document.getElementById('lives-val').textContent=lives>0?'❤️':'🖤';}
 function over(){
   cancelAnimationFrame(wordTimerRAF);
   cancelAnimationFrame(gameTimerRAF);
