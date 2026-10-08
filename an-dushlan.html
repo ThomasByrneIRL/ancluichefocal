@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🏅 Misneach Go Deo</title>
+<title>An Dúshlán</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -141,8 +141,8 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
   <div id="target-hud"></div>
   <div class="county-dots" id="county-dots"></div>
   <div id="word-num-label"></div>
-  <div id="score-display">1</div>
-  <div id="score-unit">pt</div>
+  <div id="score-display">0</div>
+  <div id="score-unit">/ 32</div>
   <div id="pts-flash"></div>
   <div class="word-timer-wrap"><div id="word-timer-bar"></div></div>
   <div class="card" id="word-card"><div id="word-display"></div></div>
@@ -385,8 +385,7 @@ function nextWord(forcedWord) {
   // Update UI for current word
   buildDots('county-dots', wordNum);
   document.getElementById('word-num-label').textContent = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS;
-  const val = POINT_VALUES[wordNum - 1];
-  document.getElementById('score-display').textContent = fmtFull(val);
+  document.getElementById('score-display').textContent = wordNum - 1;
 
   // Choose word
   const word = forcedWord || WORDS[Math.floor(Math.random()*WORDS.length)];
@@ -437,7 +436,7 @@ function pick(idx) {
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
     const fl = document.getElementById('pts-flash');
-    fl.textContent = '+' + fmtFull(POINT_VALUES[wordNum-1]); fl.style.opacity = '1';
+    fl.textContent = '+1'; fl.style.opacity = '1';
     clearTimeout(flashTimer);
     flashTimer = setTimeout(() => fl.style.opacity = '0', 600);
 
@@ -462,7 +461,7 @@ function pick(idx) {
 function victory() {
   cancelAnimationFrame(wordRAF);
   if (_ca) { _ca.pause(); _ca = null; }
-  const score = POINT_VALUES[TOTAL_WORDS - 1]; // 1,600,000,000
+  const score = TOTAL_WORDS;
   playVictory();
 
   // All dots green
@@ -502,7 +501,7 @@ function bust(reason) {
   if (_ca) { _ca.pause(); _ca = null; }
 
   // Score = value of last correctly answered word (wordNum-1), or 0 if first word
-  const score = wordNum > 1 ? POINT_VALUES[wordNum - 2] : 0;
+  const score = wordNum - 1;
 
   if (mode === 'multi') {
     const pi = currentPlayerIdx;
