@@ -96,10 +96,11 @@
 
 <div id="over-screen" class="screen">
   <h1>Críochnaithe!</h1>
-  <p class="score-sub">Babhta 1 · Babhta 2</p>
+  <p class="score-sub" id="over-sub">Babhta 1 · Babhta 2</p>
   <div class="final-score" id="final-score">0 - 0</div>
   <p class="over-msg" id="over-msg"></p>
   <button class="big-btn" onclick="initGame()" style="margin-top:1.5rem">Arís</button>
+  <button class="big-btn" id="over-baile" onclick="show('start-screen')" style="margin-top:1.5rem;background:#1a1a2e;display:none">Baile</button>
 </div>
 
 <script>
@@ -1859,7 +1860,16 @@ function endRound1() {
 
   const wrap = document.getElementById('mid-missed-wrap');
   if (missedR1.length === 0) {
-    wrap.innerHTML = '<p class="all-correct-msg">✓ Gach focal ceart — ar fheabhas!</p>';
+    // Perfect Round 1: game ends here
+    document.getElementById('over-sub').textContent = 'Babhta 1';
+    document.getElementById('final-score').textContent = score1 + ' / ' + ROUND_LENGTH;
+    document.getElementById('final-score').className = 'final-score improved';
+    const msgEl = document.getElementById('over-msg');
+    msgEl.textContent = '✓ Gach focal ceart — ar fheabhas!';
+    msgEl.className = 'over-msg improved';
+    document.getElementById('over-baile').style.display = 'inline-block';
+    show('over-screen');
+    return;
   } else {
     let html = '<div class="missed-list"><p class="missed-list-label">Focail le cleachtadh sa 2ú babhta:</p>';
     missedR1.forEach(w => {
@@ -1874,6 +1884,8 @@ function endRound1() {
 
 function endGame() {
   score2 = curScore;
+  document.getElementById('over-sub').textContent = 'Babhta 1 · Babhta 2';
+  document.getElementById('over-baile').style.display = 'none';
   const improved = score2 > score1;
   const sep = improved ? ' > ' : ' - ';
   document.getElementById('final-score').textContent = score1 + sep + score2;
