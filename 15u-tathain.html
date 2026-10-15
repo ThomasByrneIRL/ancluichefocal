@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tátháin</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f0;color:#1a1a2e;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;width:100%;max-width:540px;padding:28px;}
+.screen.active{display:flex;}
+h1{font-size:2.8rem;color:#e94560;margin-bottom:.2rem;}
+.subtitle{font-size:.95rem;color:#555;line-height:1.6;}
+.mode-wrap{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;width:100%;}
+.mode-btn{flex:1;max-width:180px;padding:1rem;border:2px solid #e94560;border-radius:14px;background:#fff;font-size:1rem;font-weight:bold;color:#e94560;cursor:pointer;font-family:Georgia,'Times New Roman',serif;transition:all .15s;}
+.mode-btn:hover{background:#fff5f6;}
+.cnt-row{display:flex;align-items:center;justify-content:center;gap:1rem;margin:.8rem 0;}
+.cnt-btn{width:38px;height:38px;border-radius:50%;border:2px solid #e94560;background:#fff;color:#e94560;font-size:1.3rem;font-weight:bold;cursor:pointer;line-height:1;}
+.cnt-btn:hover{background:#e94560;color:#fff;}
+#cnt-val{font-size:1.5rem;font-weight:bold;min-width:2rem;text-align:center;}
+.player-fields{display:flex;flex-direction:column;gap:.6rem;margin:.6rem 0 1.2rem;width:100%;}
+.player-row{display:flex;align-items:center;gap:.7rem;}
+.pdot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.player-row input{flex:1;padding:.55rem .8rem;border-radius:8px;border:1.5px solid #ccc;font-size:1rem;outline:none;}
+.player-row input:focus{border-color:#e94560;}
+#handoff-screen .player-chip{font-size:2rem;font-weight:bold;margin:1rem 0;}
+#handoff-screen .leader-note{color:#888;font-size:.9rem;margin-bottom:1.6rem;}
+#player-hud{font-size:.88rem;color:#888;min-height:1.2em;}
+#top-bar{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:.95rem;}
+#progress{color:#888;}
+#score-display{color:#2a9d47;font-weight:bold;font-size:1.1rem;}
+.pbar-wrap{width:100%;height:6px;background:#ddd;border-radius:3px;overflow:hidden;}
+#pbar{height:100%;background:#2a9d47;border-radius:3px;width:0%;transition:width .3s;}
+#affix-banner{width:100%;background:#fff;border:2px solid #e94560;border-radius:12px;padding:10px 14px;display:flex;align-items:baseline;justify-content:center;gap:10px;flex-wrap:wrap;}
+#affix-banner.new{animation:pop .5s ease;}
+@keyframes pop{0%{transform:scale(.94);}60%{transform:scale(1.04);}100%{transform:scale(1);}}
+#affix-text{font-size:1.6rem;font-weight:bold;color:#e94560;}
+#affix-mean{font-size:1.05rem;color:#555;}
+.card{background:#fff;border-radius:14px;padding:24px 20px 18px;width:100%;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.08);min-height:90px;justify-content:center;transition:background .15s;}
+.card-word{font-size:2.1rem;font-weight:bold;letter-spacing:1px;}
+.card-audio{font-size:.72rem;color:#bbb;margin-top:4px;}
+.card.flash-correct{background:#d4edda;}
+.card.flash-wrong{background:#f8d7da;}
+#breakdown{font-size:1rem;color:#555;min-height:2.6em;line-height:1.4;opacity:0;transition:opacity .2s;}
+#breakdown.show{opacity:1;}
+#breakdown b{color:#1a1a2e;}
+.choices{width:100%;display:flex;flex-direction:column;gap:10px;}
+.choice-btn{width:100%;padding:14px 16px;border-radius:10px;border:2px solid #ddd;background:#fff;color:#1a1a2e;font-size:1.1rem;cursor:pointer;transition:background .1s,border-color .1s;display:flex;align-items:center;gap:10px;}
+.key-hint{font-size:.95rem;opacity:.35;flex-shrink:0;width:1.1em;text-align:center;}
+.btn-text{flex:1;text-align:left;}
+.choice-btn:hover:not(:disabled){background:#fff5f6;border-color:#e94560;}
+.choice-btn.ok{background:#d4edda;border-color:#2a9d47;color:#1a5c2e;}
+.choice-btn.ng{background:#f8d7da;border-color:#e94560;color:#c0392b;}
+.choice-btn.rv{background:#d4edda;border-color:#4caf50;color:#2a7a2a;}
+#result-player,#over-name{font-size:1.4rem;font-weight:bold;}
+.score-box{background:#fff;border-radius:12px;padding:14px 32px;}
+.score-num{font-size:2.6rem;font-weight:bold;color:#2a9d47;}
+.score-lbl{font-size:.78rem;color:#888;margin-top:2px;}
+.best-line{font-size:.88rem;color:#777;}
+.lb-row{display:flex;align-items:center;gap:.7rem;padding:.5rem .8rem;border-radius:10px;background:#fff;margin:.35rem 0;font-size:1rem;}
+.lb-rank{min-width:1.3rem;}
+.lb-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.lb-name{flex:1;font-weight:bold;text-align:left;}
+.lb-score{font-weight:bold;color:#2a9d47;}
+.lb-winner{border:2px solid gold;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.big-btn{background:#e94560;color:#fff;border:none;border-radius:12px;padding:.9rem 2.2rem;font-size:1rem;font-weight:bold;cursor:pointer;transition:opacity .2s;}
+.big-btn:hover{opacity:.85;}
+.big-btn.sec{background:#1a1a2e;}
+.hint{font-size:.8rem;color:#999;}
+</style>
+</head>
+<body>
+
+<div id="start-screen" class="screen active">
+  <h1>Tátháin</h1>
+  <p class="subtitle"><strong>sean-</strong> = old, so <strong>seanmháthair</strong> = ?<br>Úsáid brí na coda chun brí an fhocail a thomhas.</p>
+  <div class="mode-wrap">
+    <button class="mode-btn" onclick="startSolo()">Aonair</button>
+    <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
+  </div>
+  <p class="hint">20 focal · dhá rogha · gan teorainn ama</p>
+</div>
+
+<div id="setup-screen" class="screen">
+  <h1 style="font-size:2rem">Il-imreoir</h1>
+  <p class="subtitle">Cé mhéad imreoir?</p>
+  <div class="cnt-row">
+    <button class="cnt-btn" onclick="adjCount(-1)">−</button>
+    <span id="cnt-val">2</span>
+    <button class="cnt-btn" onclick="adjCount(1)">+</button>
+  </div>
+  <div class="player-fields" id="player-fields"></div>
+  <button class="big-btn" onclick="setupDone()">Ar Aghaidh</button>
+</div>
+
+<div id="handoff-screen" class="screen">
+  <h1 style="font-size:2rem">Do sheal!</h1>
+  <div class="player-chip" id="handoff-name"></div>
+  <div class="leader-note" id="handoff-leader"></div>
+  <button class="big-btn" onclick="handoffStart()">Tosaigh</button>
+</div>
+
+<div id="game-screen" class="screen">
+  <div id="player-hud"></div>
+  <div id="top-bar">
+    <div id="progress">1 / 20</div>
+    <div id="score-display">0</div>
+  </div>
+  <div class="pbar-wrap"><div id="pbar"></div></div>
+  <div id="affix-banner"><span id="affix-text"></span><span id="affix-mean"></span></div>
+  <div id="word-card" class="card" onclick="replayPron()">
+    <div class="card-word" id="card-word"></div>
+    <div class="card-audio">🔊 cliceáil chun éisteacht arís</div>
+  </div>
+  <div class="choices">
+    <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
+    <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
+  </div>
+  <div id="breakdown"></div>
+</div>
+
+<div id="result-screen" class="screen">
+  <div id="result-player"></div>
+  <div class="score-box">
+    <div class="score-num" id="result-score">0</div>
+    <div class="score-lbl">as 20</div>
+  </div>
+  <button class="big-btn" id="result-next-btn" style="margin-top:.8rem"></button>
+</div>
+
+<div id="over-screen" class="screen">
+  <h1 style="font-size:2rem">Críochnaithe!</h1>
+  <div class="score-box">
+    <div class="score-num" id="final-score">0</div>
+    <div class="score-lbl">as 20</div>
+  </div>
+  <div class="best-line" id="best-line"></div>
+  <div class="btn-row" style="margin-top:.6rem">
+    <button class="big-btn" onclick="initGame()">Arís</button>
+    <button class="big-btn sec" onclick="goStart()">Baile</button>
+  </div>
+</div>
+
+<div id="final-screen" class="screen">
+  <h1 style="font-size:2rem">Clárbhord</h1>
+  <div id="leaderboard" style="width:100%;margin:.8rem 0 1.4rem;"></div>
+  <button class="big-btn" onclick="goStart()">Baile</button>
+</div>
+
+<script>
+const GROUPS=[{"a": "sean-", "t": "pre", "m": "old", "w": [{"w": "seanmháthair", "r": "máthair", "rm": "mother", "en": "grandmother"}, {"w": "seanathair", "r": "athair", "rm": "father", "en": "grandfather"}, {"w": "seanbhean", "r": "bean", "rm": "woman", "en": "old woman"}, {"w": "seanfhear", "r": "fear", "rm": "man", "en": "old man"}, {"w": "seanduine", "r": "duine", "rm": "person", "en": "old person"}, {"w": "seanfhocal", "r": "focal", "rm": "word", "en": "proverb"}, {"w": "seanchara", "r": "cara", "rm": "friend", "en": "old friend"}]}, {"a": "droch-", "t": "pre", "m": "bad", "w": [{"w": "drochscéal", "r": "scéal", "rm": "story, news", "en": "bad news"}, {"w": "drochdhuine", "r": "duine", "rm": "person", "en": "bad person"}, {"w": "drochaimsir", "r": "aimsir", "rm": "weather", "en": "bad weather"}, {"w": "drochbhéas", "r": "béas", "rm": "habit, manner", "en": "bad habit"}, {"w": "drochmheas", "r": "meas", "rm": "respect", "en": "contempt"}]}, {"a": "dea-", "t": "pre", "m": "good", "w": [{"w": "dea-scéal", "r": "scéal", "rm": "story, news", "en": "good news"}, {"w": "dea-bholadh", "r": "boladh", "rm": "smell", "en": "pleasant smell"}, {"w": "dea-mhéin", "r": "méin", "rm": "mind, disposition", "en": "goodwill"}, {"w": "dea-labhartha", "r": "labhartha", "rm": "spoken", "en": "well-spoken"}, {"w": "dea-bhéasach", "r": "béasach", "rm": "mannerly", "en": "well-mannered"}]}, {"a": "mí-", "t": "pre", "m": "un-, mis-, bad", "w": [{"w": "mí-ádh", "r": "ádh", "rm": "luck", "en": "bad luck"}, {"w": "míshásta", "r": "sásta", "rm": "satisfied", "en": "dissatisfied"}, {"w": "mícheart", "r": "ceart", "rm": "right", "en": "wrong"}, {"w": "míshona", "r": "sona", "rm": "happy", "en": "unhappy"}, {"w": "mífhoighneach", "r": "foighneach", "rm": "patient", "en": "impatient"}, {"w": "mímhacánta", "r": "macánta", "rm": "honest", "en": "dishonest"}, {"w": "míchompordach", "r": "compordach", "rm": "comfortable", "en": "uncomfortable"}, {"w": "míshlachtmhar", "r": "slachtmhar", "rm": "tidy", "en": "untidy"}, {"w": "míthuiscint", "r": "tuiscint", "rm": "understanding", "en": "misunderstanding"}]}, {"a": "neamh-", "t": "pre", "m": "non-, un-", "w": [{"w": "neamhspleách", "r": "spleách", "rm": "dependent", "en": "independent"}, {"w": "neamhghnách", "r": "gnách", "rm": "usual", "en": "unusual"}, {"w": "neamhábalta", "r": "ábalta", "rm": "able", "en": "unable"}, {"w": "neamhchiontach", "r": "ciontach", "rm": "guilty", "en": "innocent"}, {"w": "neamhbhuan", "r": "buan", "rm": "lasting", "en": "temporary"}, {"w": "neamhfhoirfe", "r": "foirfe", "rm": "perfect", "en": "imperfect"}, {"w": "neamhshuim", "r": "suim", "rm": "interest", "en": "indifference"}]}, {"a": "ath-", "t": "pre", "m": "re-, again", "w": [{"w": "athoscail", "r": "oscail", "rm": "open", "en": "reopen"}, {"w": "athscríobh", "r": "scríobh", "rm": "write", "en": "rewrite"}, {"w": "athrá", "r": "rá", "rm": "saying", "en": "repetition"}, {"w": "athphósadh", "r": "pósadh", "rm": "marriage", "en": "remarriage"}, {"w": "athbhliain", "r": "bliain", "rm": "year", "en": "the coming year"}]}, {"a": "il-", "t": "pre", "m": "many, multi-", "w": [{"w": "ildaite", "r": "daite", "rm": "coloured", "en": "multicoloured"}, {"w": "ilteangach", "r": "teanga", "rm": "language", "en": "multilingual"}, {"w": "ilchultúrtha", "r": "cultúr", "rm": "culture", "en": "multicultural"}, {"w": "ilchineálach", "r": "cineál", "rm": "kind, type", "en": "diverse, of many kinds"}]}, {"a": "fo-", "t": "pre", "m": "sub-, under", "w": [{"w": "fo-éadaí", "r": "éadaí", "rm": "clothes", "en": "underwear"}, {"w": "fochupán", "r": "cupán", "rm": "cup", "en": "saucer"}, {"w": "fotheideal", "r": "teideal", "rm": "title", "en": "subheading"}, {"w": "fomhuireán", "r": "muir", "rm": "sea", "en": "submarine"}, {"w": "fo-alt", "r": "alt", "rm": "section", "en": "subsection"}]}, {"a": "réamh-", "t": "pre", "m": "pre-, before", "w": [{"w": "réamhscoil", "r": "scoil", "rm": "school", "en": "preschool"}, {"w": "réamhrá", "r": "rá", "rm": "saying", "en": "introduction, preface"}, {"w": "réamhfhocal", "r": "focal", "rm": "word", "en": "preposition"}, {"w": "réamhaisnéis", "r": "aisnéis", "rm": "report", "en": "forecast"}, {"w": "réamhíocaíocht", "r": "íocaíocht", "rm": "payment", "en": "prepayment"}]}, {"a": "comh-", "t": "pre", "m": "co-, together, equal", "w": [{"w": "comhrá", "r": "rá", "rm": "saying", "en": "conversation"}, {"w": "comhoibriú", "r": "oibriú", "rm": "working", "en": "cooperation"}, {"w": "comhaois", "r": "aois", "rm": "age", "en": "person of the same age"}, {"w": "comhscór", "r": "scór", "rm": "score", "en": "draw, level score"}]}, {"a": "leas-", "t": "pre", "m": "step-", "w": [{"w": "leasmháthair", "r": "máthair", "rm": "mother", "en": "stepmother"}, {"w": "leasathair", "r": "athair", "rm": "father", "en": "stepfather"}, {"w": "leasdeartháir", "r": "deartháir", "rm": "brother", "en": "stepbrother"}, {"w": "leasdeirfiúr", "r": "deirfiúr", "rm": "sister", "en": "stepsister"}, {"w": "leasmhac", "r": "mac", "rm": "son", "en": "stepson"}, {"w": "leasiníon", "r": "iníon", "rm": "daughter", "en": "stepdaughter"}]}, {"a": "mór-", "t": "pre", "m": "great, big, main", "w": [{"w": "mórbhealach", "r": "bealach", "rm": "road, way", "en": "motorway"}, {"w": "mórchathair", "r": "cathair", "rm": "city", "en": "metropolis"}, {"w": "mórshiúl", "r": "siúl", "rm": "walk", "en": "procession"}, {"w": "mórchuid", "r": "cuid", "rm": "part, share", "en": "a great deal"}]}, {"a": "ard-", "t": "pre", "m": "high, chief", "w": [{"w": "ardscoil", "r": "scoil", "rm": "school", "en": "secondary school"}, {"w": "ardeaglais", "r": "eaglais", "rm": "church", "en": "cathedral"}, {"w": "ardmháistir", "r": "máistir", "rm": "master", "en": "headmaster"}, {"w": "ardrí", "r": "rí", "rm": "king", "en": "high king"}, {"w": "ardleibhéal", "r": "leibhéal", "rm": "level", "en": "higher level"}]}, {"a": "príomh-", "t": "pre", "m": "main, chief", "w": [{"w": "príomhchathair", "r": "cathair", "rm": "city", "en": "capital city"}, {"w": "príomhoide", "r": "oide", "rm": "teacher", "en": "school principal"}, {"w": "príomhshráid", "r": "sráid", "rm": "street", "en": "main street"}, {"w": "príomhcheist", "r": "ceist", "rm": "question", "en": "main question"}]}, {"a": "bun-", "t": "pre", "m": "basic, base", "w": [{"w": "bunscoil", "r": "scoil", "rm": "school", "en": "primary school"}, {"w": "bunreacht", "r": "reacht", "rm": "law, statute", "en": "constitution"}, {"w": "bunoideachas", "r": "oideachas", "rm": "education", "en": "primary education"}]}, {"a": "idir-", "t": "pre", "m": "inter-, between", "w": [{"w": "idirnáisiúnta", "r": "náisiúnta", "rm": "national", "en": "international"}, {"w": "idirlíon", "r": "líon", "rm": "net", "en": "internet"}, {"w": "idirbhliain", "r": "bliain", "rm": "year", "en": "Transition Year"}]}, {"a": "so-", "t": "pre", "m": "easy to, -able", "w": [{"w": "so-léite", "r": "léite", "rm": "read", "en": "easy to read"}, {"w": "so-ólta", "r": "ólta", "rm": "drunk", "en": "drinkable"}, {"w": "so-ite", "r": "ite", "rm": "eaten", "en": "edible"}, {"w": "so-bhriste", "r": "briste", "rm": "broken", "en": "fragile"}, {"w": "so-aitheanta", "r": "aitheanta", "rm": "recognised", "en": "recognisable"}]}, {"a": "do-", "t": "pre", "m": "hard to, un-", "w": [{"w": "do-léite", "r": "léite", "rm": "read", "en": "hard to read"}, {"w": "do-ólta", "r": "ólta", "rm": "drunk", "en": "undrinkable"}, {"w": "do-ite", "r": "ite", "rm": "eaten", "en": "inedible"}, {"w": "do-chreidte", "r": "creidte", "rm": "believed", "en": "unbelievable"}, {"w": "do-aitheanta", "r": "aitheanta", "rm": "recognised", "en": "unrecognisable"}]}, {"a": "-óir / -eoir", "t": "suf", "m": "person who does it", "w": [{"w": "feirmeoir", "r": "feirm", "rm": "farm", "en": "farmer"}, {"w": "siopadóir", "r": "siopa", "rm": "shop", "en": "shopkeeper"}, {"w": "rinceoir", "r": "rince", "rm": "dance", "en": "dancer"}, {"w": "peileadóir", "r": "peil", "rm": "football", "en": "footballer"}, {"w": "ceoltóir", "r": "ceol", "rm": "music", "en": "musician"}, {"w": "scríbhneoir", "r": "scríobh", "rm": "write", "en": "writer"}, {"w": "garraíodóir", "r": "garraí", "rm": "garden", "en": "gardener"}, {"w": "bádóir", "r": "bád", "rm": "boat", "en": "boatman"}, {"w": "cainteoir", "r": "caint", "rm": "talk", "en": "speaker"}, {"w": "léitheoir", "r": "léigh", "rm": "read", "en": "reader"}, {"w": "imreoir", "r": "imir", "rm": "play", "en": "player"}, {"w": "múinteoir", "r": "múin", "rm": "teach", "en": "teacher"}, {"w": "dlíodóir", "r": "dlí", "rm": "law", "en": "lawyer"}]}, {"a": "-aire / -aí", "t": "suf", "m": "person who does it", "w": [{"w": "iascaire", "r": "iasc", "rm": "fish", "en": "fisherman"}, {"w": "cócaire", "r": "cócaráil", "rm": "cook", "en": "cook (person)"}, {"w": "ceannaire", "r": "ceann", "rm": "head", "en": "leader"}, {"w": "tógálaí", "r": "tóg", "rm": "build", "en": "builder"}]}, {"a": "-lann", "t": "suf", "m": "place for", "w": [{"w": "bialann", "r": "bia", "rm": "food", "en": "restaurant"}, {"w": "leabharlann", "r": "leabhar", "rm": "book", "en": "library"}, {"w": "amharclann", "r": "amharc", "rm": "view, watching", "en": "theatre"}, {"w": "pictiúrlann", "r": "pictiúr", "rm": "picture", "en": "cinema"}, {"w": "saotharlann", "r": "saothar", "rm": "work", "en": "laboratory"}, {"w": "ceardlann", "r": "ceard", "rm": "craft", "en": "workshop"}, {"w": "dánlann", "r": "dán", "rm": "poem, art", "en": "art gallery"}, {"w": "otharlann", "r": "othar", "rm": "patient", "en": "infirmary"}]}, {"a": "-ín", "t": "suf", "m": "small, little", "w": [{"w": "teachín", "r": "teach", "rm": "house", "en": "cottage"}, {"w": "cnoicín", "r": "cnoc", "rm": "hill", "en": "little hill"}, {"w": "bóithrín", "r": "bóthar", "rm": "road", "en": "little road, boreen"}, {"w": "buidéilín", "r": "buidéal", "rm": "bottle", "en": "small bottle"}]}, {"a": "-án", "t": "suf", "m": "small, little", "w": [{"w": "leabhrán", "r": "leabhar", "rm": "book", "en": "booklet"}, {"w": "sruthán", "r": "sruth", "rm": "stream, current", "en": "brook"}, {"w": "cnocán", "r": "cnoc", "rm": "hill", "en": "hillock"}]}, {"a": "-úil", "t": "suf", "m": "-ful, -ly, having", "w": [{"w": "cairdiúil", "r": "cara", "rm": "friend", "en": "friendly"}, {"w": "suimiúil", "r": "suim", "rm": "interest", "en": "interesting"}, {"w": "cáiliúil", "r": "cáil", "rm": "fame", "en": "famous"}, {"w": "misniúil", "r": "misneach", "rm": "courage", "en": "courageous"}, {"w": "fuinniúil", "r": "fuinneamh", "rm": "energy", "en": "energetic"}, {"w": "sláintiúil", "r": "sláinte", "rm": "health", "en": "healthy"}, {"w": "laethúil", "r": "lá", "rm": "day", "en": "daily"}, {"w": "seachtainiúil", "r": "seachtain", "rm": "week", "en": "weekly"}, {"w": "bliantúil", "r": "bliain", "rm": "year", "en": "annual"}, {"w": "dathúil", "r": "dath", "rm": "colour", "en": "handsome, colourful"}]}, {"a": "-mhar", "t": "suf", "m": "full of", "w": [{"w": "ceolmhar", "r": "ceol", "rm": "music", "en": "musical"}, {"w": "ciallmhar", "r": "ciall", "rm": "sense", "en": "sensible"}, {"w": "grámhar", "r": "grá", "rm": "love", "en": "loving"}, {"w": "luachmhar", "r": "luach", "rm": "value", "en": "valuable"}, {"w": "ceomhar", "r": "ceo", "rm": "fog", "en": "foggy"}, {"w": "neartmhar", "r": "neart", "rm": "strength", "en": "strong"}, {"w": "bríomhar", "r": "brí", "rm": "vigour", "en": "lively"}]}, {"a": "-eolaíocht", "t": "suf", "m": "study of, -ology", "w": [{"w": "tíreolaíocht", "r": "tír", "rm": "country, land", "en": "geography"}, {"w": "réalteolaíocht", "r": "réalta", "rm": "star", "en": "astronomy"}, {"w": "bitheolaíocht", "r": "bith", "rm": "life", "en": "biology"}, {"w": "teangeolaíocht", "r": "teanga", "rm": "language", "en": "linguistics"}, {"w": "ceoleolaíocht", "r": "ceol", "rm": "music", "en": "musicology"}]}];
+const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
+const ROUND_WORDS=20,PER_AFFIX=4,LS_KEY='15u_best';
+const ALL=GROUPS.flatMap((g,gi)=>g.w.map(x=>Object.assign({gi},x)));
+
+// audio
+let _sfx=null,_ca=null,_cur=null;
+function gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
+function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+buf+dl);gn.gain.setValueAtTime(g,c.currentTime+buf+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+buf+dl+d);o.start(c.currentTime+buf+dl);o.stop(c.currentTime+buf+dl+d);}catch(e){}}
+function playOk(){pt(523,.25,'sine',.22,0);pt(659,.3,'sine',.2,.10);}
+function playNo(){pt(220,.22,'sawtooth',.144,0);pt(150,.25,'sawtooth',.112,.07);}
+function playPron(w){if(!w)return;if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(w)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}
+function replayPron(){if(_cur)playPron(_cur.w);}
+(function(){function w(){gx();document.removeEventListener('touchstart',w);document.removeEventListener('mousedown',w);}document.addEventListener('touchstart',w,{passive:true});document.addEventListener('mousedown',w,{passive:true});})();
+
+// state
+let seq=[],idx=0,score=0,locked=false,correctIdx=0,lastGi=-1;
+let mode='solo',numPlayers=1,playerNames=[],playerScores=[],currentPlayerIdx=0,leaderIdx=-1,leaderScore=0;
+let selectedCount=2,currentScreen='start-screen';
+
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){['start-screen','setup-screen','handoff-screen','game-screen','result-screen','over-screen','final-screen'].forEach(s=>document.getElementById(s).classList.toggle('active',s===id));currentScreen=id;}
+
+// build 20 words: affixes in random order, up to 4 words each
+function buildSeq(){const out=[];for(const gi of sh(GROUPS.map((_,i)=>i))){if(out.length>=ROUND_WORDS)break;const take=sh(GROUPS[gi].w).slice(0,Math.min(PER_AFFIX,ROUND_WORDS-out.length));take.forEach(x=>out.push(Object.assign({gi},x)));}return out;}
+
+function distractor(item){const g=GROUPS[item.gi];let d,n=0;do{d=ALL[Math.floor(Math.random()*ALL.length)];n++;}while(n<200&&(d.gi===item.gi||d.r===item.r||d.en===item.en||(GROUPS[d.gi].m===g.m)));return d.en;}
+
+function nextWord(){
+  if(idx>=seq.length){endGame();return;}
+  locked=false;
+  const item=seq[idx];_cur=item;const g=GROUPS[item.gi];
+  document.getElementById('progress').textContent=(idx+1)+' / '+seq.length;
+  document.getElementById('pbar').style.width=(idx/seq.length*100)+'%';
+  const ban=document.getElementById('affix-banner');
+  document.getElementById('affix-text').textContent=g.a;
+  document.getElementById('affix-mean').textContent='= '+g.m;
+  if(item.gi!==lastGi){ban.classList.remove('new');void ban.offsetWidth;ban.classList.add('new');lastGi=item.gi;}
+  document.getElementById('card-word').textContent=item.w;
+  document.getElementById('word-card').className='card';
+  document.getElementById('breakdown').classList.remove('show');
+  const swap=Math.random()<.5;correctIdx=swap?1:0;
+  const opts=swap?[distractor(item),item.en]:[item.en,distractor(item)];
+  ['choice-a','choice-b'].forEach((id,i)=>{const b=document.getElementById(id);b.querySelector('.btn-text').textContent=opts[i];b.className='choice-btn';b.disabled=false;});
+  playPron(item.w);
+}
+
+function pick(i){
+  if(locked||currentScreen!=='game-screen')return;gx();locked=true;
+  const btns=[document.getElementById('choice-a'),document.getElementById('choice-b')];
+  btns.forEach(b=>b.disabled=true);
+  const item=seq[idx],g=GROUPS[item.gi],ok=i===correctIdx;
+  if(ok){score++;playOk();btns[i].classList.add('ok');document.getElementById('word-card').className='card flash-correct';}
+  else{playNo();btns[i].classList.add('ng');btns[correctIdx].classList.add('rv');document.getElementById('word-card').className='card flash-wrong';}
+  document.getElementById('score-display').textContent=score;
+  const aff=g.a.split(' ')[0];
+  const bd=document.getElementById('breakdown');
+  bd.innerHTML=g.t==='pre'
+    ?'<b>'+aff+'</b> ('+g.m+') + <b>'+item.r+'</b> ('+item.rm+')<br>= <b>'+item.w+'</b> ('+item.en+')'
+    :'<b>'+item.r+'</b> ('+item.rm+') + <b>'+aff+'</b> ('+g.m+')<br>= <b>'+item.w+'</b> ('+item.en+')';
+  bd.classList.add('show');
+  idx++;
+  setTimeout(nextWord,ok?1600:2600);
+}
+
+function initGame(){
+  seq=buildSeq();idx=0;score=0;lastGi=-1;
+  document.getElementById('score-display').textContent='0';
+  const hud=document.getElementById('player-hud');
+  if(mode==='multi'){const col=PCOLS[currentPlayerIdx%PCOLS.length];hud.innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';}else hud.innerHTML='';
+  gx();show('game-screen');nextWord();
+}
+function endGame(){
+  if(_ca){_ca.pause();_ca=null;}
+  document.getElementById('pbar').style.width='100%';
+  if(mode==='multi'){playerScores[currentPlayerIdx]=score;if(score>leaderScore){leaderScore=score;leaderIdx=currentPlayerIdx;}showResult();return;}
+  let best=0;try{best=parseInt(localStorage.getItem(LS_KEY)||'0');}catch(e){}
+  const nb=score>best;if(nb){try{localStorage.setItem(LS_KEY,score);}catch(e){}}
+  document.getElementById('final-score').textContent=score;
+  document.getElementById('best-line').textContent=nb?'🏆 Taifead nua!':'Taifead: '+best;
+  show('over-screen');
+}
+
+// multiplayer
+function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;initGame();}
+function startMulti(){mode='multi';show('setup-screen');buildSetup();}
+function adjCount(d){selectedCount=Math.max(2,Math.min(6,selectedCount+d));document.getElementById('cnt-val').textContent=selectedCount;buildSetup();}
+function buildSetup(){const f=document.getElementById('player-fields');f.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];f.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'"/></div>';}}
+function setupDone(){numPlayers=selectedCount;playerNames=[];for(let i=0;i<numPlayers;i++){playerNames.push((document.getElementById('pname-'+i).value.trim()||('Imreoir '+(i+1))).toUpperCase());}playerScores=new Array(numPlayers).fill(0);leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;showHandoff();}
+function showHandoff(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('handoff-name').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';let ln='';if(leaderIdx>=0){const lc=PCOLS[leaderIdx%PCOLS.length];ln='Ceannaire: <strong style="color:'+lc+'">'+playerNames[leaderIdx]+'</strong>, '+leaderScore+' as 20';}document.getElementById('handoff-leader').innerHTML=ln;show('handoff-screen');}
+function handoffStart(){initGame();}
+function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';document.getElementById('result-score').textContent=score;const ni=currentPlayerIdx+1,btn=document.getElementById('result-next-btn');if(ni<numPlayers){btn.textContent='Pas chuig '+playerNames[ni];btn.onclick=function(){currentPlayerIdx=ni;showHandoff();};}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
+function showFinal(){const sorted=playerNames.map((n,i)=>({n,s:playerScores[i],i})).sort((a,b)=>b.s-a.s);const lb=document.getElementById('leaderboard');lb.innerHTML='';sorted.forEach((p,r)=>{const col=PCOLS[p.i%PCOLS.length],win=r===0;lb.innerHTML+='<div class="lb-row'+(win?' lb-winner':'')+'"><span class="lb-rank">'+(win?'🏆':(r+1)+'.')+'</span><div class="lb-dot" style="background:'+col+'"></div><span class="lb-name">'+p.n+'</span><span class="lb-score">'+p.s+'</span></div>';});show('final-screen');}
+function goStart(){mode='solo';show('start-screen');}
+
+document.addEventListener('keydown',e=>{
+  if(currentScreen==='game-screen'){if(e.key==='ArrowUp'){e.preventDefault();pick(0);}if(e.key==='ArrowDown'){e.preventDefault();pick(1);}}
+  if(currentScreen==='handoff-screen'&&e.key==='Enter')handoffStart();
+});
+</script>
+</body>
+</html>
