@@ -31,9 +31,10 @@
     #score-display { font-weight: bold; color: #1a1a2e; }
 
     /* Timer bar */
-    #timer-wrap { width: 100%; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
-    #timer-bar   { height: 100%; width: 100%; border-radius: 3px;
-                   background: #2a9d47; transition: background 0.3s; }
+    /* Segmented timer: one cell per second, left = last second, right = first */
+    #timer-wrap { width: 100%; height: 8px; display: flex; gap: 3px; }
+    #timer-wrap .seg { flex: 1; background: #e3e3dc; border-radius: 2px; overflow: hidden; }
+    #timer-wrap .seg > i { display: block; height: 100%; width: 100%; }
 
     /* Word card */
     .word-card { background: #fff; border-radius: 14px; padding: 20px 24px; width: 100%;
@@ -104,7 +105,7 @@
     <div id="lives-display">♥♥♥♥♥</div>
     <div id="score-display">Scór: 0</div>
   </div>
-  <div id="timer-wrap"><div id="timer-bar"></div></div>
+  <div id="timer-wrap"></div>
   <div class="word-card" id="word-card">—</div>
   <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
 
@@ -164,6 +165,19 @@ const DICT_EN = {"ach": "but", "adac": "hod", "aer": "air", "agus": "and", "aife
 const WORDS_ALL = Object.keys(DICT_ES);
 const WORD_MS   = 5000;
 const LIVES_START = 5;
+
+// +1 (last second) … +5 (first second), left to right
+const SEG_COLS = ['#e94560', '#e8622c', '#e07b00', '#2a9d47', '#1b6e33'];
+function buildSeg() {
+  document.getElementById('timer-wrap').innerHTML =
+    SEG_COLS.map(c => '<div class="seg"><i style="background:' + c + '"></i></div>').join('');
+}
+function drawSeg(rem) {
+  document.querySelectorAll('#timer-wrap .seg > i').forEach((f, i) => {
+    const v = Math.max(0, Math.min(1, (rem - i * 1000) / 1000));
+    f.style.width = (v * 100) + '%';
+  });
+}
 
 function pointsFor(elapsed) {
   if (elapsed <= 1000) return 5;
@@ -280,8 +294,7 @@ function nextWord() {
 function tickTimer() {
   const rem = WORD_MS - (Date.now() - wordStart);
   if (rem <= 0) {
-    document.getElementById('timer-bar').style.width = '0%';
-    document.getElementById('timer-bar').style.background = '#e94560';
+    drawSeg(0);
     document.getElementById('word-card').className = 'word-card flash-timeout';
     ['es-0','es-1','en-0','en-1'].forEach(id => document.getElementById(id).disabled = true);
     playNo(); locked = true; lives--;
@@ -290,10 +303,7 @@ function tickTimer() {
     setTimeout(nextWord, 900);
     return;
   }
-  const pct = rem / WORD_MS * 100;
-  const bar = document.getElementById('timer-bar');
-  bar.style.width = pct + '%';
-  bar.style.background = rem > 2000 ? '#2a9d47' : rem > 1000 ? '#e07b00' : '#e94560';
+  drawSeg(rem);
   wordRAF = requestAnimationFrame(tickTimer);
 }
 
@@ -395,6 +405,7 @@ function show(id) {
     document.getElementById(s).classList.toggle('active', s === id));
 }
 show('start-screen');
+buildSeg();
 </script>
 </body>
 </html>

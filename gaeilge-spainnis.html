@@ -19,6 +19,13 @@
   #progress-bar-bg { background: #fff; border-radius: 8px; height: 8px; width: 100%; overflow: hidden; margin-bottom: 1.2rem; }
   #progress-bar { height: 8px; border-radius: 8px; background: #53d8fb; transition: width .3s; width: 0%; }
 
+  /* Segmented word timer: one cell per second, left = last second, right = first */
+  #timer-wrap { width: 100%; height: 8px; display: flex; gap: 3px; margin-bottom: 1rem; }
+  #timer-wrap .seg { flex: 1; background: #e3e3dc; border-radius: 2px; overflow: hidden; }
+  #timer-wrap .seg > i { display: block; height: 100%; width: 100%; }
+  #pts-flash { font-size: 1.3rem; font-weight: bold; color: #4caf50; height: 1.6rem; opacity: 0; transition: opacity .25s; }
+  .card.flash-timeout { background: #fff3cd; }
+
   .card { background: #fff; border-radius: 16px; padding: 2.5rem 2rem 2rem; margin-bottom: 1.2rem; min-height: 120px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px #0005; transition: background .15s; }
   .card.flash-correct { background: #d4edda; }
   .card.flash-wrong { background: #f8d7da; }
@@ -64,6 +71,7 @@
     Roghnaigh an sainmhíniú ceart as Spáinnis.<br>
     <span style="color:#53d8fb;font-weight:bold">Babhta 1:</span> 20 focal nua.<br>
     <span style="color:#4caf50;font-weight:bold">Babhta 2:</span> Na focail chéanna i ndiaidh a chéile nua.<br>
+    4 soicind an focal: +4 / +3 / +2 / +1 de réir luais.<br>
     Féach an bhfeabhsaíonn do scór!<br>
     <span style="color:#53d8fb">↑ barr &nbsp;·&nbsp; ↓ bun</span> le roghnú
   </p>
@@ -74,9 +82,10 @@
   <div class="stat-row">
     <span id="round-badge">Babhta 1</span>
     <span><span class="stat-label">Focal</span><span id="word-num">1 / 20</span></span>
-    <span><span class="stat-label">Ceart</span><span id="score-running">0</span></span>
+    <span><span class="stat-label">Pointí</span><span id="score-running">0</span></span>
   </div>
   <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+  <div id="timer-wrap"></div>
   <div class="card" id="word-card">
     <div id="word-display"></div>
   </div>
@@ -84,19 +93,21 @@
     <button class="choice-btn" id="choice-a" onclick="pick(0)"></button>
     <button class="choice-btn" id="choice-b" onclick="pick(1)"></button>
   </div>
+  <div id="pts-flash"></div>
   <p class="hint">↑ barr · ↓ bun</p>
 </div>
 
 <div id="mid-screen" class="screen">
   <h1>Babhta 1 ✓</h1>
-  <div class="round-result"><span id="mid-score">0</span> / 20</div>
+  <div class="round-result"><span id="mid-score">0</span> pointe</div>
+  <p class="score-sub"><span id="mid-correct">0</span> / 20 ceart</p>
   <div id="mid-missed-wrap"></div>
   <button class="big-btn" onclick="startRound2()">Babhta 2 →</button>
 </div>
 
 <div id="over-screen" class="screen">
   <h1>Críochnaithe!</h1>
-  <p class="score-sub">Babhta 1 · Babhta 2</p>
+  <p class="score-sub">Pointí: Babhta 1 · Babhta 2</p>
   <div class="final-score" id="final-score">0 - 0</div>
   <p class="over-msg" id="over-msg"></p>
   <button class="big-btn" onclick="initGame()" style="margin-top:1.5rem">Arís</button>
@@ -107,8 +118,12 @@ const DICT_ES = {"ach": "pero", "adac": "artesa", "aer": "aire", "agus": "y", "a
 
 const WORDS_ALL   = Object.keys(DICT_ES);
 const ROUND_LENGTH = 20;
+const WORD_MS = 4000;
+// +1 (last second) … +4 (first second), left to right
+const SEG_COLS = ['#e94560', '#e07b00', '#2a9d47', '#1b6e33'];
 
-let round, roundWords, wordIndex, curScore, score1, score2;
+let round, roundWords, wordIndex, curScore, score1, score2, curCorrect;
+let wordStart = 0, wordRAF = null, flashTimer = null;
 let missedR1 = [];
 let locked, correctIdx, currentWord;
 let _ca = null, _nextAudio = null, _nextW = null;
@@ -152,11 +167,56 @@ function getDistractor(correctWord) {
   return DICT_ES[WORDS_ALL[0]];
 }
 
+// ── Word timer ────────────────────────────────────────────────────────────────
+function buildSeg() {
+  document.getElementById('timer-wrap').innerHTML =
+    SEG_COLS.map(c => '<div class="seg"><i style="background:' + c + '"></i></div>').join('');
+}
+function drawSeg(rem) {
+  document.querySelectorAll('#timer-wrap .seg > i').forEach((f, i) => {
+    const v = Math.max(0, Math.min(1, (rem - i * 1000) / 1000));
+    f.style.width = (v * 100) + '%';
+  });
+}
+function pointsFor(elapsed) {
+  if (elapsed <= 1000) return 4;
+  if (elapsed <= 2000) return 3;
+  if (elapsed <= 3000) return 2;
+  return 1;
+}
+function tickTimer() {
+  const rem = WORD_MS - (Date.now() - wordStart);
+  if (rem <= 0) { drawSeg(0); timeout(); return; }
+  drawSeg(rem);
+  wordRAF = requestAnimationFrame(tickTimer);
+}
+function showFlash(txt) {
+  const el = document.getElementById('pts-flash');
+  el.textContent = txt; el.style.opacity = '1';
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => el.style.opacity = '0', 650);
+}
+function timeout() {
+  if (locked) return;
+  locked = true;
+  const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
+  btns.forEach(b => b.disabled = true);
+  if (round === 1) missedR1.push(currentWord);
+  playNo();
+  btns[correctIdx].className = 'choice-btn reveal-correct';
+  document.getElementById('word-card').className = 'card flash-timeout';
+  const nextIdx = wordIndex + 1;
+  if (nextIdx < ROUND_LENGTH) preloadNext(roundWords[nextIdx]);
+  wordIndex++;
+  updateStats();
+  setTimeout(nextWord, 1100);
+}
+
 // ── Game flow ─────────────────────────────────────────────────────────────────
 function initGame() {
   round = 1;
   roundWords = sh(WORDS_ALL).slice(0, ROUND_LENGTH);
-  wordIndex = 0; curScore = 0; score1 = 0; score2 = 0;
+  wordIndex = 0; curScore = 0; curCorrect = 0; score1 = 0; score2 = 0;
   missedR1 = [];
   locked = false;
   _nextAudio = null; _nextW = null;
@@ -168,7 +228,7 @@ function initGame() {
 function startRound2() {
   round = 2;
   roundWords = sh(roundWords.slice());
-  wordIndex = 0; curScore = 0;
+  wordIndex = 0; curScore = 0; curCorrect = 0;
   locked = false;
   _nextAudio = null; _nextW = null;
   updateStats();
@@ -219,16 +279,23 @@ function nextWord() {
   });
 
   updateStats();
+  document.getElementById('pts-flash').style.opacity = '0';
+  cancelAnimationFrame(wordRAF);
+  wordStart = Date.now();
+  tickTimer();
 }
 
 function pick(idx) {
-  if (locked) return;
+  if (locked || document.getElementById('game-screen').style.display !== 'block') return;
   locked = true;
+  cancelAnimationFrame(wordRAF);
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => b.disabled = true);
 
   if (idx === correctIdx) {
-    curScore++;
+    const pts = pointsFor(Date.now() - wordStart);
+    curScore += pts; curCorrect++;
+    showFlash('+' + pts);
     playOk();
     btns[idx].className = 'choice-btn selected-correct';
     document.getElementById('word-card').className = 'card flash-correct';
@@ -253,6 +320,7 @@ function pick(idx) {
 function endRound1() {
   score1 = curScore;
   document.getElementById('mid-score').textContent = score1;
+  document.getElementById('mid-correct').textContent = curCorrect;
 
   const wrap = document.getElementById('mid-missed-wrap');
   if (missedR1.length === 0) {
@@ -279,7 +347,7 @@ function endGame() {
 
   let msg, cls;
   if (improved) {
-    msg = '↑ Feabhas de ' + (score2-score1) + ' focal — maith thú!';
+    msg = '↑ Feabhas de ' + (score2-score1) + ' pointe — maith thú!';
     cls = 'improved';
   } else if (score2 === score1) {
     msg = 'Scór cothrom — lean ort ag cleachtadh!';
@@ -311,6 +379,7 @@ function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGai
 function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
 function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
 
+buildSeg();
 show('start-screen');
 </script>
 </body>
