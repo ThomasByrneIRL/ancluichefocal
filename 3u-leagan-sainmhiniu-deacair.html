@@ -36,6 +36,45 @@
   #over-word { font-size: 1.1rem; color: #888; margin-bottom: .3rem; }
   #over-answer { font-size: 1.1rem; color: #ff9966; margin-bottom: 1.5rem; }
   .best-wrap { color: #53d8fb; font-size: 1rem; margin-bottom: 1rem; }
+  /* Aonair / Il-imreoir */
+  .mode-row { display: flex; gap: 12px; justify-content: center; margin-top: 1rem; }
+  .mode-btn { flex: 1; max-width: 180px; padding: 1rem; border: 2px solid #e94560; border-radius: 14px;
+              background: #fff; font-size: 1rem; font-weight: bold; color: #e94560; cursor: pointer;
+              font-family: Georgia, 'Times New Roman', serif; transition: all .15s; }
+  .mode-btn:hover { background: #fff5f6; }
+  .mode-btn.chosen, .mode-btn.chosen:hover { background: #2a9d47; border-color: #2a9d47; color: #fff; }
+  /* Multiplayer setup */
+  h2 { font-size: 1.8rem; color: #e94560; margin-bottom: .6rem; }
+  .count-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.2rem; }
+  .cnt-btn, .rnd-btn { height: 44px; border: 2px solid #ddd; border-radius: 10px; background: #fff;
+              font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all .15s; color: #1a1a2e; }
+  .cnt-btn { width: 44px; } .rnd-btn { width: 56px; }
+  .cnt-btn.active, .rnd-btn.active { background: #e94560; color: #fff; border-color: #e94560; }
+  .setup-label { color: #888; margin-bottom: .6rem; font-size: .9rem; }
+  .name-fields { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.4rem; }
+  .name-row { display: flex; align-items: center; gap: 10px; }
+  .name-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .name-input { flex: 1; padding: .6rem .9rem; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem;
+                color: #1a1a2e; background: #fff; outline: none; }
+  .name-input:focus { border-color: #1565c0; }
+  .ghost-btn { background: transparent; color: #888; border: 1.5px solid #ddd; border-radius: 12px;
+               padding: .75rem 1.8rem; font-size: 1rem; cursor: pointer; margin-top: 1rem; }
+  /* Handoff / result / leaderboard */
+  #handoff-name { font-size: 2rem; font-weight: bold; margin-bottom: .3rem; }
+  #handoff-sub { font-size: .9rem; color: #888; margin-bottom: .8rem; }
+  #handoff-leader { font-size: 1rem; color: #555; margin-bottom: 1.2rem; background: #fff; border-radius: 12px;
+                    padding: .8rem 1rem; box-shadow: 0 1px 6px rgba(0,0,0,.07); line-height: 1.6; }
+  #player-hud { font-size: .95rem; margin-bottom: .6rem; min-height: 1.3rem; }
+  #result-player { font-size: 1.4rem; font-weight: bold; margin-bottom: .2rem; }
+  #result-score { font-size: 4rem; font-weight: bold; color: #4caf50; }
+  #result-total { color: #555; margin: .6rem 0 .4rem; }
+  .lb-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px;
+            padding: .7rem 1rem; margin-bottom: .5rem; box-shadow: 0 1px 6px rgba(0,0,0,.06); }
+  .lb-medal { font-size: 1.2rem; min-width: 1.6rem; }
+  .lb-left { flex: 1; text-align: left; }
+  .lb-name { font-weight: bold; }
+  .lb-rounds { font-size: .75rem; color: #999; margin-top: 2px; }
+  .lb-score { font-size: 1.1rem; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -49,10 +88,42 @@
     3 iarracht in aghaidh an fhocail.<br>
     Mura n-éiríonn leat — <span style="color:#e94560">thart!</span>
   </p>
-  <button class="big-btn" onclick="initGame()">Tosaígh</button>
+  <div class="mode-row">
+    <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
+    <button class="mode-btn" onclick="pickMode(this,'multi')">Il-imreoir</button>
+  </div>
+</div>
+
+<div id="setup-screen" class="screen">
+  <h2>Il-imreoir</h2>
+  <p class="setup-label">Cé mhéad imreoir?</p>
+  <div class="count-row">
+    <button class="cnt-btn" onclick="setCount(2)">2</button>
+    <button class="cnt-btn" onclick="setCount(3)">3</button>
+    <button class="cnt-btn" onclick="setCount(4)">4</button>
+    <button class="cnt-btn" onclick="setCount(5)">5</button>
+    <button class="cnt-btn" onclick="setCount(6)">6</button>
+  </div>
+  <div class="name-fields" id="name-fields"></div>
+  <p class="setup-label">Cé mhéad babhta?</p>
+  <div class="count-row">
+    <button class="rnd-btn active" onclick="setRounds(3)">3</button>
+    <button class="rnd-btn" onclick="setRounds(4)">4</button>
+    <button class="rnd-btn" onclick="setRounds(5)">5</button>
+  </div>
+  <button class="big-btn" onclick="setupDone()">Tosaigh</button>
+  <br><button class="ghost-btn" onclick="show('start-screen')">Ar ais</button>
+</div>
+
+<div id="handoff-screen" class="screen">
+  <div id="handoff-name"></div>
+  <div id="handoff-sub"></div>
+  <div id="handoff-leader"></div>
+  <button class="big-btn" onclick="handoffStart()">Tosaigh</button>
 </div>
 
 <div id="game-screen" class="screen">
+  <div id="player-hud"></div>
   <div class="stats">
     <div><span class="stat-label">Scór</span><span id="score-val">0</span></div>
     <div><span class="stat-label">Iarracht</span><span id="tries-val">●●●</span></div>
@@ -80,6 +151,24 @@
   <div id="over-answer"></div>
   <div class="best-wrap">🏆 Taifead: <span id="best-score">0</span></div>
   <button class="big-btn" onclick="initGame()">Arís</button>
+  <br><button class="ghost-btn" onclick="show('start-screen')">Baile</button>
+</div>
+
+<div id="result-screen" class="screen">
+  <div id="result-player"></div>
+  <div id="result-score">0</div>
+  <p style="color:#aaa;margin-bottom:.3rem">focal ceart</p>
+  <div id="result-word" style="color:#888"></div>
+  <div id="result-answer" style="color:#ff9966;margin-bottom:.4rem"></div>
+  <div id="result-total"></div>
+  <div id="result-action"></div>
+</div>
+
+<div id="final-screen" class="screen">
+  <h1 id="final-title" style="color:#e07b00">🏆 Clárbhord</h1>
+  <div id="final-sub" style="color:#888;font-size:.9rem;margin-bottom:.8rem"></div>
+  <div id="leaderboard"></div>
+  <div id="final-actions" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"></div>
 </div>
 
 <script>
@@ -90,12 +179,27 @@ const WORD_TIME = 10;
 const MAX_TRIES = 3;
 
 let score, triesLeft, locked, currentWord, timerInterval, wordTimeLeft;
-let _ca = null;
+let _ca = null, _nextAudio = null, _nextWord = null;
+const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
+let mode = 'solo', numPlayers = 1, playerNames = [], playerScores = [], roundScores = [];
+let currentPlayerIdx = 0, leaderIdx = -1, leaderScore = 0, selectedCount = 2;
+let numRounds = 3, curRound = 1, currentScreen = 'start-screen';
 let best = 0;
 try { best = parseInt(localStorage.getItem('v3best') || '0'); } catch(e){}
 
+// Load the first word's audio inside the tap that starts a turn (needed on iPhone)
+function preloadFor(word) {
+  if (_nextAudio) { _nextAudio.pause(); _nextAudio = null; }
+  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  a.onerror = function(){}; a.muted = true; a.play().catch(function(){});
+  _nextAudio = a; _nextWord = word;
+}
 function playPron(word) {
   if (_ca) { _ca.pause(); _ca = null; }
+  if (_nextAudio && _nextWord === word) {
+    const a = _nextAudio; _nextAudio = null; _nextWord = null;
+    a.muted = false; a.currentTime = 0; a.play().catch(function(){}); _ca = a; return;
+  }
   const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
   a.onerror = function(){};
   a.play().catch(function(){});
@@ -113,6 +217,7 @@ function sh(arr) {
 
 let queue = [];
 function pickWord() {
+  if (_nextWord) return _nextWord;
   if (queue.length === 0) queue = sh(WORDS);
   return queue.pop();
 }
@@ -120,6 +225,11 @@ function pickWord() {
 function initGame() {
   score = 0; locked = false;
   queue = sh(WORDS);
+  const hud = document.getElementById('player-hud');
+  if (mode === 'multi') {
+    hud.innerHTML = '<span style="color:' + pc(currentPlayerIdx) + ';font-weight:bold">' + pn(currentPlayerIdx) + '</span>' +
+      ' <span style="color:#888;font-size:.85rem">· Babhta ' + curRound + '/' + numRounds + ' · Iomlán ' + playerScores[currentPlayerIdx] + '</span>';
+  } else hud.innerHTML = '';
   if (timerInterval) clearInterval(timerInterval);
   updateScore();
   nextWord();
@@ -234,6 +344,7 @@ function triggerDeath(reason) {
 }
 
 function gameOver() {
+  if (mode === 'multi') { endTurn(); return; }
   if (score > best) { best = score; try { localStorage.setItem('v3best', best); } catch(e){} }
   document.getElementById('final-score').textContent = score;
   document.getElementById('over-word').textContent = '"' + currentWord + '"';
@@ -247,13 +358,117 @@ function updateScore() {
 }
 
 function show(id) {
-  ['start-screen','game-screen','over-screen'].forEach(s => {
+  ['start-screen','setup-screen','handoff-screen','game-screen','over-screen','result-screen','final-screen'].forEach(s => {
     document.getElementById(s).style.display = s === id ? 'block' : 'none';
   });
+  currentScreen = id;
 }
 
+// ── Aonair / Il-imreoir: chosen button turns green for 0.4 s ─────────────────
+function pickMode(btn, m) {
+  if (btn.disabled) return;
+  btn.classList.add('chosen');
+  document.querySelectorAll('.mode-btn').forEach(b => b.disabled = true);
+  const done = () => document.querySelectorAll('.mode-btn').forEach(b => { b.classList.remove('chosen'); b.disabled = false; });
+  if (m === 'solo') {
+    mode = 'solo';
+    preloadFor(WORDS[Math.floor(Math.random() * WORDS.length)]);
+    setTimeout(() => { done(); initGame(); }, 400);
+  } else {
+    setTimeout(() => { done(); mode = 'multi'; setCount(selectedCount); show('setup-screen'); }, 400);
+  }
+}
+
+// ── Multiplayer: 2–6 players, 3/4/5 rounds, totals add up ────────────────────
+function pn(i) { return playerNames[i] || ('Imreoir ' + (i + 1)); }
+function pc(i) { return PCOLS[i % PCOLS.length]; }
+function setCount(n) {
+  selectedCount = n;
+  document.querySelectorAll('.cnt-btn').forEach(b => b.classList.toggle('active', Number(b.textContent) === n));
+  const el = document.getElementById('name-fields'), prev = [];
+  for (let i = 0; i < 6; i++) { const f = document.getElementById('pname-' + i); prev.push(f ? f.value : ''); }
+  el.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    el.innerHTML += '<div class="name-row"><div class="name-dot" style="background:' + PCOLS[i] + '"></div>' +
+      '<input class="name-input" type="text" maxlength="20" id="pname-' + i + '" placeholder="Imreoir ' + (i + 1) + '" value="' + (prev[i] || '').replace(/"/g, '') + '"></div>';
+  }
+}
+function setRounds(n) {
+  numRounds = n;
+  document.querySelectorAll('.rnd-btn').forEach(b => b.classList.toggle('active', Number(b.textContent) === n));
+}
+function resetMultiScores() {
+  playerScores = new Array(numPlayers).fill(0); roundScores = playerNames.map(() => []);
+  curRound = 1; currentPlayerIdx = 0; leaderIdx = -1; leaderScore = 0;
+}
+function updateLeader() {
+  leaderIdx = -1; leaderScore = 0;
+  playerScores.forEach((v, i) => { if (v > leaderScore) { leaderScore = v; leaderIdx = i; } });
+}
+function setupDone() {
+  numPlayers = selectedCount; playerNames = [];
+  for (let i = 0; i < numPlayers; i++) {
+    const v = (document.getElementById('pname-' + i) || {}).value || '';
+    playerNames.push((v.trim() || ('Imreoir ' + (i + 1))).toUpperCase());
+  }
+  resetMultiScores(); beginHandoff();
+}
+function beginHandoff() {
+  const i = currentPlayerIdx;
+  document.getElementById('handoff-name').innerHTML = '<span style="color:' + pc(i) + '">' + pn(i) + '</span>';
+  document.getElementById('handoff-sub').textContent = 'Babhta ' + curRound + ' / ' + numRounds + ' · Do sheal!';
+  const mine = curRound > 1 ? '<div style="margin-top:.4rem;color:#888;font-size:.9rem">Do scór iomlán: <strong>' + playerScores[i] + '</strong></div>' : '';
+  let html = '';
+  if (leaderIdx >= 0) {
+    html = leaderIdx === i ? 'Tá tú féin chun tosaigh le <strong>' + leaderScore + '</strong>!'
+      : 'Tá <strong style="color:' + pc(leaderIdx) + '">' + pn(leaderIdx) + '</strong> chun tosaigh le <strong>' + leaderScore + '</strong> — an féidir leat é a bhualadh?';
+  } else if (i > 0 || curRound > 1) html = 'Níl éinne chun tosaigh go fóill!';
+  const ld = document.getElementById('handoff-leader');
+  ld.innerHTML = html + mine; ld.style.display = (html || mine) ? 'block' : 'none';
+  show('handoff-screen');
+}
+function handoffStart() { preloadFor(WORDS[Math.floor(Math.random() * WORDS.length)]); initGame(); }
+function endTurn() {
+  const i = currentPlayerIdx;
+  roundScores[i].push(score); playerScores[i] += score; updateLeader();
+  document.getElementById('result-player').innerHTML = '<span style="color:' + pc(i) + '">' + pn(i) + '</span>';
+  document.getElementById('result-score').textContent = score;
+  document.getElementById('result-word').textContent = '"' + currentWord + '"';
+  document.getElementById('result-answer').textContent = '✓ ' + DICT[currentWord].join(' / ');
+  document.getElementById('result-total').innerHTML = 'Babhta ' + curRound + ' / ' + numRounds + ' · Scór iomlán: <strong>' + playerScores[i] + '</strong>';
+  const act = document.getElementById('result-action');
+  if (i + 1 < numPlayers) act.innerHTML = '<button class="big-btn" onclick="nextPlayer()">Pas chuig ' + pn(i + 1) + ' →</button>';
+  else if (curRound < numRounds) act.innerHTML = '<button class="big-btn" onclick="showFinal()">Seasamh tar éis Babhta ' + curRound + ' →</button>';
+  else act.innerHTML = '<button class="big-btn" onclick="showFinal()">Clárbhord 🏆</button>';
+  show('result-screen');
+}
+function nextPlayer() { currentPlayerIdx++; beginHandoff(); }
+function isFinalRound() { return curRound >= numRounds; }
+// Standings after each round; final leaderboard after the last. Equal totals share a place.
+function showFinal() {
+  const ranked = playerNames.map((n, i) => ({ n, i, s: playerScores[i] || 0 })).sort((a, b) => b.s - a.s);
+  const M = ['🥇','🥈','🥉']; let place = 0;
+  document.getElementById('leaderboard').innerHTML = ranked.map((p, pos) => {
+    if (pos === 0 || p.s < ranked[pos - 1].s) place = pos;
+    return '<div class="lb-row"><div class="lb-medal">' + (M[place] || (place + 1) + '.') + '</div>' +
+      '<div class="lb-left"><div class="lb-name" style="color:' + pc(p.i) + '">' + p.n + '</div><div class="lb-rounds">' + (roundScores[p.i] || []).join(' · ') + '</div></div>' +
+      '<div class="lb-score">' + p.s + '</div></div>';
+  }).join('');
+  const fin = isFinalRound(), tie = ranked.length > 1 && ranked[0].s === ranked[1].s;
+  document.getElementById('final-title').textContent = fin ? '🏆 Clárbhord' : 'Tar éis Babhta ' + curRound + ' / ' + numRounds;
+  document.getElementById('final-sub').textContent = fin ? (tie ? 'Comhscór! Roinneann siad an bua 🤝' : ranked[0].n + ' a bhuaigh!') : 'Focail chearta go dtí seo';
+  document.getElementById('final-actions').innerHTML = fin
+    ? '<button class="big-btn" onclick="replayMulti()">Arís</button><button class="ghost-btn" onclick="show(\'start-screen\')">Baile</button>'
+    : '<button class="big-btn" onclick="nextRound()">Babhta ' + (curRound + 1) + ' →</button>';
+  show('final-screen');
+}
+function nextRound() { curRound++; currentPlayerIdx = 0; beginHandoff(); }
+function replayMulti() { resetMultiScores(); beginHandoff(); }
+
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitAnswer();
+  if (e.key !== 'Enter') return;
+  if (currentScreen === 'game-screen') submitAnswer();
+  else if (currentScreen === 'handoff-screen') { e.preventDefault(); handoffStart(); }
 });
 
 show('start-screen');
