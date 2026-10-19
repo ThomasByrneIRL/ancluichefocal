@@ -355,7 +355,10 @@ function pick(idx){
     document.getElementById('choice-'+(idx===0?'a':'b')).className='choice-btn selected-correct';
     document.getElementById('word-card').className='card flash-correct';
     chainStep++;updateChainUI();
-    showDecision(); // timer keeps running!
+    // Show the correct answer in green for 0.5 s before the decision.
+    // The word timer keeps running, so this half second comes out of the decision window.
+    const w=currentWord;
+    setTimeout(()=>{if(currentWord===w&&wordDeadline-Date.now()>0)showDecision();},500);
   } else {
     cancelAnimationFrame(wordRAF);
     document.getElementById('choice-'+(idx===0?'a':'b')).className='choice-btn selected-wrong';
