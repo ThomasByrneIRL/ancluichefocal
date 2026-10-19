@@ -20,6 +20,7 @@
                 color: #e94560; cursor: pointer; transition: all .15s;
                 font-family: Georgia, 'Times New Roman', serif; }
     .mode-btn:hover { background: #fff5f6; }
+    .mode-btn.chosen, .mode-btn.chosen:hover { background: #2a9d47; border-color: #2a9d47; color: #fff; }
     .count-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.2rem; }
     .cnt-btn { width: 44px; height: 44px; border: 2px solid #ddd; border-radius: 10px;
                background: #fff; font-size: 1.1rem; font-weight: bold; cursor: pointer;
@@ -132,8 +133,8 @@
     <div>Freagra m&iacute;cheart &rarr;</div><div><span style="color:#e94560">sc&oacute;r = 0 &#128293;</span></div>
   </div>
   <div class="mode-row">
-    <button class="mode-btn" onclick="startSolo()">Aonair</button>
-    <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
+    <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
+    <button class="mode-btn" onclick="pickMode(this,'multi')">Il-imreoir</button>
   </div>
 </div>
 
@@ -246,6 +247,22 @@ function updateChainUI(){
 
 // ── Solo ──
 function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[-1];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;preloadFor(WORDS[Math.floor(Math.random()*WORDS.length)]);initGame();}
+
+// ── Start-screen choice: chosen button turns green for 0.4 s, then the game continues ──
+function resetModeBtns(){document.querySelectorAll('.mode-btn').forEach(b=>{b.classList.remove('chosen');b.disabled=false;});}
+function pickMode(btn,m){
+  if(btn.disabled)return;
+  btn.classList.add('chosen');
+  document.querySelectorAll('.mode-btn').forEach(b=>b.disabled=true);
+  if(m==='solo'){
+    // Set up and unlock audio now, inside the tap (needed on iPhone), then start after the green flash
+    mode='solo';numPlayers=1;playerNames=[''];playerScores=[-1];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;
+    preloadFor(WORDS[Math.floor(Math.random()*WORDS.length)]);
+    setTimeout(()=>{resetModeBtns();initGame();},400);
+  } else {
+    setTimeout(()=>{resetModeBtns();startMulti();},400);
+  }
+}
 
 // ── Multi setup ──
 function startMulti(){mode='multi';selectedCount=2;buildNameFields(2);show('setup-screen');}
