@@ -52,6 +52,12 @@
     #chain-label  { font-size: .8rem; color: #888; }
     #chain-value  { font-size: 1.1rem; font-weight: bold; color: #e07b00; }
     #chain-dots   { font-size: .65rem; letter-spacing: 2px; color: #ddd; }
+    /* Solo: one big number (the points at stake) replaces the banked / potential rows */
+    #big-score { display: none; font-weight: bold; color: #1a1a2e; line-height: 1.05;
+                 letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap;
+                 margin: .2rem 0 .6rem; }
+    #game-screen.solo #big-score { display: block; }
+    #game-screen.solo #banked-label, #game-screen.solo #banked-score, #game-screen.solo #chain-row { display: none; }
     #pts-flash    { font-size: 1.4rem; font-weight: bold; height: 1.8rem;
                     margin-bottom: .3rem; transition: opacity .3s; }
     .timer-wrap { height: 6px; background: #ddd; border-radius: 3px;
@@ -163,6 +169,7 @@
 <div id="game-screen" class="screen">
   <div id="player-hud"></div>
   <div id="target-hud"></div>
+  <div id="big-score">1</div>
   <div id="banked-label">Baincéadta</div>
   <div id="banked-score">0</div>
   <div id="chain-row">
@@ -235,6 +242,19 @@ function preloadFor(word){if(_nextAudio){_nextAudio.pause();_nextAudio=null;}con
 function rnd(ex){let w;do{w=WORDS[Math.floor(Math.random()*WORDS.length)];}while(w===ex);return w;}
 function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function fmt(n){return Number(n).toLocaleString();}
+// Big in-game number: words from 9 figures up (128 MILLIÚN, 1 BILLIÚN, 1.5 BILLIÚN)
+function fmtBig(n){
+  const t=(x)=>String(Math.round(x*10)/10);
+  if(n>=1e9)return t(n/1e9)+' BILLIÚN';
+  if(n>=1e8)return t(n/1e6)+' MILLIÚN';
+  return Number(n).toLocaleString();
+}
+function setBig(n){
+  const el=document.getElementById('big-score'),txt=fmtBig(n);
+  el.textContent=txt;
+  const avail=Math.min(window.innerWidth,480)-48;
+  el.style.fontSize=Math.max(32,Math.min(88,avail/(txt.length*0.62)))+'px';
+}
 function pn(i){return playerNames[i]||('Imreoir '+(i+1));}
 function pc(i){return PCOLS[i%PCOLS.length];}
 
@@ -242,6 +262,7 @@ function updateChainUI(){
   document.getElementById('chain-value').textContent=fmt(chainValue)+' pt';
   document.getElementById('chain-dots').textContent='●'.repeat(Math.min(chainStep,10))+'○'.repeat(Math.max(0,10-chainStep));
   document.getElementById('banked-score').textContent=fmt(totalScore);
+  setBig(chainValue);
   if(chainValue>maxChain)maxChain=chainValue;
 }
 
@@ -305,6 +326,7 @@ function handoffStart(){preloadFor(WORDS[Math.floor(Math.random()*WORDS.length)]
 
 // ── Init ──
 function initGame(){
+  document.getElementById('game-screen').classList.toggle('solo',mode==='solo');
   totalScore=0;chainValue=1;chainStep=0;maxChain=1;bustStake=0;locked=false;
   document.getElementById('pts-flash').style.opacity='0';
   document.getElementById('decision').style.display='none';
