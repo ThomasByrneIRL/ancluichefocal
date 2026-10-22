@@ -475,8 +475,10 @@ show('start-screen');
 
 // ── Sound feedback ───────────────────────────────────────────────────────────
 let _sfx=null;
-function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();return _sfx;}
-function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
+// iPhone: switch sound on at the very first tap anywhere on the page
+(function(){function w(){_gx();document.removeEventListener('touchstart',w);document.removeEventListener('mousedown',w);}document.addEventListener('touchstart',w,{passive:true});document.addEventListener('mousedown',w,{passive:true});})();
+function _pt(f,d,t,g,dl){try{const c=_gx(),b=c.state==='running'?0:0.06,s=c.currentTime+b+dl,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(g,s);gn.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d);}catch(e){}}
 function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
 function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
 </script>
