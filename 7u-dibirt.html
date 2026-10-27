@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Díbirt</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f0; color: #1a1a2e;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .screen { display: none; flex-direction: column; align-items: center;
+              justify-content: center; gap: 14px; text-align: center;
+              width: 100%; max-width: 720px; padding: 24px; }
+    .screen.active { display: flex; }
+
+    h1 { font-size: 2rem; color: #e94560; }
+    h2 { font-size: 1.8rem; color: #e94560; }
+    .subtitle { font-size: 1rem; color: #888; }
+
+    /* ── Player count selector ── */
+    .count-row {
+      display: flex; align-items: center; gap: 16px;
+      background: #fff; border-radius: 12px; padding: 10px 20px;
+    }
+    .count-btn {
+      background: none; border: 2px solid #53d8fb; color: #53d8fb;
+      border-radius: 8px; width: 36px; height: 36px; font-size: 1.3rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .count-btn:hover { background: #fff5f6; }
+    .count-btn:disabled { border-color: #333; color: #333; cursor: default; }
+    #n-display { font-size: 1.1rem; font-weight: bold; color: #1a1a2e; min-width: 120px; }
+
+    /* ── Name grid ── */
+    #name-grid {
+      width: 100%; display: grid; gap: 10px;
+    }
+    .name-field { display: flex; flex-direction: column; gap: 5px; text-align: left; }
+    .name-field label { font-size: 0.82rem; }
+    .name-field input {
+      width: 100%; padding: 9px 13px; border-radius: 8px;
+      border: 2px solid #ddd; background: #fff; color: #1a1a2e;
+      font-size: 0.95rem; outline: none; transition: border-color 0.15s;
+    }
+    .name-field input:focus { border-color: #53d8fb; }
+    .start-btn {
+      background: #e94560; color: #fff; border: none;
+      border-radius: 10px; padding: 12px 36px;
+      font-size: 1.05rem; font-weight: bold; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .start-btn:hover { background: #c73652; }
+    .hint { font-size: 0.78rem; color: #444; }
+
+    /* ── Player panels ── */
+    #panels {
+      width: 100%; display: grid; gap: 8px;
+    }
+    .panel {
+      padding: 9px 13px; border-radius: 10px;
+      border: 2px solid #ddd; background: #f0f4f8;
+      transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+      text-align: left;
+    }
+    .panel.dead { opacity: 0.3; }
+    .p-name { font-size: 0.9rem; font-weight: bold; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .p-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .p-clock-wrap { height: 10px; background: #e3e3dc; border-radius: 5px; overflow: hidden; margin-top: 6px; }
+    .p-clock { height: 100%; width: 100%; border-radius: 5px; }
+    .p-time { font-size: 0.95rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+    .p-score-box { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; color: #1a1a2e; }
+
+    /* ── Turn indicator ── */
+    #turn-indicator {
+      font-size: 1.5rem; color: #1a6fb5; font-weight: bold;
+      letter-spacing: 2px; min-height: 1.6em;
+    }
+
+    /* ── Word timer ── */
+    #word-timer-wrap { width: 100%; height: 16px; background: #e3e3dc; border-radius: 8px; overflow: hidden; }
+    #big-time { font-size: 2.4rem; font-weight: bold; font-variant-numeric: tabular-nums; line-height: 1; }
+    #word-timer-bar  { height: 100%; border-radius: 3px; width: 100%; transition: none; }
+
+    /* ── Word card ── */
+    .card {
+      background: #fff; border-radius: 14px; padding: 24px;
+      width: 100%; font-size: 1.9rem; font-weight: bold; color: #1a1a2e;
+      letter-spacing: 1px; min-height: 84px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .card.flash-correct { background: #d4edda; }
+    .card.flash-wrong   { background: #f8d7da; }
+    .card.flash-timeout { background: #fff3cd; }
+    .card.turn-card     { background: #e8f0fe; font-size: 1.2rem; color: #1a6fb5; border: 2px solid #b3c8f0; }
+
+    #sound-btn { font-size: 0.82rem; color: #444; cursor: pointer; user-select: none; }
+    #sound-btn:hover { color: #888; }
+
+    /* ── Choices ── */
+    .choices { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .choice-btn {
+      width: 100%; padding: 12px 18px; border-radius: 10px;
+      border: 2px solid #ddd; background: #fff; color: #1a1a2e;
+      font-size: 1rem; cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
+    .btn-text  { flex: 1; text-align: left; }
+    .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
+    .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
+    .choice-btn.selected-wrong   { background: #f8d7da; border-color: #e94560; color: #e94560; }
+    .choice-btn.reveal-correct   { background: #d4edda; border-color: #4caf50; color: #4caf50; }
+
+    #pts-flash {
+      font-size: 1.3rem; font-weight: bold; color: #4caf50;
+      opacity: 0; transition: opacity 0.25s; height: 28px;
+    }
+
+    /* ── Over screen ── */
+    .result-icon { font-size: 3rem; }
+    #results-grid { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .player-result {
+      padding: 11px 14px; border-radius: 10px;
+      background: #fff; text-align: left; font-size: 0.9rem;
+    }
+    .player-result.winner { border: 2px solid #ffc107; }
+    .player-result .pr-name { font-weight: bold; font-size: 1rem; }
+    .player-result .pr-detail { color: #888; font-size: 0.82rem; margin-top: 3px; }
+    .btn-row { display: flex; gap: 10px; }
+    .btn-secondary {
+      background: #fff; color: #1a1a2e; border: none;
+      border-radius: 10px; padding: 12px 28px;
+      font-size: 1rem; cursor: pointer; font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: #fff5f6; }
+  </style>
+</head>
+<body>
+
+<!-- ══ START SCREEN ══ -->
+<div id="start-screen" class="screen active">
+  <h1>🥊 Díbirt</h1>
+  <p class="subtitle">An duine deireanach sa chluiche · 🔊 Fuaim Chonnacht</p>
+
+  <div class="count-row">
+    <button class="count-btn" id="btn-minus" onclick="setN(N-1)">−</button>
+    <span id="n-display">4 Imreoir</span>
+    <button class="count-btn" id="btn-plus"  onclick="setN(N+1)">+</button>
+  </div>
+
+  <div id="name-grid"></div>
+
+  <button class="start-btn" onclick="startGame()">Tosaigh</button>
+  <p class="hint">30 soicind ar an gclog ag gach imreoir · freagra ceart = stopann do chlog · freagra mícheart = leanann sé ag rith · 0 = díbeartha!</p>
+</div>
+
+<!-- ══ GAME SCREEN ══ -->
+<div id="game-screen" class="screen">
+  <div id="panels"></div>
+  <div id="turn-indicator">—</div>
+  <div id="big-time">30.0</div>
+  <div id="word-timer-wrap"><div id="word-timer-bar"></div></div>
+  <div id="word-card" class="card">—</div>
+  <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
+  <div class="choices">
+    <button class="choice-btn" id="choice-a" onclick="pick(0)"><span class="key-hint">↑</span><span class="btn-text"></span></button>
+    <button class="choice-btn" id="choice-b" onclick="pick(1)"><span class="key-hint">↓</span><span class="btn-text"></span></button>
+  </div>
+  <div id="pts-flash"></div>
+</div>
+
+<!-- ══ OVER SCREEN ══ -->
+<div id="over-screen" class="screen">
+  <div class="result-icon">🏆</div>
+  <h2 id="over-title">Buaiteoir!</h2>
+  <div id="results-grid"></div>
+  <div class="btn-row">
+    <button class="btn-secondary" onclick="rematch()">Athimirt</button>
+    <button class="btn-secondary" onclick="showStart()">Ainmneacha nua</button>
+  </div>
+</div>
+
+<script src="focloir.js"></script>
+<script>
+const WORDS    = Object.keys(DICT);
+const CLOCK_MS = 30000;   // each player's clock = their life bar
+
+// Same six player colours as the other 2–6 player games
+const PALETTE = [
+  { border: '#e94560', bg: '#fdf0f2', abg: '#f8d7da', label: '#a8203a' },
+  { border: '#1565c0', bg: '#eff4fb', abg: '#d0e4f7', label: '#0d3a7a' },
+  { border: '#2a9d47', bg: '#edf7ed', abg: '#d4edda', label: '#1a5c2e' },
+  { border: '#e07b00', bg: '#fdf9e6', abg: '#fef3c7', label: '#7a3c00' },
+  { border: '#8b5cf6', bg: '#f5f1fe', abg: '#e6dcfd', label: '#5b21b6' },
+  { border: '#0891b2', bg: '#ecf9fc', abg: '#cff1f8', label: '#0e5f75' },
+];
+
+let N = 4;
+let players = [], currentPlayer = 0, outOrder = [];
+let clockRAF = null, lastTick = 0, clockRunning = false;
+let correctIdx = 0, locked = true, flashTimer;
+let _ca = null, _currentWord = '', _nextW = null, _nextAudio = null;
+
+// ── Player count selector ─────────────────────────────────────────────────────
+function setN(n) {
+  N = Math.max(2, Math.min(6, n));
+  document.getElementById('n-display').textContent = N + ' Imreoir';
+  document.getElementById('btn-minus').disabled = (N <= 2);
+  document.getElementById('btn-plus').disabled  = (N >= 6);
+  buildNameGrid();
+}
+function buildNameGrid() {
+  const grid = document.getElementById('name-grid');
+  grid.style.gridTemplateColumns = 'repeat(' + (N <= 3 ? N : 2) + ', 1fr)';
+  const prev = [];
+  for (let i = 1; i <= 6; i++) { const el = document.getElementById('name' + i); prev.push(el ? el.value : ''); }
+  grid.innerHTML = Array.from({length: N}, (_, i) => {
+    const c = PALETTE[i];
+    return '<div class="name-field"><label style="color:' + c.label + '">Imreoir ' + (i+1) + '</label>' +
+      '<input type="text" id="name' + (i+1) + '" placeholder="Ainm..." maxlength="14" autocomplete="off" ' +
+      'style="border-color:' + c.border + '" value="' + (prev[i] || '').replace(/"/g, '') + '"></div>';
+  }).join('');
+}
+
+// ── Panels: every player's clock is shown as a life bar ──────────────────────
+function fmtT(ms) { return (Math.max(0, ms) / 1000).toFixed(1); }
+function buildPanels() {
+  const el = document.getElementById('panels');
+  el.style.gridTemplateColumns = 'repeat(' + (N <= 3 ? N : (N === 4 ? 2 : 3)) + ', 1fr)';
+  el.innerHTML = players.map((p, i) =>
+    '<div class="panel" id="panel-' + i + '" style="border-color:' + PALETTE[i].border + ';background:' + PALETTE[i].bg + '">' +
+      '<div class="p-header"><div class="p-name">' + p.name.toUpperCase() + '</div>' +
+      '<div class="p-time" id="p-time-' + i + '">' + fmtT(p.time) + '</div></div>' +
+      '<div class="p-clock-wrap"><div class="p-clock" id="p-clock-' + i + '" style="background:' + PALETTE[i].border + '"></div></div>' +
+    '</div>').join('');
+}
+function drawClock(i) {
+  const p = players[i], pct = Math.max(0, p.time) / CLOCK_MS * 100;
+  const low = p.time <= 5000;
+  const bar = document.getElementById('p-clock-' + i);
+  bar.style.width = pct + '%';
+  bar.style.background = low ? '#c0392b' : PALETTE[i].border;
+  document.getElementById('p-time-' + i).textContent = p.time <= 0 ? '💀' : fmtT(p.time);
+  if (i === currentPlayer) {
+    const big = document.getElementById('word-timer-bar');
+    big.style.width = pct + '%';
+    big.style.background = low ? '#c0392b' : PALETTE[i].border;
+    const bt = document.getElementById('big-time');
+    bt.textContent = fmtT(p.time);
+    bt.style.color = low ? '#c0392b' : PALETTE[i].border;
+  }
+}
+function updatePanels() {
+  players.forEach((p, i) => {
+    const panel = document.getElementById('panel-' + i);
+    const active = i === currentPlayer && p.time > 0;
+    panel.style.background = active ? PALETTE[i].abg : PALETTE[i].bg;
+    panel.style.boxShadow = active ? '0 0 0 2px ' + PALETTE[i].border : 'none';
+    panel.classList.toggle('dead', p.time <= 0);
+    drawClock(i);
+  });
+  const ti = document.getElementById('turn-indicator');
+  ti.textContent = players[currentPlayer].name.toUpperCase() + '!';
+  ti.style.color = PALETTE[currentPlayer].border;
+}
+
+// ── Screens ───────────────────────────────────────────────────────────────────
+function show(id) {
+  ['start-screen','game-screen','over-screen'].forEach(s =>
+    document.getElementById(s).classList.toggle('active', s === id));
+}
+function showStart() { stopClock(); show('start-screen'); }
+
+// ── Start / rematch ───────────────────────────────────────────────────────────
+function startGame() {
+  players = Array.from({length: N}, (_, i) => ({
+    name: (document.getElementById('name' + (i+1)).value.trim()) || ('Imreoir ' + (i+1)),
+    time: CLOCK_MS, correct: 0
+  }));
+  resetAndPlay();
+}
+function rematch() { players.forEach(p => { p.time = CLOCK_MS; p.correct = 0; }); resetAndPlay(); }
+function resetAndPlay() {
+  currentPlayer = 0; outOrder = []; locked = true; _nextW = null; _nextAudio = null;
+  preloadNext();               // unlock audio inside the tap (iPhone)
+  buildPanels(); show('game-screen'); beginTurn();
+}
+
+// ── Alive helpers ─────────────────────────────────────────────────────────────
+function alive() { return players.filter(p => p.time > 0).length; }
+function nextAlive(from) {
+  let idx = (from + 1) % N;
+  for (let k = 0; k < N; k++) { if (players[idx].time > 0) return idx; idx = (idx + 1) % N; }
+  return from;
+}
+
+// ── The clock: runs only while the current player is answering ───────────────
+function startClock() { clockRunning = true; lastTick = performance.now(); cancelAnimationFrame(clockRAF); clockRAF = requestAnimationFrame(tick); }
+function stopClock()  { clockRunning = false; cancelAnimationFrame(clockRAF); }
+function tick(now) {
+  if (!clockRunning) return;
+  const p = players[currentPlayer];
+  p.time -= (now - lastTick); lastTick = now;
+  if (p.time <= 0) { p.time = 0; drawClock(currentPlayer); knockOut(); return; }
+  drawClock(currentPlayer);
+  clockRAF = requestAnimationFrame(tick);
+}
+
+// ── Audio ─────────────────────────────────────────────────────────────────────
+function playPron(word) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  a.onerror = function(){}; a.play().catch(function(){}); _ca = a;
+}
+function replayPron() { if (_currentWord) playPron(_currentWord); }
+function preloadNext() {
+  _nextW = WORDS[Math.floor(Math.random() * WORDS.length)];
+  if (_nextAudio) { _nextAudio.pause(); }
+  _nextAudio = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(_nextW) + '.mp3');
+  _nextAudio.onerror = function(){}; _nextAudio.muted = true; _nextAudio.play().catch(function(){});
+}
+
+// ── Word helpers ──────────────────────────────────────────────────────────────
+function sh(arr) { for (let i = arr.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]] = [arr[j],arr[i]]; } return arr; }
+function rnd(ex) { let w; do { w = WORDS[Math.floor(Math.random()*WORDS.length)]; } while (w === ex); return w; }
+
+// ── Turn flow ─────────────────────────────────────────────────────────────────
+function beginTurn() {
+  locked = true; stopClock();
+  const card = document.getElementById('word-card');
+  card.textContent = players[currentPlayer].name.toUpperCase() + ' — do sheal!';
+  card.className = 'card turn-card';
+  document.querySelectorAll('.choice-btn').forEach(b => { b.querySelector('.btn-text').textContent = ''; b.className = 'choice-btn'; b.disabled = true; });
+  document.getElementById('pts-flash').style.opacity = '0';
+  updatePanels();
+  setTimeout(() => { nextWord(); startClock(); }, 1000);   // clock starts when the first word appears
+}
+
+function nextWord() {
+  const word = _nextW || WORDS[Math.floor(Math.random()*WORDS.length)];
+  _nextW = null;
+  const correct = DICT[word][0], opts = sh([correct, DICT[rnd(word)][0]]);
+  correctIdx = opts.indexOf(correct); _currentWord = word;
+  const card = document.getElementById('word-card');
+  card.textContent = word; card.className = 'card';
+  document.querySelectorAll('.choice-btn').forEach((b, i) => { b.querySelector('.btn-text').textContent = opts[i]; b.className = 'choice-btn'; b.disabled = false; });
+  if (_nextAudio) { const a = _nextAudio; _nextAudio = null; a.muted = false; a.currentTime = 0; a.play().catch(function(){}); _ca = a; }
+  else playPron(word);
+  locked = false;
+}
+
+function pick(idx) {
+  if (locked || !document.getElementById('game-screen').classList.contains('active')) return;
+  locked = true;
+  const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
+  btns.forEach(b => b.disabled = true);
+  preloadNext();                                  // keeps iPhone audio unlocked
+  if (idx === correctIdx) {
+    stopClock();                                  // correct: the clock stops, turn passes on
+    players[currentPlayer].correct++;
+    playOk();
+    btns[idx].className = 'choice-btn selected-correct';
+    document.getElementById('word-card').className = 'card flash-correct';
+    showFlash('⏸ ' + fmtT(players[currentPlayer].time) + ' s fágtha');
+    setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 900);
+  } else {
+    playNo();                                     // wrong: the clock keeps running, new word
+    btns[idx].className = 'choice-btn selected-wrong';
+    btns[correctIdx].className = 'choice-btn reveal-correct';
+    document.getElementById('word-card').className = 'card flash-wrong';
+    setTimeout(() => { if (clockRunning) nextWord(); }, 700);
+  }
+}
+
+// ── Out of time = knocked out ─────────────────────────────────────────────────
+function knockOut() {
+  stopClock(); locked = true;
+  if (_ca) { _ca.pause(); _ca = null; }
+  playNo();
+  outOrder.push(currentPlayer);
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  const card = document.getElementById('word-card');
+  card.textContent = '💀 ' + players[currentPlayer].name.toUpperCase() + ' — díbeartha!';
+  card.className = 'card flash-wrong';
+  updatePanels();
+  if (alive() <= 1) { setTimeout(endGame, 1500); return; }
+  setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 1500);
+}
+
+function showFlash(txt) {
+  const el = document.getElementById('pts-flash');
+  el.textContent = txt; el.style.opacity = '1';
+  clearTimeout(flashTimer); flashTimer = setTimeout(() => { el.style.opacity = '0'; }, 800);
+}
+
+// ── End: last player standing wins; others ranked by how long they lasted ────
+function endGame() {
+  stopClock(); locked = true;
+  const w = players.findIndex(p => p.time > 0);
+  const order = [w, ...outOrder.slice().reverse()];
+  document.getElementById('over-title').textContent = players[w].name.toUpperCase() + ' buaite! 🏆';
+  const rg = document.getElementById('results-grid');
+  rg.style.gridTemplateColumns = 'repeat(' + (N <= 3 ? N : 2) + ', 1fr)';
+  rg.innerHTML = order.map((i, rank) => {
+    const p = players[i];
+    const detail = rank === 0 ? 'Buaiteoir · ' + fmtT(p.time) + ' s fágtha' : (rank + 1) + 'ú áit · díbeartha';
+    return '<div class="player-result' + (rank === 0 ? ' winner' : '') + '" style="border:2px solid ' + PALETTE[i].border + '">' +
+      '<div class="pr-name" style="color:' + PALETTE[i].label + '">' + p.name.toUpperCase() + (rank === 0 ? ' 🏆' : ' 💀') + '</div>' +
+      '<div class="pr-detail">' + detail + ' · Ceart: ' + p.correct + '</div></div>';
+  }).join('');
+  show('over-screen');
+}
+
+// ── Keyboard ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (document.getElementById('game-screen').classList.contains('active')) {
+    if (e.key === 'ArrowUp')   { e.preventDefault(); pick(0); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); pick(1); }
+  }
+  if (e.key === 'Enter' && document.getElementById('start-screen').classList.contains('active')) startGame();
+});
+
+setN(4);
+show('start-screen');
+
+// ── Sound feedback ───────────────────────────────────────────────────────────
+let _sfx=null;
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
+// iPhone: switch sound on at the very first tap anywhere on the page
+(function(){function w(){_gx();document.removeEventListener('touchstart',w);document.removeEventListener('mousedown',w);}document.addEventListener('touchstart',w,{passive:true});document.addEventListener('mousedown',w,{passive:true});})();
+function _pt(f,d,t,g,dl){try{const c=_gx(),b=c.state==='running'?0:0.06,s=c.currentTime+b+dl,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(g,s);gn.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d);}catch(e){}}
+function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
+function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
+</script>
+</body>
+</html>
