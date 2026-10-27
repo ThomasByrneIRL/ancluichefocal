@@ -4,6 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Cuimhne 60 Soicind</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -1851,7 +1879,7 @@ const POOL=[...new Set(["Aibreán",
 const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const WORD_MS = 3000;
 const GAME_MS = 60000;
-let score,lives,seen,queue,cw,locked;
+let score,lives,seen,queue,cw,locked,ended=true;
 let wordDeadline, wordTimerRAF, gameDeadline, gameTimerRAF;
 let mode='solo',numPlayers=1,playerNames=[],playerScores=[],currentPlayerIdx=0,leaderIdx=-1,leaderScore=0;
 let selectedCount=2,currentScreen='start-screen';
@@ -1861,17 +1889,18 @@ function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.crea
 function playOk(){pt(523,.37,'sine',.22,0);pt(659,.43,'sine',.2,.12);}
 function playNo(){pt(220,.30,'sawtooth',.18,0);pt(150,.33,'sawtooth',.14,.08);}
 function sh(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function tickGame(){const rem=gameDeadline-Date.now();if(rem<=0){document.getElementById('timer-val').textContent='0:00';if(!locked){locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}over();}return;}const s=Math.ceil(rem/1000);const mm=Math.floor(s/60);const ss=(s%60).toString().padStart(2,'0');const tv=document.getElementById('timer-val');tv.textContent=mm+':'+ss;tv.className=s<=10?'urgent':'';gameTimerRAF=requestAnimationFrame(tickGame);}
-function initGame(){score=0;lives=1;seen=new Set();queue=sh(POOL);locked=false;gameDeadline=Date.now()+GAME_MS;tickGame();upd();
+function tickGame(){const rem=gameDeadline-Date.now();if(rem<=0){document.getElementById('timer-val').textContent='0:00';locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}over();return;}const s=Math.ceil(rem/1000);const mm=Math.floor(s/60);const ss=(s%60).toString().padStart(2,'0');const tv=document.getElementById('timer-val');tv.textContent=mm+':'+ss;tv.className=s<=10?'urgent':'';gameTimerRAF=requestAnimationFrame(tickGame);}
+function initGame(){ended=false;score=0;lives=1;seen=new Set();queue=sh(POOL);locked=false;gameDeadline=Date.now()+GAME_MS;tickGame();upd();
   const hud=document.getElementById('player-hud');
   if(mode==='multi'){const col=PCOLS[currentPlayerIdx%PCOLS.length];hud.innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';}else{hud.innerHTML='';}
   gx();show('game-screen');nxt();}
 function pw(){const s=[...seen].filter(w=>w!==cw);if(s.length>0&&Math.random()<0.4)return s[Math.floor(Math.random()*s.length)];if(queue.length===0)queue=sh(POOL.filter(w=>!seen.has(w)));if(queue.length===0)queue=sh(POOL);if(queue[queue.length-1]===cw)queue.splice(queue.length-1,1);if(queue.length===0)queue=sh(POOL.filter(w=>w!==cw));return queue.pop();}
-function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
+function nxt(){if(ended)return;if(gameDeadline-Date.now()<=0){over();return;}locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;if(_ca){_ca.pause();_ca=null;}lives--;playNo();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
-function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
+function answer(isNew){if(locked||ended)return;locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
 function upd(){document.getElementById('score-val').textContent=score;document.getElementById('lives-val').textContent=lives>0?'❤️':'🖤';}
 function over(){
+  if(ended)return;ended=true;locked=true;
   cancelAnimationFrame(wordTimerRAF);
   cancelAnimationFrame(gameTimerRAF);
   if(mode==='multi'){
