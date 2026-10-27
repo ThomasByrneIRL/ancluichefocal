@@ -27,6 +27,8 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
 .path.tosai     .path-header{border-color:#2a9d47} .path.tosai     .path-title{color:#2a9d47}
 .path.mean      .path-header{border-color:#e07b00} .path.mean      .path-title{color:#e07b00}
 .path.ard       .path-header{border-color:#e94560} .path.ard       .path-title{color:#e94560}
+.path.coisire   .path-header{border-color:#8b5cf6} .path.coisire   .path-title{color:#8b5cf6}
+.path.speis     .path-header{border-color:#0891b2} .path.speis     .path-title{color:#0891b2}
 
 .games{display:flex;flex-direction:column;gap:.55rem}
 .game-card{display:flex;align-items:center;gap:.8rem;padding:.65rem .85rem;border-radius:10px;
@@ -37,10 +39,9 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
 .path.tosai   .game-card:hover{border-color:#2a9d47}
 .path.mean    .game-card:hover{border-color:#e07b00}
 .path.ard     .game-card:hover{border-color:#e94560}
+.path.coisire .game-card:hover{border-color:#8b5cf6}
+.path.speis   .game-card:hover{border-color:#0891b2}
 
-.spec-divider{display:flex;align-items:center;gap:.6rem;margin:.5rem 0 .1rem;font-size:.68rem;color:#aaa;letter-spacing:.1em;text-transform:uppercase}
-.spec-divider::before,.spec-divider::after{content:"";flex:1;border-top:1px dashed #ddd}
-.game-card.spec{border-style:dashed;background:#fbfbf9}
 .game-num{font-size:1rem;font-weight:bold;min-width:2.2rem;text-align:center;color:#999;flex-shrink:0}
 .game-info{flex:1;min-width:0}
 .game-name{font-size:.92rem;font-weight:bold;color:#1a1a2e}
@@ -59,7 +60,6 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
 
 <main>
 
-  <!-- UILÍOCH -->
   <div class="path uilioch">
     <div class="path-header">
       <span class="path-icon">⭐</span>
@@ -88,7 +88,34 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
     </div>
   </div>
 
-  <!-- TOSAITHEOIRÍ -->
+  <div class="path coisire">
+    <div class="path-header">
+      <span class="path-icon">🎉</span>
+      <div>
+        <div class="path-title">Cluichí Cóisire</div>
+        <div class="path-desc">Don ghrúpa, 2–6 imreoir</div>
+      </div>
+    </div>
+    <div class="games">
+      <a href="7u-dibirt.html" class="game-card">
+        <span class="game-num">🥊</span>
+        <div class="game-info">
+          <div class="game-name">Díbirt</div>
+          <div class="game-desc">30 soicind ar an gclog, an duine deireanach beo</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+      <a href="12u-marthanas-il-imreora.html" class="game-card">
+        <span class="game-num">👥</span>
+        <div class="game-info">
+          <div class="game-name">Marthanas Il-imreora</div>
+          <div class="game-desc">An duine deireanach beo</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+    </div>
+  </div>
+
   <div class="path tosai">
     <div class="path-header">
       <span class="path-icon">🌱</span>
@@ -133,7 +160,6 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
     </div>
   </div>
 
-  <!-- MEÁNLEIBHÉAL -->
   <div class="path mean">
     <div class="path-header">
       <span class="path-icon">🌳</span>
@@ -159,14 +185,6 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
         </div>
         <span class="game-arrow">›</span>
       </a>
-      <a href="12u-marthanas-il-imreora.html" class="game-card">
-        <span class="game-num">👥</span>
-        <div class="game-info">
-          <div class="game-name">Marthanas Il-imreora</div>
-          <div class="game-desc">An duine deireanach beo</div>
-        </div>
-        <span class="game-arrow">›</span>
-      </a>
       <a href="11u-sliabhraon.html" class="game-card">
         <span class="game-num">⛰️</span>
         <div class="game-info">
@@ -175,27 +193,9 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
         </div>
         <span class="game-arrow">›</span>
       </a>
-      <div class="spec-divider"><span>Cluichí speisialta</span></div>
-      <a href="10u-comhchiallach.html" class="game-card spec">
-        <span class="game-num">=</span>
-        <div class="game-info">
-          <div class="game-name">Comhchiallach</div>
-          <div class="game-desc">Focail chomhchiallacha</div>
-        </div>
-        <span class="game-arrow">›</span>
-      </a>
-      <a href="13u-frithfhocal.html" class="game-card spec">
-        <span class="game-num">≠</span>
-        <div class="game-info">
-          <div class="game-name">Frithfhocal</div>
-          <div class="game-desc">Focail fhrithchiallacha</div>
-        </div>
-        <span class="game-arrow">›</span>
-      </a>
     </div>
   </div>
 
-  <!-- ARDLEIBHÉAL -->
   <div class="path ard">
     <div class="path-header">
       <span class="path-icon">🏔️</span>
@@ -237,8 +237,35 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
         </div>
         <span class="game-arrow">›</span>
       </a>
-      <div class="spec-divider"><span>Cluichí speisialta</span></div>
-      <a href="gaeilge-spainnis.html" class="game-card spec">
+    </div>
+  </div>
+
+  <div class="path speis">
+    <div class="path-header">
+      <span class="path-icon">✨</span>
+      <div>
+        <div class="path-title">Cluichí Speisialta</div>
+        <div class="path-desc">Comhchiallaigh, frithfhocail agus teangacha eile</div>
+      </div>
+    </div>
+    <div class="games">
+      <a href="10u-comhchiallach.html" class="game-card">
+        <span class="game-num">=</span>
+        <div class="game-info">
+          <div class="game-name">Comhchiallach</div>
+          <div class="game-desc">Focail chomhchiallacha</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+      <a href="13u-frithfhocal.html" class="game-card">
+        <span class="game-num">≠</span>
+        <div class="game-info">
+          <div class="game-name">Frithfhocal</div>
+          <div class="game-desc">Focail fhrithchiallacha</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+      <a href="gaeilge-spainnis.html" class="game-card">
         <span class="game-num">🇪🇸</span>
         <div class="game-info">
           <div class="game-name">Gaeilge-Spáinnis</div>
@@ -246,7 +273,7 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
         </div>
         <span class="game-arrow">›</span>
       </a>
-      <a href="gaeilge-dha-theanga.html" class="game-card spec">
+      <a href="gaeilge-dha-theanga.html" class="game-card">
         <span class="game-num">🌐</span>
         <div class="game-info">
           <div class="game-name">Dhá Theanga</div>
