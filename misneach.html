@@ -4,6 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Misneach</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0;
@@ -300,7 +328,9 @@ function pickMode(btn,m){
 // ── Multi setup ──
 function startMulti(){mode='multi';selectedCount=2;buildNameFields(2);show('setup-screen');}
 function setCount(n){selectedCount=n;document.querySelectorAll('.cnt-btn').forEach((b,i)=>b.classList.toggle('active',i+2===n));buildNameFields(n);}
+// Changing the number of players keeps the names already typed (removing a player drops the last name only)
 function buildNameFields(n){
+  const _prev=[];for(let i=0;i<6;i++){const e=document.getElementById('pname-'+i);_prev.push(e?e.value:'');}
   const el=document.getElementById('name-fields');el.innerHTML='';
   for(let i=0;i<n;i++){
     const row=document.createElement('div');row.className='name-row';
@@ -309,6 +339,7 @@ function buildNameFields(n){
     inp.placeholder='Imreoir '+(i+1);inp.maxLength=20;
     row.appendChild(dot);row.appendChild(inp);el.appendChild(row);
   }
+  for(let i=0;i<6;i++){const e=document.getElementById('pname-'+i);if(e&&_prev[i])e.value=_prev[i];}
   document.querySelectorAll('.cnt-btn').forEach((b,i)=>b.classList.toggle('active',i+2===n));
 }
 function setRounds(n){numRounds=n;document.querySelectorAll('.rnd-btn').forEach(b=>b.classList.toggle('active',Number(b.textContent)===n));}

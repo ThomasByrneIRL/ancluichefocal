@@ -101,7 +101,8 @@
   .lb-score { font-weight:bold; color:#2a9d47; }
   .lb-winner { border:2px solid gold; }
   /* live scoreboard (multiplayer): chip strip on phones/tablets, sidebar on wide screens */
-  #live-board { display:none; flex-wrap:wrap; gap:6px; justify-content:center; margin:0 0 .9rem; }
+  #live-board { display:none; flex-wrap:wrap; gap:6px; justify-content:center; margin:0 0 1.6rem; }
+  #live-board .brk { flex-basis:100%; height:0; }
   #live-board.on { display:flex; }
   .lv { display:flex; align-items:center; gap:5px; padding:3px 9px; border:1.5px solid #e3e3dc; border-radius:999px;
         background:#fff; font-size:.78rem; line-height:1.4; }
@@ -121,6 +122,7 @@
     .lv { border-radius:10px; padding:8px 12px; font-size:.95rem; justify-content:space-between; }
     .lv.lead { padding:7px 11px; }
     .lv .nm { max-width:9em; flex:1; text-align:left; }
+    #live-board .brk { display:none; }
   }
 </style>
 </head>
@@ -183,10 +185,9 @@
     <div id="word-display"></div>
   </div>
   <div class="btns">
-    <button class="btn" id="btn-new" onclick="answer(true)">NUA<br><small style="font-weight:normal;font-size:.75rem">◄ Clé</small></button>
-    <button class="btn" id="btn-seen" onclick="answer(false)">FEICTHE<br><small style="font-weight:normal;font-size:.75rem">Deis ►</small></button>
+    <button class="btn" id="btn-new" onclick="answer(true)">NUA</button>
+    <button class="btn" id="btn-seen" onclick="answer(false)">FEICTHE</button>
   </div>
-  <p class="hint">← Saighead Chlé = NUA &nbsp;|&nbsp; Saighead Dheis = FEICTHE</p>
 </div>
 <div id="over-screen" class="screen">
   <h1>Críochnaithe!</h1>
@@ -1886,7 +1887,8 @@ function renderLive(){
   const tot=playerNames.map((n,i)=>(playerScores[i]||0)+(i===currentPlayerIdx?(score||0):0));
   const top=Math.max(...tot), lead=top>0?tot.map((v,i)=>v===top?i:-1).filter(i=>i>=0):[];
   const key=lead.join(','), changed=key!==_lvLead&&lead.length>0; _lvLead=key;
-  el.innerHTML=playerNames.map((n,i)=>'<div class="lv'+(i===currentPlayerIdx?' cur':'')+(lead.includes(i)?' lead':'')+(changed&&lead.includes(i)?' pulse':'')+'">'+
+  const half=playerNames.length>=4?Math.ceil(playerNames.length/2):99;
+  el.innerHTML=playerNames.map((n,i)=>(i===half?'<div class="brk"></div>':'')+'<div class="lv'+(i===currentPlayerIdx?' cur':'')+(lead.includes(i)?' lead':'')+(changed&&lead.includes(i)?' pulse':'')+'">'+
     '<span class="dot" style="background:'+PCOLS[i%PCOLS.length]+'"></span><span class="nm">'+n+'</span><span class="sc">'+tot[i]+'</span></div>').join('');
 }
 function upd(){document.getElementById('score-val').textContent=score;renderLive();const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
@@ -1922,8 +1924,9 @@ function playPron(){if(!cw)return;if(_nextPronAudio&&_nextPronWord===cw){const a
 // ── multiplayer helpers ──────────────────────────────────────────────────────
 function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[];leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;queue=sh(POOL);seen=new Set();gx();preloadPron(pw());initGame();}
 function startMulti(){mode='multi';show('setup-screen');buildSetup();}
-function adjCount(d){selectedCount=Math.max(2,Math.min(6,selectedCount+d));document.getElementById('cnt-val').textContent=selectedCount;buildSetup();}
-function buildSetup(){const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" /></div>';}}
+function adjCount(d){const was=selectedCount;selectedCount=Math.max(2,Math.min(6,selectedCount+d));const keep=true;document.getElementById('cnt-val').textContent=selectedCount;buildSetup(keep);}
+// Changing the number of players keeps the names already typed (removing a player drops the last name only)
+function buildSetup(keep){const prev=[];if(keep){for(let i=0;i<6;i++){const el=document.getElementById('pname-'+i);prev.push(el?el.value:'');}}const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" value="'+(prev[i]||'').replace(/"/g,'&quot;')+'" /></div>';}}
 // ── Rounds: 1–5 (default 1); scores add up, highest total wins ──
 let numRounds=1,curRound=1,roundScores=[];
 function setRounds(n){numRounds=n;document.querySelectorAll('.rnd-btn').forEach(b=>b.classList.toggle('on',Number(b.textContent)===n));}
