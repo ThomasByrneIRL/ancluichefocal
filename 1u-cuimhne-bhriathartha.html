@@ -100,6 +100,28 @@
   .lb-name { flex:1; font-weight:bold; text-align:left; }
   .lb-score { font-weight:bold; color:#2a9d47; }
   .lb-winner { border:2px solid gold; }
+  /* live scoreboard (multiplayer): chip strip on phones/tablets, sidebar on wide screens */
+  #live-board { display:none; flex-wrap:wrap; gap:6px; justify-content:center; margin:0 0 .9rem; }
+  #live-board.on { display:flex; }
+  .lv { display:flex; align-items:center; gap:5px; padding:3px 9px; border:1.5px solid #e3e3dc; border-radius:999px;
+        background:#fff; font-size:.78rem; line-height:1.4; }
+  .lv .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .lv .nm { max-width:6.5em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:#555; }
+  .lv .sc { font-weight:bold; font-variant-numeric:tabular-nums; color:#1a1a2e; }
+  .lv.cur { background:#f0f0ea; }
+  .lv.lead { border:2.5px solid #1a1a2e; padding:2px 8px; }
+  .lv.lead .nm { color:#1a1a2e; }
+  .lv.pulse { animation:lvpulse .6s ease; }
+  @keyframes lvpulse { 0%{transform:scale(1)} 40%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  @media (min-width:1000px) {
+    #live-board.on { position:fixed; right:28px; top:50%; transform:translateY(-50%); flex-direction:column;
+                     width:210px; margin:0; gap:8px; }
+    #live-board.on::before { content:'Clárbhord'; font-weight:bold; color:#999; font-size:.75rem; letter-spacing:.1em;
+                     text-transform:uppercase; text-align:left; margin-bottom:2px; }
+    .lv { border-radius:10px; padding:8px 12px; font-size:.95rem; justify-content:space-between; }
+    .lv.lead { padding:7px 11px; }
+    .lv .nm { max-width:9em; flex:1; text-align:left; }
+  }
 </style>
 </head>
 <body>
@@ -151,6 +173,7 @@
 </div>
 <div id="game-screen" class="screen">
   <div id="player-hud"></div>
+  <div id="live-board"></div>
   <div class="stats">
     <div><span class="stat-label">Scór</span><span id="score-val">0</span></div>
     <div><span class="stat-label">Saolta</span><span id="lives-val">❤️❤️❤️</span></div>
@@ -1853,7 +1876,20 @@ function pw(){const s=[...seen].filter(w=>w!==cw);if(s.length>0&&Math.random()<0
 function nxt(){locked=false;document.getElementById('btn-new').classList.remove('selected');document.getElementById('btn-seen').classList.remove('selected');if(_pendingWord){cw=_pendingWord;_pendingWord=null;}else{cw=pw();}document.getElementById('word-display').textContent=cw;document.getElementById('word-card').className='card';playPron();wordDeadline=Date.now()+WORD_MS;cancelAnimationFrame(wordTimerRAF);tickWord();}
 function tickWord(){const rem=wordDeadline-Date.now();if(rem<=0){document.getElementById('word-timer-bar').style.width='0%';if(!locked){locked=true;if(_ca){_ca.pause();_ca=null;}lives--;playNo();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);document.getElementById('word-card').className='card flash-wrong';upd();if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}return;}document.getElementById('word-timer-bar').style.width=(rem/WORD_MS*100)+'%';document.getElementById('word-timer-bar').className=rem<=900?'urgent':'';wordTimerRAF=requestAnimationFrame(tickWord);}
 function answer(isNew){if(locked)return;locked=true;cancelAnimationFrame(wordTimerRAF);if(_ca){_ca.pause();_ca=null;}document.getElementById(isNew?'btn-new':'btn-seen').classList.add('selected');const ws=seen.has(cw);const ok=isNew?!ws:ws;if(ok){score++;if(!ws)seen.add(cw);playOk();document.getElementById('word-card').className='card flash-correct';}else{lives--;playNo();document.getElementById('word-card').className='card flash-wrong';}upd();setTimeout(()=>{_pendingWord=pw();preloadPron(_pendingWord);},100);if(lives<=0)setTimeout(over,500);else setTimeout(nxt,350);}
-function upd(){document.getElementById('score-val').textContent=score;const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
+// ── Live scoreboard (multiplayer): totals so far + the current turn, updated on every correct answer.
+// Display only: it reads the scores the game already keeps. Players level at the top all get the outline.
+let _lvLead='';
+function renderLive(){
+  const el=document.getElementById('live-board'); if(!el)return;
+  if(mode!=='multi'||!playerNames.length){el.classList.remove('on');el.innerHTML='';return;}
+  el.classList.add('on');
+  const tot=playerNames.map((n,i)=>(playerScores[i]||0)+(i===currentPlayerIdx?(score||0):0));
+  const top=Math.max(...tot), lead=top>0?tot.map((v,i)=>v===top?i:-1).filter(i=>i>=0):[];
+  const key=lead.join(','), changed=key!==_lvLead&&lead.length>0; _lvLead=key;
+  el.innerHTML=playerNames.map((n,i)=>'<div class="lv'+(i===currentPlayerIdx?' cur':'')+(lead.includes(i)?' lead':'')+(changed&&lead.includes(i)?' pulse':'')+'">'+
+    '<span class="dot" style="background:'+PCOLS[i%PCOLS.length]+'"></span><span class="nm">'+n+'</span><span class="sc">'+tot[i]+'</span></div>').join('');
+}
+function upd(){document.getElementById('score-val').textContent=score;renderLive();const h='❤️',d='🖤';document.getElementById('lives-val').textContent=h.repeat(lives)+d.repeat(3-lives);}
 function over(){
   cancelAnimationFrame(wordTimerRAF);
   if(mode==='multi'){
