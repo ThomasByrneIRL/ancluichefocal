@@ -70,6 +70,10 @@
     font-family:Georgia,'Times New Roman',serif; transition:all .15s; }
   .mode-btn:hover { background:#fff5f6; }
   .cnt-row { display:flex; align-items:center; justify-content:center; gap:1rem; margin:1.2rem 0; }
+  .rnd-row { display:flex; gap:8px; justify-content:center; margin:.4rem 0 1.4rem; }
+  .rnd-btn { width:44px;height:44px;border-radius:10px;border:2px solid #ddd;background:#fff;font-size:1.05rem;font-weight:bold;cursor:pointer;color:#1a1a2e; }
+  .rnd-btn.on { background:#e94560;border-color:#e94560;color:#fff; }
+  .lb-rounds { display:block;font-size:.75rem;color:#999;font-weight:normal; }
   .cnt-btn { width:38px;height:38px;border-radius:50%;border:2px solid #e94560;background:#fff;
     color:#e94560;font-size:1.3rem;font-weight:bold;cursor:pointer;line-height:1; }
   .cnt-btn:hover { background:#e94560;color:#fff; }
@@ -118,11 +122,20 @@
     <button class="cnt-btn" onclick="adjCount(1)">+</button>
   </div>
   <div class="player-fields" id="player-fields"></div>
+  <p style="color:#888;margin-bottom:.2rem">Cé mhéad babhta?</p>
+  <div class="rnd-row">
+    <button class="rnd-btn on" onclick="setRounds(1)">1</button>
+    <button class="rnd-btn" onclick="setRounds(2)">2</button>
+    <button class="rnd-btn" onclick="setRounds(3)">3</button>
+    <button class="rnd-btn" onclick="setRounds(4)">4</button>
+    <button class="rnd-btn" onclick="setRounds(5)">5</button>
+  </div>
   <button class="big-btn" id="setup-go" onclick="setupDone()">Ar Aghaidh</button>
 </div>
 <!-- HANDOFF SCREEN -->
 <div id="handoff-screen" class="screen">
   <h1>Do sheal!</h1>
+  <div id="handoff-round" style="color:#888;font-size:.95rem"></div>
   <div class="player-chip" id="handoff-name"></div>
   <div class="leader-note" id="handoff-leader"></div>
   <button class="big-btn" onclick="handoffStart()">Tosaigh</button>
@@ -132,7 +145,8 @@
   <h1>Críochnaithe!</h1>
   <div id="result-player"></div>
   <div id="result-score"></div>
-  <p style="color:#888;margin-bottom:1.8rem">focail cuimhnithe</p>
+  <p style="color:#888;margin-bottom:.6rem">focail cuimhnithe</p>
+  <div id="result-total" style="color:#555;margin-bottom:1.4rem"></div>
   <button class="big-btn" id="result-next-btn"></button>
 </div>
 <div id="game-screen" class="screen">
@@ -162,9 +176,10 @@
 </div>
 <!-- FINAL LEADERBOARD -->
 <div id="final-screen" class="screen">
-  <h1>Clárbhord</h1>
+  <h1 id="final-title">Clárbhord</h1>
+  <div id="final-sub" style="color:#888;font-size:.9rem"></div>
   <div id="leaderboard" style="margin:1.2rem 0 1.8rem;"></div>
-  <button class="big-btn" onclick="goStart()">Baile</button>
+  <div id="final-actions"><button class="big-btn" onclick="goStart()">Baile</button></div>
 </div>
 <script>
 const POOL=[...new Set(["Aibreán",
@@ -1842,8 +1857,7 @@ function upd(){document.getElementById('score-val').textContent=score;const h='�
 function over(){
   cancelAnimationFrame(wordTimerRAF);
   if(mode==='multi'){
-    playerScores[currentPlayerIdx]=score;
-    if(score>leaderScore){leaderScore=score;leaderIdx=currentPlayerIdx;}
+    roundScores[currentPlayerIdx].push(score);playerScores[currentPlayerIdx]+=score;updateLeader();
     showResult();
     return;
   }
@@ -1874,11 +1888,21 @@ function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[];l
 function startMulti(){mode='multi';show('setup-screen');buildSetup();}
 function adjCount(d){selectedCount=Math.max(2,Math.min(6,selectedCount+d));document.getElementById('cnt-val').textContent=selectedCount;buildSetup();}
 function buildSetup(){const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" /></div>';}}
-function setupDone(){numPlayers=selectedCount;playerNames=[];for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i).value.trim()||('Imreoir '+(i+1))).toUpperCase();playerNames.push(v);}playerScores=new Array(numPlayers).fill(0);leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;showHandoff();}
-function showHandoff(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('handoff-name').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';let lnote='';if(leaderIdx>=0){const lc=PCOLS[leaderIdx%PCOLS.length];lnote='Ceannaire: <strong style="color:'+lc+'">'+playerNames[leaderIdx]+'</strong> — '+leaderScore+' pointe';}document.getElementById('handoff-leader').innerHTML=lnote;show('handoff-screen');}
+// ── Rounds: 1–5 (default 1); totals add up, highest average wins ──
+let numRounds=1,curRound=1,roundScores=[];
+function setRounds(n){numRounds=n;document.querySelectorAll('.rnd-btn').forEach(b=>b.classList.toggle('on',Number(b.textContent)===n));}
+function avg(i){const r=roundScores[i]||[];return r.length?playerScores[i]/r.length:0;}
+function fmtAvg(v){return (Math.round(v*10)/10).toString();}
+function updateLeader(){leaderIdx=-1;leaderScore=0;playerScores.forEach((v,i)=>{if(v>leaderScore){leaderScore=v;leaderIdx=i;}});}
+function setupDone(){numPlayers=selectedCount;playerNames=[];for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i).value.trim()||('Imreoir '+(i+1))).toUpperCase();playerNames.push(v);}resetMulti();showHandoff();}
+function resetMulti(){playerScores=new Array(numPlayers).fill(0);roundScores=playerNames.map(()=>[]);curRound=1;leaderIdx=-1;leaderScore=0;currentPlayerIdx=0;}
+function showHandoff(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('handoff-round').textContent=numRounds>1?'Babhta '+curRound+' / '+numRounds:'';document.getElementById('handoff-name').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';let lnote='';if(leaderIdx>=0){const lc=PCOLS[leaderIdx%PCOLS.length];lnote='Ceannaire: <strong style="color:'+lc+'">'+playerNames[leaderIdx]+'</strong> — '+leaderScore+' pointe';}if(curRound>1)lnote+='<br>Do scór iomlán: <strong>'+playerScores[currentPlayerIdx]+'</strong>';document.getElementById('handoff-leader').innerHTML=lnote;show('handoff-screen');}
 function handoffStart(){queue=sh(POOL);seen=new Set();gx();preloadPron(pw());initGame();}
-function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';document.getElementById('result-score').textContent=score;const nextIdx=currentPlayerIdx+1;const btn=document.getElementById('result-next-btn');if(nextIdx<numPlayers){btn.textContent='Pas chuig '+playerNames[nextIdx];btn.onclick=function(){currentPlayerIdx=nextIdx;showHandoff();};}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
-function showFinal(){const sorted=[...playerNames.map((n,i)=>({n,s:playerScores[i],i}))].sort((a,b)=>b.s-a.s);const lb=document.getElementById('leaderboard');lb.innerHTML='';sorted.forEach((p,rank)=>{const col=PCOLS[p.i%PCOLS.length];const winner=rank===0;lb.innerHTML+='<div class="lb-row'+(winner?' lb-winner':'')+'"><span class="lb-rank">'+(winner?'🏆':(rank+1)+'.')+' </span><div class="lb-dot" style="background:'+col+'"></div><span class="lb-name">'+p.n+'</span><span class="lb-score">'+p.s+'</span></div>';});show('final-screen');}
+function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';document.getElementById('result-score').textContent=score;document.getElementById('result-total').innerHTML=numRounds>1?'Babhta '+curRound+' / '+numRounds+' · Scór iomlán: <strong>'+playerScores[currentPlayerIdx]+'</strong>':'';const nextIdx=currentPlayerIdx+1;const btn=document.getElementById('result-next-btn');if(nextIdx<numPlayers){btn.textContent='Pas chuig '+playerNames[nextIdx];btn.onclick=function(){currentPlayerIdx=nextIdx;showHandoff();};}else if(curRound<numRounds){btn.textContent='Seasamh tar éis Babhta '+curRound+' →';btn.onclick=showFinal;}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
+// Standings after each round, final leaderboard after the last; ranked by average score, equal averages share a place
+function showFinal(){const fin=curRound>=numRounds,multi=numRounds>1;const sorted=playerNames.map((n,i)=>({n,i,a:avg(i),t:playerScores[i]})).sort((x,y)=>y.a-x.a);const lb=document.getElementById('leaderboard');lb.innerHTML='';let place=0;sorted.forEach((p,pos)=>{if(pos===0||p.a<sorted[pos-1].a)place=pos;const col=PCOLS[p.i%PCOLS.length];const top=place===0;const rounds=multi?'<span class="lb-rounds">'+roundScores[p.i].join(' · ')+' · iomlán '+p.t+'</span>':'';lb.innerHTML+='<div class="lb-row'+(top&&fin?' lb-winner':'')+'"><span class="lb-rank">'+(top?'🏆':(place+1)+'.')+' </span><div class="lb-dot" style="background:'+col+'"></div><span class="lb-name">'+p.n+rounds+'</span><span class="lb-score">'+(multi?fmtAvg(p.a):p.t)+'</span></div>';});const tie=sorted.length>1&&sorted[0].a===sorted[1].a;document.getElementById('final-title').textContent=fin?'Clárbhord':'Tar éis Babhta '+curRound+' / '+numRounds;document.getElementById('final-sub').textContent=fin?(tie?'Comhscór! Roinneann siad an bua 🤝':sorted[0].n+' a bhuaigh!')+(multi?' · meánscór':''):'Meánscór go dtí seo';document.getElementById('final-actions').innerHTML=fin?'<button class="big-btn" onclick="replayMulti()">Arís</button>&nbsp;&nbsp;<button class="big-btn" style="background:#1a1a2e" onclick="goStart()">Baile</button>':'<button class="big-btn" onclick="nextRound()">Babhta '+(curRound+1)+' →</button>';show('final-screen');}
+function nextRound(){curRound++;currentPlayerIdx=0;showHandoff();}
+function replayMulti(){resetMulti();showHandoff();}
 function goStart(){mode='solo';show('start-screen');}
 </script>
 </body>
