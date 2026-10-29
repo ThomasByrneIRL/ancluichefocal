@@ -4,6 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>An Dúshlán</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -96,13 +124,41 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 .lb-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 .lb-name { flex: 1; font-size: 1.05rem; font-weight: bold; }
 .lb-score { font-size: 1.2rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+  .rnd-row { display:flex; gap:8px; justify-content:center; margin:.4rem 0 1.4rem; }
+  .rnd-btn { width:44px;height:44px;border-radius:10px;border:2px solid #ddd;background:#fff;font-size:1.05rem;font-weight:bold;cursor:pointer;color:#1a1a2e; }
+  .rnd-btn.on { background:#e94560;border-color:#e94560;color:#fff; }
+  .lb-rounds { display:block;font-size:.75rem;color:#999;font-weight:normal; }
+  /* live scoreboard (multiplayer): chip strip on phones/tablets, sidebar on wide screens */
+  #live-board { display:none; flex-wrap:wrap; gap:6px; justify-content:center; margin:0 0 1.6rem; }
+  #live-board .brk { flex-basis:100%; height:0; }
+  #live-board.on { display:flex; }
+  .lv { display:flex; align-items:center; gap:5px; padding:3px 9px; border:1.5px solid #e3e3dc; border-radius:999px;
+        background:#fff; font-size:.78rem; line-height:1.4; }
+  .lv .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .lv .nm { max-width:6.5em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:#555; }
+  .lv .sc { font-weight:bold; font-variant-numeric:tabular-nums; color:#1a1a2e; }
+  .lv.cur { background:#f0f0ea; }
+  .lv.lead { border:2.5px solid #1a1a2e; padding:2px 8px; }
+  .lv.lead .nm { color:#1a1a2e; }
+  .lv.pulse { animation:lvpulse .6s ease; }
+  @keyframes lvpulse { 0%{transform:scale(1)} 40%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  @media (min-width:1000px) {
+    #live-board.on { position:fixed; right:28px; top:50%; transform:translateY(-50%); flex-direction:column;
+                     width:210px; margin:0; gap:8px; }
+    #live-board.on::before { content:'Clárbhord'; font-weight:bold; color:#999; font-size:.75rem; letter-spacing:.1em;
+                     text-transform:uppercase; text-align:left; margin-bottom:2px; }
+    .lv { border-radius:10px; padding:8px 12px; font-size:.95rem; justify-content:space-between; }
+    .lv.lead { padding:7px 11px; }
+    .lv .nm { max-width:9em; flex:1; text-align:left; }
+    #live-board .brk { display:none; }
+  }
 </style>
 </head>
 <body>
 
 <!-- START -->
 <div id="start-screen" class="screen">
-  <h1>🏅 Misneach Go Deo</h1>
+  <h1>🏅 An Dúshlán</h1>
   <p class="subtitle">32 focal as a chéile. Contae amháin in aghaidh gach focail. Focal amháin mícheart agus tá tú thart.</p>
   <p style="color:#666;margin-bottom:1.2rem;line-height:2">
     Roghnaigh an sainmhíniú ceart.<br>
@@ -119,16 +175,25 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 
 <!-- SETUP -->
 <div id="setup-screen" class="screen">
-  <h1>🏅 Misneach Go Deo</h1>
+  <h1>🏅 An Dúshlán</h1>
   <p class="subtitle">Cé mhéad imreoir?</p>
   <div class="setup-count" id="count-btns"></div>
   <div class="player-fields" id="player-fields"></div>
+  <p class="subtitle">Cé mhéad babhta?</p>
+  <div class="rnd-row">
+    <button class="rnd-btn on" onclick="setRounds(1)">1</button>
+    <button class="rnd-btn" onclick="setRounds(2)">2</button>
+    <button class="rnd-btn" onclick="setRounds(3)">3</button>
+    <button class="rnd-btn" onclick="setRounds(4)">4</button>
+    <button class="rnd-btn" onclick="setRounds(5)">5</button>
+  </div>
+  <p style="color:#888;font-size:.85rem;margin-bottom:.8rem">32 focal ceart as a chéile = pointí faoi dhó (64)</p>
   <button class="big-btn" onclick="setupDone()">Ar aghaidh →</button>
 </div>
 
 <!-- HANDOFF -->
 <div id="handoff-screen" class="screen">
-  <h1>🏅 Misneach Go Deo</h1>
+  <h1>🏅 An Dúshlán</h1>
   <div id="handoff-name"></div>
   <div id="handoff-sub"></div>
   <div id="handoff-target"></div>
@@ -138,6 +203,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 <!-- GAME -->
 <div id="game-screen" class="screen">
   <div id="player-hud"></div>
+  <div id="live-board"></div>
   <div id="target-hud"></div>
   <div class="county-dots" id="county-dots"></div>
   <div id="word-num-label"></div>
@@ -178,10 +244,10 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 
 <!-- FINAL LEADERBOARD -->
 <div id="final-screen" class="screen">
-  <h1>🏆 Críoch!</h1>
+  <h1 id="final-title">🏆 Críoch!</h1>
   <p class="subtitle" id="final-sub"></p>
   <div id="lb-list" style="margin:1.2rem 0"></div>
-  <button class="big-btn" onclick="goStart()">Arís</button>
+  <div id="final-actions"><button class="big-btn" onclick="goStart()">Arís</button></div>
 </div>
 
 <script src="focloir.js"></script>
@@ -214,6 +280,9 @@ let mode = 'solo';
 let numPlayers = 1, playerNames = [], playerScores = [];
 let currentPlayerIdx = 0, leaderIdx = -1, leaderScore = 0;
 let selectedCount = 2;
+// Multiplayer rounds (1–5, default 1): scores add up, highest total wins; a perfect run of 32 scores double (64)
+let numRounds = 1, curRound = 1, roundScores = [], turnLive = 0;
+const PERFECT_BONUS = 2;
 
 /* ── Helpers ── */
 function show(id) {
@@ -318,12 +387,37 @@ function buildSetup(n) {
 }
 
 function setupDone() {
-  numPlayers = selectedCount; playerNames = []; playerScores = new Array(numPlayers).fill(-1);
+  numPlayers = selectedCount; playerNames = [];
   document.querySelectorAll('.player-input').forEach((inp, i) => {
     if (i < numPlayers) playerNames.push((inp.value.trim() || ('Imreoir ' + (i+1))).toUpperCase());
   });
-  leaderIdx = -1; leaderScore = 0; currentPlayerIdx = 0;
+  resetMulti();
   showHandoff();
+}
+function setRounds(n) { numRounds = n; document.querySelectorAll('.rnd-btn').forEach(b => b.classList.toggle('on', Number(b.textContent) === n)); }
+function resetMulti() {
+  playerScores = new Array(numPlayers).fill(0); roundScores = playerNames.map(() => []);
+  curRound = 1; currentPlayerIdx = 0; leaderIdx = -1; leaderScore = 0; turnLive = 0;
+}
+function updateLeader() { leaderIdx = -1; leaderScore = 0; playerScores.forEach((v, i) => { if (v > leaderScore) { leaderScore = v; leaderIdx = i; } }); }
+function commitTurn(score) {
+  const pi = currentPlayerIdx;
+  roundScores[pi].push(score); playerScores[pi] += score; turnLive = 0; updateLeader(); renderLive();
+}
+
+// ── Live scoreboard: totals so far + the current turn, updated on every correct answer.
+// Display only: it reads the scores the game already keeps. Players level at the top all get the outline.
+let _lvLead = '';
+function renderLive() {
+  const el = document.getElementById('live-board'); if (!el) return;
+  if (mode !== 'multi' || !playerNames.length) { el.classList.remove('on'); el.innerHTML = ''; return; }
+  el.classList.add('on');
+  const tot = playerNames.map((n, i) => (playerScores[i] || 0) + (i === currentPlayerIdx ? turnLive : 0));
+  const top = Math.max(...tot), lead = top > 0 ? tot.map((v, i) => v === top ? i : -1).filter(i => i >= 0) : [];
+  const key = lead.join(','), changed = key !== _lvLead && lead.length > 0; _lvLead = key;
+  const half = playerNames.length >= 4 ? Math.ceil(playerNames.length / 2) : 99;
+  el.innerHTML = playerNames.map((n, i) => (i === half ? '<div class="brk"></div>' : '') + '<div class="lv' + (i === currentPlayerIdx ? ' cur' : '') + (lead.includes(i) ? ' lead' : '') + (changed && lead.includes(i) ? ' pulse' : '') + '">' +
+    '<span class="dot" style="background:' + pc(i) + '"></span><span class="nm">' + n + '</span><span class="sc">' + tot[i] + '</span></div>').join('');
 }
 
 /* ══════════ HANDOFF ══════════ */
@@ -334,12 +428,12 @@ function showHandoff() {
 
   document.getElementById('handoff-name').innerHTML = '<span style="color:' + c + '">' + n + '</span>';
   document.getElementById('handoff-name').style.color = c;
-  document.getElementById('handoff-sub').textContent = currentPlayerIdx === 0 ? 'Is tusa an chéad imreoir!' : 'Do sheal!';
+  document.getElementById('handoff-sub').textContent = (numRounds > 1 ? 'Babhta ' + curRound + ' / ' + numRounds + ' · ' : '') + (currentPlayerIdx === 0 && curRound === 1 ? 'Is tusa an chéad imreoir!' : 'Do sheal!') + (curRound > 1 ? ' · Iomlán: ' + playerScores[pi] : '');
 
   const tgt = document.getElementById('handoff-target');
   if (leaderIdx >= 0 && leaderIdx !== pi) {
     const lc = pc(leaderIdx), ln = pn(leaderIdx), ls = playerScores[leaderIdx];
-    tgt.innerHTML = 'AN SCÓR IS AIRDE ANOIS — <span style="color:' + lc + ';font-weight:bold">' + ln + '</span> LE <span style="color:#f0c040;font-weight:bold">' + fmt(ls) + '</span> pt';
+    tgt.innerHTML = 'AN SCÓR IS AIRDE ANOIS — <span style="color:' + lc + ';font-weight:bold">' + ln + '</span> LE <span style="color:#f0c040;font-weight:bold">' + ls + '</span> pt';
     tgt.style.display = 'block';
   } else {
     tgt.style.display = 'none';
@@ -363,7 +457,8 @@ function initGame(firstWord) {
     document.getElementById('player-hud').innerHTML = '<span style="color:' + c + '">' + n + '</span>';
     document.getElementById('player-hud').style.display = 'block';
     const th = document.getElementById('target-hud');
-    if (leaderIdx >= 0 && leaderIdx !== pi) {
+    turnLive = 0; renderLive();
+    if (false) {
       const lc = pc(leaderIdx), ln = pn(leaderIdx);
       th.innerHTML = 'AN SCÓR IS AIRDE — <span style="color:' + lc + '">' + ln + '</span> LE <span style="color:#f0c040">' + fmt(playerScores[leaderIdx]) + '</span> pt';
       th.style.display = 'block';
@@ -371,6 +466,7 @@ function initGame(firstWord) {
   } else {
     document.getElementById('player-hud').style.display = 'none';
     document.getElementById('target-hud').style.display = 'none';
+    renderLive();
   }
 
   document.getElementById('pts-flash').style.opacity = '0';
@@ -386,6 +482,7 @@ function nextWord(forcedWord) {
   buildDots('county-dots', wordNum);
   document.getElementById('word-num-label').textContent = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS;
   document.getElementById('score-display').textContent = wordNum - 1;
+  if (mode === 'multi') { turnLive = wordNum - 1; renderLive(); }
 
   // Choose word
   const word = forcedWord || WORDS[Math.floor(Math.random()*WORDS.length)];
@@ -461,7 +558,7 @@ function pick(idx) {
 function victory() {
   cancelAnimationFrame(wordRAF);
   if (_ca) { _ca.pause(); _ca = null; }
-  const score = TOTAL_WORDS;
+  const score = mode === 'multi' ? TOTAL_WORDS * PERFECT_BONUS : TOTAL_WORDS;
   playVictory();
 
   // All dots green
@@ -473,14 +570,15 @@ function victory() {
 
   if (mode === 'multi') {
     const pi = currentPlayerIdx, c = pc(pi), n = pn(pi);
-    playerScores[pi] = score;
-    if (score > leaderScore) { leaderScore = score; leaderIdx = pi; }
-    document.getElementById('victory-player').innerHTML = '<span style="color:' + c + '">' + n + '</span>';
+    commitTurn(score);
+    document.getElementById('victory-player').innerHTML = '<span style="color:' + c + '">' + n + '</span><div style="color:#e07b00;font-size:.95rem;margin-top:.3rem">Bua iomlán: pointí faoi dhó! (32 × 2)</div>';
     document.getElementById('victory-score').textContent = fmtFull(score);
     const act = document.getElementById('victory-actions');
     const nextPi = pi + 1;
     if (nextPi < numPlayers) {
       act.innerHTML = '<button class="big-btn gold" onclick="nextPlayer()">Pas chuig ' + pn(nextPi) + ' →</button>';
+    } else if (curRound < numRounds) {
+      act.innerHTML = '<button class="big-btn gold" onclick="showFinal()">Seasamh tar éis Babhta ' + curRound + ' →</button>';
     } else {
       act.innerHTML = '<button class="big-btn gold" onclick="showFinal()">Clárbhord 🏆</button>';
     }
@@ -503,11 +601,7 @@ function bust(reason) {
   // Score = value of last correctly answered word (wordNum-1), or 0 if first word
   const score = wordNum - 1;
 
-  if (mode === 'multi') {
-    const pi = currentPlayerIdx;
-    playerScores[pi] = score;
-    if (score > leaderScore) { leaderScore = score; leaderIdx = pi; }
-  }
+  if (mode === 'multi') commitTurn(score);
 
   // Player name
   const pi = currentPlayerIdx;
@@ -545,9 +639,12 @@ function bust(reason) {
     const nextPi = pi + 1;
     if (nextPi < numPlayers) {
       act.innerHTML = '<button class="big-btn" onclick="nextPlayer()">Pas chuig <strong>' + pn(nextPi) + '</strong> →</button>';
+    } else if (curRound < numRounds) {
+      act.innerHTML = '<button class="big-btn" onclick="showFinal()">Seasamh tar éis Babhta ' + curRound + ' →</button>';
     } else {
       act.innerHTML = '<button class="big-btn" onclick="showFinal()">Clárbhord 🏆</button>';
     }
+    if (numRounds > 1) act.innerHTML = '<p style="color:#555;margin-bottom:.6rem">Babhta ' + curRound + ' / ' + numRounds + ' · Scór iomlán: <strong>' + playerScores[pi] + '</strong></p>' + act.innerHTML;
   }
 
   show('over-screen');
@@ -560,21 +657,31 @@ function nextPlayer() {
 }
 
 /* ══════════ LEADERBOARD ══════════ */
+// Standings after each round, final leaderboard after the last; ranked by total, equal totals share a place
+function isFinalRound() { return curRound >= numRounds; }
 function showFinal() {
-  const ranked = playerNames.map((n,i) => ({n, i, s: Math.max(playerScores[i], 0)}))
-    .sort((a,b) => b.s - a.s);
-  const medals = ['🥇','🥈','🥉'];
-  document.getElementById('final-sub').textContent = '🥇 ' + ranked[0].n + ' le ' + fmt(ranked[0].s) + ' pt!';
-  document.getElementById('lb-list').innerHTML = ranked.map((p,pos) =>
-    '<div class="lb-row' + (pos===0?' lb-winner':'') + '">' +
-    '<div class="lb-rank">' + (medals[pos]||(pos+1)+'.') + '</div>' +
-    '<div class="lb-dot" style="background:' + pc(p.i) + '"></div>' +
-    '<div class="lb-name">' + p.n + '</div>' +
-    '<div class="lb-score" style="color:' + pc(p.i) + '">' + fmt(p.s) + ' pt</div>' +
-    '</div>'
-  ).join('');
+  const fin = isFinalRound(), multi = numRounds > 1;
+  const ranked = playerNames.map((n, i) => ({ n, i, s: playerScores[i] || 0 })).sort((a, b) => b.s - a.s);
+  const medals = ['🥇','🥈','🥉']; let place = 0;
+  document.getElementById('lb-list').innerHTML = ranked.map((p, pos) => {
+    if (pos === 0 || p.s < ranked[pos - 1].s) place = pos;
+    const rounds = multi ? '<span class="lb-rounds">' + roundScores[p.i].join(' · ') + '</span>' : '';
+    return '<div class="lb-row' + (place === 0 && fin ? ' lb-winner' : '') + '">' +
+      '<div class="lb-rank">' + (medals[place] || (place + 1) + '.') + '</div>' +
+      '<div class="lb-dot" style="background:' + pc(p.i) + '"></div>' +
+      '<div class="lb-name">' + p.n + rounds + '</div>' +
+      '<div class="lb-score" style="color:' + pc(p.i) + '">' + p.s + ' pt</div></div>';
+  }).join('');
+  const tie = ranked.length > 1 && ranked[0].s === ranked[1].s;
+  document.getElementById('final-title').textContent = fin ? '🏆 Críoch!' : 'Tar éis Babhta ' + curRound + ' / ' + numRounds;
+  document.getElementById('final-sub').textContent = fin ? (tie ? 'Comhscór! Roinneann siad an bua 🤝' : '🥇 ' + ranked[0].n + ' le ' + ranked[0].s + ' pt!') : 'Scór iomlán go dtí seo';
+  document.getElementById('final-actions').innerHTML = fin
+    ? '<button class="big-btn" onclick="replayMulti()">Arís</button><button class="ghost-btn" onclick="goStart()">Baile</button>'
+    : '<button class="big-btn" onclick="nextRound()">Babhta ' + (curRound + 1) + ' →</button>';
   show('final-screen');
 }
+function nextRound() { curRound++; currentPlayerIdx = 0; _nextAudio = null; _nextWord = null; showHandoff(); }
+function replayMulti() { resetMulti(); _nextAudio = null; _nextWord = null; showHandoff(); }
 
 /* ══════════ KEYBOARD ══════════ */
 document.addEventListener('keydown', e => {
@@ -596,7 +703,7 @@ document.addEventListener('keydown', e => {
         else { showFinal(); }
       } break;
     case 'final-screen':
-      if (e.key === 'Enter') { e.preventDefault(); goStart(); } break;
+      if (e.key === 'Enter') { e.preventDefault(); if (isFinalRound()) replayMulti(); else nextRound(); } break;
   }
 });
 
