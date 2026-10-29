@@ -98,6 +98,30 @@
   .lb-sub { display: block; font-size: .75rem; color: #999; font-weight: normal; }
   .lb-score { font-weight: bold; font-variant-numeric: tabular-nums; }
   .reveal-row { display: flex; justify-content: space-between; background: #fff; border-radius: 10px; padding: .6rem 1rem; margin-bottom: .4rem; font-weight: bold; }
+  /* live scoreboard (multiplayer): chip strip on phones/tablets, sidebar on wide screens */
+  #live-board { display:none; flex-wrap:wrap; gap:6px; justify-content:center; margin:0 0 1.6rem; }
+  #live-board .brk { flex-basis:100%; height:0; }
+  #live-board.on { display:flex; }
+  .lv { display:flex; align-items:center; gap:5px; padding:3px 9px; border:1.5px solid #e3e3dc; border-radius:999px;
+        background:#fff; font-size:.78rem; line-height:1.4; }
+  .lv .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .lv .nm { max-width:6.5em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:#555; }
+  .lv .sc { font-weight:bold; font-variant-numeric:tabular-nums; color:#1a1a2e; }
+  .lv.cur { background:#f0f0ea; }
+  .lv.lead { border:2.5px solid #1a1a2e; padding:2px 8px; }
+  .lv.lead .nm { color:#1a1a2e; }
+  .lv.pulse { animation:lvpulse .6s ease; }
+  @keyframes lvpulse { 0%{transform:scale(1)} 40%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  @media (min-width:1000px) {
+    #live-board.on { position:fixed; right:28px; top:50%; transform:translateY(-50%); flex-direction:column;
+                     width:210px; margin:0; gap:8px; }
+    #live-board.on::before { content:'Clárbhord'; font-weight:bold; color:#999; font-size:.75rem; letter-spacing:.1em;
+                     text-transform:uppercase; text-align:left; margin-bottom:2px; }
+    .lv { border-radius:10px; padding:8px 12px; font-size:.95rem; justify-content:space-between; }
+    .lv.lead { padding:7px 11px; }
+    .lv .nm { max-width:9em; flex:1; text-align:left; }
+    #live-board .brk { display:none; }
+  }
 </style>
 </head>
 <body>
@@ -105,7 +129,7 @@
 <div id="start-screen" class="screen">
   <h1>🔗 Comhcheangal</h1>
   <p class="sub">Roghnaigh do sprioc: cé mhéad focal as a chéile?</p>
-  <p class="rules">Gach focal ceart = nasc nua sa slabhra.<br>Críochnaigh an slabhra: sprioc × sprioc pointe.<br>20 focal = 400 · 100 focal = 10,000<br>Focal mícheart nó am caite = <span style="color:#e94560">0!</span><br>4 soicind an focal · sprioc idir 5 agus 1,000</p>
+  <p class="rules">Gach focal ceart = nasc nua sa slabhra agus +1 pointe.<br>Críochnaigh an slabhra: bónas de sprioc × sprioc.<br>20 focal = 20 + 400 · 100 focal = 100 + 10,000<br>Focal mícheart nó am caite = <span style="color:#e94560">slabhra briste, gan bhónas!</span><br>4 soicind an focal · sprioc idir 5 agus 1,000</p>
   <div class="mode-row">
     <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
     <button class="mode-btn" onclick="pickMode(this,'multi')">Il-imreoir</button>
@@ -138,7 +162,7 @@
   <p class="sub">Cé mhéad focal ceart as a chéile? (5 go 1,000)</p>
   <div class="tgt-row">
     <button class="step" onclick="stepTarget(-1)">−</button>
-    <input id="target-input" type="number" inputmode="numeric" min="5" max="1000" value="20" oninput="showStake()">
+    <input id="target-input" type="number" inputmode="numeric" min="5" max="1000" value="10" oninput="showStake()">
     <button class="step" onclick="stepTarget(1)">+</button>
   </div>
   <div class="row" id="preset-row"></div>
@@ -154,6 +178,7 @@
 </div>
 
 <div id="game-screen" class="screen">
+  <div id="live-board"></div>
   <div id="hud"><span class="who" id="who"></span><span id="progress"></span></div>
   <div id="stakes"></div>
   <div id="chain"></div>
@@ -193,7 +218,7 @@ const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const fmt = n => Number(n).toLocaleString('en-IE');
 
 let mode = 'solo', names = [], totals = [], rounds = [], targets = [], numRounds = 1, round = 1, selectedCount = 2;
-let cur = 0, target = 20, got = 0, correct = 0, locked = true, deadline = 0, raf = null, word = '', setIdx = 0;
+let cur = 0, target = 10, got = 0, correct = 0, locked = true, deadline = 0, raf = null, word = '', setIdx = 0;
 let best = 0; try { best = parseInt(localStorage.getItem(LS_KEY) || '0'); } catch (e) {}
 let currentScreen = 'start-screen';
 
@@ -233,7 +258,7 @@ function buildSetup() {
 }
 function setupDone() {
   names = []; for (let i = 0; i < selectedCount; i++) names.push(((document.getElementById('pname-' + i).value || '').trim() || 'Imreoir ' + (i + 1)).toUpperCase());
-  totals = names.map(() => 0); rounds = names.map(() => []); targets = names.map(() => 20); round = 1;
+  totals = names.map(() => 0); rounds = names.map(() => []); targets = names.map(() => 10); round = 1;
   startTargets();
 }
 
@@ -250,7 +275,7 @@ function openTarget() {
   const t = mode === 'multi' ? targets[cur] : target;
   document.getElementById('target-who').innerHTML = mode === 'multi' ? '<b style="color:' + pc(cur) + '">' + names[cur] + '</b>' + (numRounds > 1 ? ' · Babhta ' + round + ' / ' + numRounds : '') : '';
   document.getElementById('target-input').value = t;
-  document.getElementById('preset-row').innerHTML = [10, 20, 50, 100, 250].map(n => '<button class="pick" onclick="setTarget(' + n + ')">' + n + '</button>').join('');
+  document.getElementById('preset-row').innerHTML = [5, 10, 20, 50, 100, 250].map(n => '<button class="pick" onclick="setTarget(' + n + ')">' + n + '</button>').join('');
   showStake(); show('target-screen');
 }
 function clampT(v) { v = parseInt(v, 10); if (isNaN(v)) v = MIN_T; return Math.max(MIN_T, Math.min(MAX_T, v)); }
@@ -259,7 +284,7 @@ function stepTarget(d) { setTarget(clampT(document.getElementById('target-input'
 function showStake() {
   const raw = parseInt(document.getElementById('target-input').value, 10), el = document.getElementById('stake');
   if (isNaN(raw) || raw < MIN_T || raw > MAX_T) { el.style.color = '#e94560'; el.textContent = 'Idir 5 agus 1,000, le do thoil'; return; }
-  el.style.color = '#2a9d47'; el.textContent = raw + ' as a chéile = ' + fmt(raw * raw) + ' pointe';
+  el.style.color = '#2a9d47'; el.textContent = raw + ' as a chéile = ' + fmt(raw + raw * raw) + ' pointe (' + raw + ' + bónas ' + fmt(raw * raw) + ')';
 }
 function targetDone() {
   const t = clampT(document.getElementById('target-input').value);
@@ -270,14 +295,14 @@ function targetDone() {
 function showReveal() {
   document.getElementById('reveal-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
   document.getElementById('reveal-list').innerHTML = names.map((n, i) =>
-    '<div class="reveal-row"><span style="color:' + pc(i) + '">' + n + '</span><span>' + targets[i] + ' → ' + fmt(targets[i] * targets[i]) + '</span></div>').join('');
+    '<div class="reveal-row"><span style="color:' + pc(i) + '">' + n + '</span><span>' + targets[i] + ' → ' + fmt(targets[i] + targets[i] * targets[i]) + '</span></div>').join('');
   show('reveal-screen');
 }
 function beginTurns() { cur = 0; passForTurn(); }
 function passForTurn() {
   document.getElementById('pass-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
   document.getElementById('pass-name').innerHTML = '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>';
-  document.getElementById('pass-msg').textContent = 'Do sheal! Sprioc: ' + targets[cur] + ' (' + fmt(targets[cur] * targets[cur]) + ' pointe)';
+  document.getElementById('pass-msg').textContent = 'Do sheal! Sprioc: ' + targets[cur] + ' (' + fmt(targets[cur] + targets[cur] * targets[cur]) + ' pointe má chríochnaíonn tú)';
   const b = document.getElementById('pass-btn'); b.textContent = 'Tosaigh'; b.onclick = () => { preload(rndKey()); target = targets[cur]; startTurn(); };
   show('pass-screen');
 }
@@ -287,8 +312,22 @@ let correctIdx = 0;
 function startTurn() {
   got = 0;
   document.getElementById('who').innerHTML = mode === 'multi' ? '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>' : '';
-  document.getElementById('stakes').textContent = 'Ag imirt ar son ' + fmt(target * target) + ' pointe';
+  document.getElementById('stakes').textContent = '+' + fmt(target * target) + ' bónas má chríochnaíonn tú';
   show('game-screen'); nextWord();
+}
+// ── Live scoreboard (multiplayer): totals so far + the current player's points this turn.
+// The bonus is added once the chain is finished. Players level at the top all get the outline.
+let _lvLead = '';
+function renderLive() {
+  const el = document.getElementById('live-board');
+  if (mode !== 'multi' || !names.length) { el.classList.remove('on'); el.innerHTML = ''; return; }
+  el.classList.add('on');
+  const tot = names.map((n, i) => (totals[i] || 0) + (i === cur && currentScreen === 'game-screen' ? got : 0));
+  const top = Math.max(...tot), lead = top > 0 ? tot.map((v, i) => v === top ? i : -1).filter(i => i >= 0) : [];
+  const key = lead.join(','), changed = key !== _lvLead && lead.length > 0; _lvLead = key;
+  const half = names.length >= 4 ? Math.ceil(names.length / 2) : 99;
+  el.innerHTML = names.map((n, i) => (i === half ? '<div class="brk"></div>' : '') + '<div class="lv' + (i === cur ? ' cur' : '') + (lead.includes(i) ? ' lead' : '') + (changed && lead.includes(i) ? ' pulse' : '') + '">' +
+    '<span class="dot" style="background:' + pc(i) + '"></span><span class="nm">' + n + '</span><span class="sc">' + fmt(tot[i]) + '</span></div>').join('');
 }
 function drawChain(broken) {
   const links = Math.min(target, 25), per = target / links;
@@ -299,7 +338,8 @@ function drawChain(broken) {
     h += '<div class="lk' + (k < doneLinks ? ' done' : k === doneLinks ? (broken ? ' broke' : ' now') : '') + '"></div>';
   }
   document.getElementById('chain').innerHTML = h;
-  document.getElementById('progress').textContent = got + ' / ' + target;
+  document.getElementById('progress').textContent = got + ' / ' + target + ' · +' + got;
+  renderLive();
 }
 function nextWord() {
   const k = _preW && SHORT[_preW] ? _preW : rndKey();
@@ -344,14 +384,14 @@ function fail(timeout) {
 // ── Result of a turn ──────────────────────────────────────────────────────────
 function finish(success, timeout) {
   if (_ca) { _ca.pause(); _ca = null; }
-  const pts = success ? target * target : 0;
+  const pts = success ? target + target * target : got;   // +1 per correct word, plus target² for a finished chain
   document.getElementById('res-title').textContent = success ? 'Slabhra iomlán! 🔗' : (timeout ? 'Am caite!' : 'Briseadh an slabhra!');
   document.getElementById('res-title').style.color = success ? '#2a9d47' : '#e94560';
   document.getElementById('res-name').innerHTML = mode === 'multi' ? '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>' : '';
-  const sc = document.getElementById('res-score'); sc.textContent = fmt(pts); sc.style.color = success ? '#2a9d47' : '#aaa';
+  const sc = document.getElementById('res-score'); sc.textContent = fmt(pts); sc.style.color = success ? '#2a9d47' : pts > 0 ? '#e07b00' : '#aaa';
   const det = document.getElementById('res-detail');
-  det.innerHTML = success ? target + ' as ' + target + ' ceart · ' + target + ' × ' + target
-    : got + ' as ' + target + ' ceart · <b>' + word + '</b> = ' + SHORT[word];
+  det.innerHTML = success ? fmt(pts) + ' = ' + target + ' + bónas ' + fmt(target * target)
+    : got + ' as ' + target + ' ceart, gan bhónas · <b>' + word + '</b> = ' + SHORT[word];
   const act = document.getElementById('res-actions');
   if (mode === 'solo') {
     const nb = pts > best; if (nb) { best = pts; try { localStorage.setItem(LS_KEY, best); } catch (e) {} }
