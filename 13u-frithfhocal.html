@@ -226,7 +226,7 @@ const PAIRS=[
   {a:"amuigh",b:"istigh",ea:"outside",eb:"inside"},
   {a:"aníos",b:"anuas",ea:"up",eb:"down"},
   {a:"anois",b:"ansin",ea:"now",eb:"then"},
-  {a:"anseo",b:"ansin",ea:"here",eb:"then"},
+  {a:"anseo",b:"ansin",ea:"here",eb:"there"},
   {a:"ard",b:"íseal",ea:"tall",eb:"low"},
   {a:"athair",b:"máthair",ea:"father",eb:"mother"},
   {a:"baininscneach",b:"firinscneach",ea:"feminine",eb:"masculine"},
@@ -239,23 +239,22 @@ const PAIRS=[
   {a:"beo",b:"marbh",ea:"alive",eb:"dead"},
   {a:"bocht",b:"saibhir",ea:"poor",eb:"rich"},
   {a:"bog",b:"crua",ea:"soft",eb:"hard"},
-  {a:"bogearra",b:"crua-earraí",ea:"software program",eb:"hardware"},
+  {a:"bogearra",b:"crua-earraí",ea:"software",eb:"hardware"},
   {a:"brabúsach",b:"neamhbhrabúsach",ea:"profitable",eb:"non-profit"},
   {a:"bráthair",b:"siúr",ea:"brother",eb:"sister"},
   {a:"bréag",b:"fírinne",ea:"lie",eb:"truth"},
-  {a:"bréagach",b:"fíor",ea:"false",eb:"figure"},
+  {a:"bréagach",b:"fíor",ea:"false",eb:"true"},
   {a:"buachaill",b:"cailín",ea:"boy",eb:"girl"},
   {a:"buan",b:"sealadach",ea:"permanent",eb:"temporary"},
-  {a:"caoithiúlacht",b:"míchaoithiúlacht",ea:"convenience",eb:"invonvenience"},
+  {a:"caoithiúlacht",b:"míchaoithiúlacht",ea:"convenience",eb:"inconvenience"},
   {a:"caol",b:"leathan",ea:"slender",eb:"wide"},
   {a:"cat",b:"madra",ea:"cat",eb:"dog"},
-  {a:"ceannaigh",b:"díol",ea:"buy",eb:"pay"},
+  {a:"ceannaigh",b:"díol",ea:"buy",eb:"sell"},
   {a:"ceart",b:"mícheart",ea:"correct",eb:"incorrect"},
   {a:"clé",b:"deas",ea:"left",eb:"right"},
-  {a:"codladh",b:"dúiseacht",ea:"sleep",eb:"awakedness"},
+  {a:"codladh",b:"dúiseacht",ea:"sleep",eb:"being awake"},
   {a:"cosúlacht",b:"difríocht",ea:"similarity",eb:"difference"},
   {a:"críochnaigh",b:"tosaigh",ea:"finish",eb:"start"},
-  {a:"crua-earraí",b:"bogearraí",ea:"hardware",eb:""},
   {a:"cuir",b:"bain",ea:"plant",eb:"remove"},
   {a:"cúng",b:"leathan",ea:"narrow",eb:"wide"},
   {a:"daor",b:"saor",ea:"expensive",eb:"free"},
@@ -266,16 +265,14 @@ const PAIRS=[
   {a:"dia",b:"diabhal",ea:"god",eb:"devil"},
   {a:"dífhostaithe",b:"fostaithe",ea:"unemployed",eb:"employed"},
   {a:"dleathach",b:"mídhleathach",ea:"legal",eb:"illegal"},
-  {a:"do-",b:"so",ea:"un- -able",eb:""},
   {a:"doiléir",b:"soiléir",ea:"obscure",eb:"clear"},
   {a:"dolúbtha",b:"solúbtha",ea:"inflexible",eb:"flexible"},
   {a:"dona",b:"maith",ea:"bad",eb:"good"},
-  {a:"dubh",b:"geall",ea:"black",eb:"promise"},
   {a:"dúnta",b:"oscailte",ea:"closed",eb:"open"},
   {a:"éadrom",b:"trom",ea:"light",eb:"heavy"},
   {a:"éigeantach",b:"roghnach",ea:"compulsory",eb:"optional"},
   {a:"éirigh",b:"teip",ea:"succeed",eb:"fail"},
-  {a:"fada",b:"gearr",ea:"long",eb:"impose"},
+  {a:"fada",b:"gearr",ea:"long",eb:"short"},
   {a:"farraige",b:"talamh",ea:"sea",eb:"land"},
   {a:"feabhas",b:"olcas",ea:"improvement",eb:"how bad"},
   {a:"fliuch",b:"tirim",ea:"wet",eb:"dry"},
@@ -287,35 +284,28 @@ const PAIRS=[
   {a:"fuar",b:"te",ea:"cold",eb:"hot"},
   {a:"gariníon",b:"garmhac",ea:"granddaughter",eb:"grandson"},
   {a:"geal",b:"dorcha",ea:"bright",eb:"dark"},
-  {a:"geal",b:"gorm",ea:"white-skinned",eb:"black-skinned"},
   {a:"glan",b:"salach",ea:"clean",eb:"dirty"},
-  {a:"glasra",b:"toradh",ea:"vegetable",eb:"result"},
   {a:"iníon",b:"mac",ea:"daughter",eb:"son"},
-  {a:"inlíon",b:"eislíon",ea:"intranet",eb:""},
-  {a:"íochtar",b:"uachtar",ea:"bottom",eb:"cream"},
+  {a:"íochtar",b:"uachtar",ea:"bottom",eb:"top"},
   {a:"ionchur",b:"aschur",ea:"input",eb:"output"},
   {a:"íoslódáil",b:"uaslódáil",ea:"download",eb:"upload"},
   {a:"íosmhéid",b:"uasmhéid",ea:"minimum",eb:"maximum"},
   {a:"lag",b:"láidir",ea:"weak",eb:"strong"},
-  {a:"laghad",b:"méad",ea:"how small",eb:"how much"},
   {a:"laistigh",b:"lasmuigh",ea:"inside",eb:"outside"},
   {a:"maith",b:"olc",ea:"good",eb:"bad"},
   {a:"mall",b:"tapa",ea:"slow",eb:"fast"},
-  {a:"mapa",b:"léarscáil",ea:"map",eb:"map"},
   {a:"míshásta",b:"sásta",ea:"unhappy",eb:"happy"},
   {a:"míshláintiúil",b:"sláintiúil",ea:"unhealthy",eb:"healthy"},
   {a:"neacht",b:"nia",ea:"niece",eb:"nephew"},
   {a:"nua",b:"sean",ea:"new",eb:"old"},
   {a:"óg",b:"sean",ea:"young",eb:"old"},
   {a:"óg",b:"aosta",ea:"young",eb:"aged"},
-  {a:"ramhar",b:"tanaí",ea:"fat",eb:"shallow"},
+  {a:"ramhar",b:"tanaí",ea:"fat",eb:"thin"},
   {a:"seanathair",b:"seanmháthair",ea:"grandfather",eb:"grandmother"},
-  {a:"séimhiú",b:"urú",ea:"lenition",eb:"eclipsis"},
   {a:"seo",b:"sin",ea:"this",eb:"that"},
   {a:"síos",b:"suas",ea:"down",eb:"up"},
   {a:"sláintiúil",b:"tinn",ea:"healthy",eb:"sick"},
   {a:"sláintiúil",b:"breoite",ea:"healthy",eb:"ill"},
-  {a:"so-",b:"do-",ea:"-able",eb:"un- -able"},
   {a:"tanaí",b:"tiubh",ea:"thin",eb:"dense"},
   {a:"thíos",b:"thuas",ea:"down",eb:"up"},
   {a:"Gael",b:"Gall",ea:"Gaelic person",eb:"foreigner"}
@@ -323,6 +313,9 @@ const PAIRS=[
 
 // all unique words in dataset (for distractors)
 const ALL_WORDS=[...new Set(PAIRS.flatMap(p=>[p.a,p.b]))];
+// Every partner of each word, across all pairs. The wrong option is never one of these,
+// so a word can't have two correct answers on screen (e.g. aisling: fís and brionglóid).
+const LINKS={};PAIRS.forEach(p=>{(LINKS[p.a]=LINKS[p.a]||new Set()).add(p.b);(LINKS[p.b]=LINKS[p.b]||new Set()).add(p.a);});
 
 // ── audio ─────────────────────────────────────────────────────────────────────
 let _sfx=null,_ca=null,_clue='';
@@ -370,7 +363,7 @@ function nextWord(){
   // distractor from another pair's words
   let dist;let attempts=0;
   do{dist=ALL_WORDS[Math.floor(Math.random()*ALL_WORDS.length)];attempts++;}
-  while((dist===pair.a||dist===pair.b)&&attempts<100);
+  while((dist===pair.a||dist===pair.b||dist===clue||(LINKS[clue]&&LINKS[clue].has(dist)))&&attempts<200);
   const swap=Math.random()<.5;
   correctIdx=swap?1:0;
   const opts=swap?[dist,correct]:[correct,dist];

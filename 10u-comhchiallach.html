@@ -219,7 +219,6 @@ const LS_KEY='10u_best';
 const PAIRS=[
   {a:"amháin",b:"aon",en:"one"},
   {a:"alt",b:"paragraf",en:"paragraph"},
-  {a:"abair",b:"can",en:"sing"},
   {a:"adhlaic",b:"cuir",en:"bury"},
   {a:"aghaidh",b:"éadan",en:"face"},
   {a:"agus",b:"is",en:"and"},
@@ -272,7 +271,6 @@ const PAIRS=[
   {a:"briathar",b:"focal",en:"word"},
   {a:"bríste",b:"treabhsar",en:"trousers"},
   {a:"brollach",b:"réamhrá",en:"preface"},
-  {a:"buí",b:"buíochas",en:""},
   {a:"cabhraigh",b:"cuidigh",en:"help"},
   {a:"cáca",b:"císte",en:"cake"},
   {a:"caid",b:"peil",en:"football"},
@@ -287,10 +285,9 @@ const PAIRS=[
   {a:"ceap",b:"meas",en:"think"},
   {a:"céard",b:"cad",en:"what"},
   {a:"ceart",b:"cóir",en:"correct"},
-  {a:"ceathracha",b:"daichead",en:"fourty"},
+  {a:"ceathracha",b:"daichead",en:"forty"},
   {a:"ceathrachadú",b:"daicheadú",en:"fortieth"},
   {a:"ceathrú",b:"leis",en:"thigh"},
-  {a:"ceobhránach",b:"bog",en:"drizzly"},
   {a:"chí",b:"feic",en:"see"},
   {a:"cliabhrach",b:"ucht",en:"chest"},
   {a:"clois",b:"cluin",en:"hear"},
@@ -326,7 +323,7 @@ const PAIRS=[
   {a:"doiligh",b:"deacair",en:"difficult"},
   {a:"domhan",b:"saol",en:"world"},
   {a:"dona",b:"olc",en:"bad"},
-  {a:"donacht",b:"olcas",en:""},
+  {a:"donacht",b:"olcas",en:"badness"},
   {a:"dream",b:"lucht",en:"group"},
   {a:"druid",b:"dún",en:"close"},
   {a:"druidte",b:"dúnta",en:"closed"},
@@ -346,7 +343,6 @@ const PAIRS=[
   {a:"féad",b:"féidir",en:"can"},
   {a:"féirín",b:"bronntanas",en:"gift"},
   {a:"fidil",b:"veidhlín",en:"fiddle"},
-  {a:"fionn",b:"geal",en:"bright"},
   {a:"fios",b:"eolas",en:"knowledge"},
   {a:"flannbhuí",b:"oráiste",en:"orange"},
   {a:"folláin",b:"sláintiúil",en:"healthy"},
@@ -361,8 +357,6 @@ const PAIRS=[
   {a:"gabh",b:"téigh",en:"go"},
   {a:"gach",b:"achan",en:"every"},
   {a:"gadhar",b:"madra",en:"dog"},
-  {a:"Gaeilg",b:"Gaeilge",en:"Irish"},
-  {a:"Gaelainn",b:"Gaeilge",en:"Irish"},
   {a:"gairid",b:"gearr",en:"short"},
   {a:"gaosán",b:"srón",en:"nose"},
   {a:"garraí",b:"gairdín",en:"garden"},
@@ -370,9 +364,8 @@ const PAIRS=[
   {a:"gasúr",b:"páiste",en:"child"},
   {a:"gealltanas",b:"geallúint",en:"promise"},
   {a:"girseach",b:"cailín",en:"girl"},
-  {a:"glas",b:"liath",en:"green"},
+  {a:"glas",b:"liath",en:"grey"},
   {a:"guthán",b:"teileafón",en:"telephone"},
-  {a:"héileacaptar",b:"aerárthach",en:"helicopter"},
   {a:"iarnóin",b:"tráthnóna",en:"afternoon"},
   {a:"imirt",b:"cluiche",en:"play"},
   {a:"inneall",b:"meaisín",en:"engine"},
@@ -390,13 +383,11 @@ const PAIRS=[
   {a:"ní",b:"rud",en:"thing"},
   {a:"nua",b:"úr",en:"new"},
   {a:"obair",b:"saothar",en:"work"},
-  {a:"ord",b:"cearr",en:"order"},
-  {a:"oscail",b:"dún",en:"open"},
   {a:"pá",b:"tuarastal",en:"pay"},
   {a:"piseog",b:"pisreog",en:"superstition"},
   {a:"réitigh",b:"ullmhaigh",en:"prepare"},
   {a:"sásta",b:"sona",en:"happy"},
-  {a:"sásta",b:"toilteanach",en:"happy"},
+  {a:"sásta",b:"toilteanach",en:"willing"},
   {a:"sceadamán",b:"scornach",en:"throat"},
   {a:"scéal",b:"nuacht",en:"news"},
   {a:"seans",b:"deis",en:"chance"},
@@ -409,14 +400,15 @@ const PAIRS=[
   {a:"tionscadal",b:"tionscnamh",en:"project"},
   {a:"toghthóir",b:"vótálaí",en:"elector"},
   {a:"traochta",b:"tuirseach",en:"exhausted"},
-  {a:"uisce",b:"fuisce",en:"water"},
-  {a:"paráid",b:"mórshiúil",en:"parade"},
-  {a:"mórshiúl",b:"paráid",en:"demonstration"},
+  {a:"mórshiúl",b:"paráid",en:"parade, procession"},
   {a:"seachain",b:"coimhéad",en:"watch out"}
 ];
 
 // all unique words in dataset (for distractors)
 const ALL_WORDS=[...new Set(PAIRS.flatMap(p=>[p.a,p.b]))];
+// Every partner of each word, across all pairs. The wrong option is never one of these,
+// so a word can't have two correct answers on screen (e.g. aisling: fís and brionglóid).
+const LINKS={};PAIRS.forEach(p=>{(LINKS[p.a]=LINKS[p.a]||new Set()).add(p.b);(LINKS[p.b]=LINKS[p.b]||new Set()).add(p.a);});
 
 // ── audio ─────────────────────────────────────────────────────────────────────
 let _sfx=null,_ca=null,_clue='';
@@ -463,7 +455,7 @@ function nextWord(){
   // distractor: a word from ALL_WORDS not in this pair
   let dist;let attempts=0;
   do{dist=ALL_WORDS[Math.floor(Math.random()*ALL_WORDS.length)];attempts++;}
-  while((dist===pair.a||dist===pair.b||dist===clue)&&attempts<100);
+  while((dist===pair.a||dist===pair.b||dist===clue||(LINKS[clue]&&LINKS[clue].has(dist)))&&attempts<200);
   const swap=Math.random()<.5;
   correctIdx=swap?1:0;
   const opts=swap?[dist,correct]:[correct,dist];
