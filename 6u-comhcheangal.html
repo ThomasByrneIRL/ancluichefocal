@@ -144,6 +144,8 @@
   <div class="name-fields" id="name-fields"></div>
   <p class="sub">Cé mhéad babhta?</p>
   <div class="row" id="round-row"></div>
+  <p class="sub">Spriocanna</p>
+  <div class="row" id="lock-row"></div>
   <button class="big-btn" onclick="setupDone()">Ar aghaidh →</button><br>
   <button class="ghost-btn" onclick="show('start-screen')">Ar ais</button>
 </div>
@@ -217,6 +219,8 @@ const WORD_MS = 4000, MIN_T = 5, MAX_T = 1000, LS_KEY = '6u_comh_best';
 const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const fmt = n => Number(n).toLocaleString('en-IE');
 
+// lockTargets: true = targets set once before round 1 and locked for the whole game; false = new target each round
+let lockTargets = false;
 let mode = 'solo', names = [], totals = [], rounds = [], targets = [], numRounds = 1, round = 1, selectedCount = 2;
 let cur = 0, target = 10, got = 0, correct = 0, locked = true, deadline = 0, raf = null, word = '', setIdx = 0;
 let best = 0; try { best = parseInt(localStorage.getItem(LS_KEY) || '0'); } catch (e) {}
@@ -253,6 +257,9 @@ function buildSetup() {
   const prev = []; for (let i = 0; i < 6; i++) { const e = document.getElementById('pname-' + i); prev.push(e ? e.value : ''); }
   document.getElementById('count-row').innerHTML = [2,3,4,5,6].map(n => '<button class="pick' + (n === selectedCount ? ' on' : '') + '" onclick="selectedCount=' + n + ';buildSetup()">' + n + '</button>').join('');
   document.getElementById('round-row').innerHTML = [1,2,3,4,5].map(n => '<button class="pick' + (n === numRounds ? ' on' : '') + '" onclick="numRounds=' + n + ';buildSetup()">' + n + '</button>').join('');
+  document.getElementById('lock-row').innerHTML =
+    '<button class="pick' + (!lockTargets ? ' on' : '') + '" onclick="lockTargets=false;buildSetup()">Athraigh gach babhta</button>' +
+    '<button class="pick' + (lockTargets ? ' on' : '') + '" onclick="lockTargets=true;buildSetup()">🔒 Faoi ghlas ón tús</button>';
   document.getElementById('name-fields').innerHTML = Array.from({length: selectedCount}, (_, i) =>
     '<div class="name-row"><div class="dot" style="background:' + pc(i) + '"></div><input class="name-input" id="pname-' + i + '" maxlength="20" placeholder="Imreoir ' + (i + 1) + '" value="' + (prev[i] || '').replace(/"/g, '&quot;') + '"></div>').join('');
 }
@@ -293,7 +300,7 @@ function targetDone() {
   if (setIdx < names.length) passForTarget(); else showReveal();
 }
 function showReveal() {
-  document.getElementById('reveal-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
+  document.getElementById('reveal-round').textContent = (numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '') + (lockTargets && numRounds > 1 ? ' · 🔒 Faoi ghlas don chluiche ar fad' : '');
   document.getElementById('reveal-list').innerHTML = names.map((n, i) =>
     '<div class="reveal-row"><span style="color:' + pc(i) + '">' + n + '</span><span>' + targets[i] + ' → ' + fmt(targets[i] + targets[i] * targets[i]) + '</span></div>').join('');
   show('reveal-screen');
@@ -420,12 +427,14 @@ function showBoard() {
   }).join('');
   const tie = ranked.length > 1 && ranked[0].t === ranked[1].t;
   document.getElementById('board-title').textContent = fin ? 'Clárbhord 🏆' : 'Tar éis Babhta ' + round + ' / ' + numRounds;
-  document.getElementById('board-sub').textContent = fin ? (top === 0 ? 'Níor chríochnaigh aon duine a slabhra!' : tie ? 'Comhscór! Roinneann siad an bua 🤝' : ranked[0].n + ' a bhuaigh!') : 'Is féidir sprioc nua a roghnú don chéad bhabhta eile';
+  document.getElementById('board-sub').textContent = fin ? (top === 0 ? 'Níor chríochnaigh aon duine a slabhra!' : tie ? 'Comhscór! Roinneann siad an bua 🤝' : ranked[0].n + ' a bhuaigh!') : (lockTargets ? '🔒 Na spriocanna céanna sa chéad bhabhta eile' : 'Is féidir sprioc nua a roghnú don chéad bhabhta eile');
   document.getElementById('board-actions').innerHTML = fin
     ? '<button class="big-btn" onclick="replayMatch()">Arís</button><button class="ghost-btn" onclick="toStart()">Baile</button>'
-    : '<button class="big-btn" onclick="round++;startTargets()">Babhta ' + (round + 1) + ' →</button>';
+    : '<button class="big-btn" onclick="nextRound()">Babhta ' + (round + 1) + ' →</button>';
   show('board-screen');
 }
+// Locked targets skip straight to the reveal; otherwise everyone sets a new secret target
+function nextRound() { round++; if (lockTargets) showReveal(); else startTargets(); }
 function replayMatch() { totals = names.map(() => 0); rounds = names.map(() => []); round = 1; startTargets(); }
 function toStart() { mode = 'solo'; document.getElementById('best-line').textContent = best ? 'Taifead: ' + fmt(best) : ''; show('start-screen'); }
 
