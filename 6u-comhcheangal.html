@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Comhcheangal</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .screen { display: none; text-align: center; padding: 2rem 1.2rem; max-width: 520px; width: 100%; }
+  h1 { font-size: 2.2rem; color: #e94560; margin-bottom: .5rem; }
+  h2 { font-size: 1.6rem; color: #e94560; margin-bottom: .5rem; }
+  .sub { color: #888; font-size: .92rem; margin-bottom: 1rem; line-height: 1.6; }
+  .rules { color: #555; font-weight: bold; line-height: 1.8; margin-bottom: 1.2rem; }
+  .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.4rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: .8rem; }
+  .ghost-btn { background: transparent; color: #888; border: 1.5px solid #ddd; border-radius: 12px; padding: .85rem 1.6rem; font-size: 1rem; cursor: pointer; margin: .8rem 0 0 .4rem; }
+  .mode-row { display: flex; gap: 12px; justify-content: center; margin-top: 1rem; }
+  .mode-btn { flex: 1; max-width: 180px; padding: 1rem; border: 2px solid #e94560; border-radius: 14px; background: #fff; font-size: 1rem; font-weight: bold; color: #e94560; cursor: pointer; font-family: Georgia, 'Times New Roman', serif; transition: all .15s; }
+  .mode-btn:hover { background: #fff5f6; }
+  .mode-btn.chosen { background: #2a9d47; border-color: #2a9d47; color: #fff; }
+  .best { color: #e07b00; min-height: 1.3em; margin-top: .8rem; }
+
+  /* setup */
+  .row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: .4rem 0 1.1rem; }
+  .pick { min-width: 44px; height: 44px; padding: 0 10px; border: 2px solid #ddd; border-radius: 10px; background: #fff; font-size: 1.05rem; font-weight: bold; cursor: pointer; color: #1a1a2e; }
+  .pick.on { background: #e94560; border-color: #e94560; color: #fff; }
+  .name-fields { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .name-row { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .name-input { flex: 1; padding: .6rem .9rem; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; outline: none; }
+
+  /* target */
+  #target-input { width: 150px; font-size: 2.4rem; font-weight: bold; text-align: center; padding: .4rem; border: 3px solid #e94560; border-radius: 14px; outline: none; color: #1a1a2e; }
+  .step { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #e94560; background: #fff; color: #e94560; font-size: 1.6rem; font-weight: bold; cursor: pointer; }
+  .tgt-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin: .6rem 0; }
+  #stake { font-size: 1.15rem; color: #2a9d47; font-weight: bold; min-height: 1.5em; }
+  .player-chip { font-size: 1.8rem; font-weight: bold; margin: .4rem 0 .6rem; }
+
+  /* game */
+  #hud { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .5rem; }
+  #hud .who { font-weight: bold; }
+  #progress { font-weight: bold; font-variant-numeric: tabular-nums; }
+  #stakes { color: #2a9d47; font-weight: bold; }
+  /* chain progress: -o-o-o-o-o */
+  #chain { display: flex; align-items: center; justify-content: center; margin: .6rem 0 .9rem; }
+  .lk { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid #cfcfc6; background: #fff; flex-shrink: 0; }
+  .ln { height: 3px; flex: 1; max-width: 18px; min-width: 4px; background: #cfcfc6; }
+  .lk.done { border-color: #2a9d47; background: #2a9d47; }
+  .ln.done { background: #2a9d47; }
+  .lk.now { border-color: #e94560; animation: pulse 1s infinite; }
+  .lk.broke { border-color: #e94560; background: #e94560; }
+  @keyframes pulse { 50% { transform: scale(1.3); } }
+  .wbar { height: 6px; background: #e3e3dc; border-radius: 3px; overflow: hidden; margin-bottom: 1rem; }
+  #wbar { height: 100%; width: 100%; background: #2a9d47; }
+  #wbar.urgent { background: #e94560; }
+  .card { background: #fff; border-radius: 16px; padding: 2rem 1rem; box-shadow: 0 2px 16px rgba(0,0,0,.08); margin-bottom: 1rem; transition: background .15s; }
+  .card.ok { background: #d4edda; } .card.bad { background: #f8d7da; }
+  #word { font-size: 2.3rem; font-weight: bold; }
+  .choices { display: flex; flex-direction: column; gap: .7rem; }
+  .choice { padding: 1rem 1.2rem; border: 2px solid #ddd; border-radius: 12px; background: #fff; font-size: 1.05rem; text-align: left; cursor: pointer; color: #1a1a2e; }
+  .choice.ok { background: #d4edda; border-color: #2a9d47; }
+  .choice.bad { background: #f8d7da; border-color: #e94560; }
+
+  /* results */
+  #res-score { font-size: 3.6rem; font-weight: bold; margin: .3rem 0; }
+  #res-detail { color: #666; margin-bottom: .4rem; line-height: 1.6; }
+  .lb-row { display: flex; align-items: center; gap: 10px; background: #fff; border: 2px solid transparent; border-radius: 12px; padding: .7rem 1rem; margin-bottom: .5rem; text-align: left; }
+  .lb-row.win { border: 2.5px solid gold; background: #fffbea; }
+  .lb-rank { min-width: 1.6rem; font-size: 1.1rem; }
+  .lb-name { flex: 1; font-weight: bold; }
+  .lb-sub { display: block; font-size: .75rem; color: #999; font-weight: normal; }
+  .lb-score { font-weight: bold; font-variant-numeric: tabular-nums; }
+  .reveal-row { display: flex; justify-content: space-between; background: #fff; border-radius: 10px; padding: .6rem 1rem; margin-bottom: .4rem; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div id="start-screen" class="screen">
+  <h1>🔗 Comhcheangal</h1>
+  <p class="sub">Roghnaigh do sprioc: cé mhéad focal as a chéile?</p>
+  <p class="rules">Gach focal ceart = nasc nua sa slabhra.<br>Críochnaigh an slabhra: sprioc × sprioc pointe.<br>20 focal = 400 · 100 focal = 10,000<br>Focal mícheart nó am caite = <span style="color:#e94560">0!</span><br>4 soicind an focal · sprioc idir 5 agus 1,000</p>
+  <div class="mode-row">
+    <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
+    <button class="mode-btn" onclick="pickMode(this,'multi')">Il-imreoir</button>
+  </div>
+  <div class="best" id="best-line"></div>
+</div>
+
+<div id="setup-screen" class="screen">
+  <h2>Il-imreoir</h2>
+  <p class="sub">Cé mhéad imreoir?</p>
+  <div class="row" id="count-row"></div>
+  <div class="name-fields" id="name-fields"></div>
+  <p class="sub">Cé mhéad babhta?</p>
+  <div class="row" id="round-row"></div>
+  <button class="big-btn" onclick="setupDone()">Ar aghaidh →</button><br>
+  <button class="ghost-btn" onclick="show('start-screen')">Ar ais</button>
+</div>
+
+<!-- multiplayer: pass the phone so each player sets a secret target -->
+<div id="pass-screen" class="screen">
+  <p class="sub" id="pass-round"></p>
+  <div class="player-chip" id="pass-name"></div>
+  <p class="sub" id="pass-msg"></p>
+  <button class="big-btn" id="pass-btn"></button>
+</div>
+
+<div id="target-screen" class="screen">
+  <p class="sub" id="target-who"></p>
+  <h2>Do sprioc</h2>
+  <p class="sub">Cé mhéad focal ceart as a chéile? (5 go 1,000)</p>
+  <div class="tgt-row">
+    <button class="step" onclick="stepTarget(-1)">−</button>
+    <input id="target-input" type="number" inputmode="numeric" min="5" max="1000" value="20" oninput="showStake()">
+    <button class="step" onclick="stepTarget(1)">+</button>
+  </div>
+  <div class="row" id="preset-row"></div>
+  <div id="stake"></div>
+  <button class="big-btn" onclick="targetDone()">Glac leis ✓</button>
+</div>
+
+<div id="reveal-screen" class="screen">
+  <h2>Na spriocanna</h2>
+  <p class="sub" id="reveal-round"></p>
+  <div id="reveal-list"></div>
+  <button class="big-btn" onclick="beginTurns()">Tosaigh →</button>
+</div>
+
+<div id="game-screen" class="screen">
+  <div id="hud"><span class="who" id="who"></span><span id="progress"></span></div>
+  <div id="stakes"></div>
+  <div id="chain"></div>
+  <div class="wbar"><div id="wbar"></div></div>
+  <div class="card" id="card" onclick="replay()"><div id="word"></div></div>
+  <div class="choices">
+    <button class="choice" id="c0" onclick="pick(0)"></button>
+    <button class="choice" id="c1" onclick="pick(1)"></button>
+  </div>
+</div>
+
+<div id="result-screen" class="screen">
+  <h2 id="res-title"></h2>
+  <div class="player-chip" id="res-name"></div>
+  <div id="res-score"></div>
+  <p id="res-detail"></p>
+  <div id="res-actions"></div>
+</div>
+
+<div id="board-screen" class="screen">
+  <h2 id="board-title"></h2>
+  <p class="sub" id="board-sub"></p>
+  <div id="board-list"></div>
+  <div id="board-actions"></div>
+</div>
+
+<script src="focloir.js"></script>
+<script>
+// ── Words: short meanings only (4 seconds a word leaves no time for long definitions) ──
+function shortGloss(g) { return g.replace(/\([^)]*\)/g, ' ').split(/[,;]/)[0].replace(/\s+/g, ' ').trim(); }
+const SHORT = {};
+Object.keys(DICT).forEach(k => { const g = shortGloss(DICT[k][0]); if (g && g.split(' ').length <= 3 && g.length <= 25) SHORT[k] = g; });
+const KEYS = Object.keys(SHORT);
+
+const WORD_MS = 4000, MIN_T = 5, MAX_T = 1000, LS_KEY = '6u_comh_best';
+const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
+const fmt = n => Number(n).toLocaleString('en-IE');
+
+let mode = 'solo', names = [], totals = [], rounds = [], targets = [], numRounds = 1, round = 1, selectedCount = 2;
+let cur = 0, target = 20, got = 0, correct = 0, locked = true, deadline = 0, raf = null, word = '', setIdx = 0;
+let best = 0; try { best = parseInt(localStorage.getItem(LS_KEY) || '0'); } catch (e) {}
+let currentScreen = 'start-screen';
+
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.style.display = s.id === id ? 'block' : 'none'); currentScreen = id; }
+function pc(i) { return PCOLS[i % PCOLS.length]; }
+function rndKey(ex) { let k; do { k = KEYS[Math.floor(Math.random() * KEYS.length)]; } while (k === ex); return k; }
+
+// ── Audio ─────────────────────────────────────────────────────────────────────
+let _ca = null, _pre = null, _preW = null;
+const url = w => 'https://www.teanglann.ie/CanC/' + encodeURIComponent(w) + '.mp3';
+function preload(w) { const a = new Audio(url(w)); a.onerror = function(){}; a.muted = true; a.play().catch(function(){}); _pre = a; _preW = w; }
+function speak(w) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  if (_pre && _preW === w) { const a = _pre; _pre = null; a.muted = false; a.currentTime = 0; a.play().catch(function(){}); _ca = a; return; }
+  const a = new Audio(url(w)); a.onerror = function(){}; a.play().catch(function(){}); _ca = a;
+}
+function replay() { if (word && !locked) speak(word); }
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+function pickMode(btn, m) {
+  if (btn.disabled) return;
+  btn.classList.add('chosen'); document.querySelectorAll('.mode-btn').forEach(b => b.disabled = true);
+  setTimeout(() => {
+    document.querySelectorAll('.mode-btn').forEach(b => { b.classList.remove('chosen'); b.disabled = false; });
+    if (m === 'solo') { mode = 'solo'; names = ['']; totals = [0]; cur = 0; openTarget(); }
+    else { mode = 'multi'; buildSetup(); show('setup-screen'); }
+  }, 400);
+}
+
+// ── Multiplayer setup (adding a player keeps the names typed; removing one drops the last name) ──
+function buildSetup() {
+  const prev = []; for (let i = 0; i < 6; i++) { const e = document.getElementById('pname-' + i); prev.push(e ? e.value : ''); }
+  document.getElementById('count-row').innerHTML = [2,3,4,5,6].map(n => '<button class="pick' + (n === selectedCount ? ' on' : '') + '" onclick="selectedCount=' + n + ';buildSetup()">' + n + '</button>').join('');
+  document.getElementById('round-row').innerHTML = [1,2,3,4,5].map(n => '<button class="pick' + (n === numRounds ? ' on' : '') + '" onclick="numRounds=' + n + ';buildSetup()">' + n + '</button>').join('');
+  document.getElementById('name-fields').innerHTML = Array.from({length: selectedCount}, (_, i) =>
+    '<div class="name-row"><div class="dot" style="background:' + pc(i) + '"></div><input class="name-input" id="pname-' + i + '" maxlength="20" placeholder="Imreoir ' + (i + 1) + '" value="' + (prev[i] || '').replace(/"/g, '&quot;') + '"></div>').join('');
+}
+function setupDone() {
+  names = []; for (let i = 0; i < selectedCount; i++) names.push(((document.getElementById('pname-' + i).value || '').trim() || 'Imreoir ' + (i + 1)).toUpperCase());
+  totals = names.map(() => 0); rounds = names.map(() => []); targets = names.map(() => 20); round = 1;
+  startTargets();
+}
+
+// ── Targets: each player sets theirs in secret, then all are revealed ─────────
+function startTargets() { setIdx = 0; passForTarget(); }
+function passForTarget() {
+  document.getElementById('pass-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
+  document.getElementById('pass-name').innerHTML = '<span style="color:' + pc(setIdx) + '">' + names[setIdx] + '</span>';
+  document.getElementById('pass-msg').textContent = 'Socraigh do sprioc faoi rún. Ná lig d\'aon duine eile féachaint!';
+  const b = document.getElementById('pass-btn'); b.textContent = 'Socraigh sprioc →'; b.onclick = () => { cur = setIdx; openTarget(); };
+  show('pass-screen');
+}
+function openTarget() {
+  const t = mode === 'multi' ? targets[cur] : target;
+  document.getElementById('target-who').innerHTML = mode === 'multi' ? '<b style="color:' + pc(cur) + '">' + names[cur] + '</b>' + (numRounds > 1 ? ' · Babhta ' + round + ' / ' + numRounds : '') : '';
+  document.getElementById('target-input').value = t;
+  document.getElementById('preset-row').innerHTML = [10, 20, 50, 100, 250].map(n => '<button class="pick" onclick="setTarget(' + n + ')">' + n + '</button>').join('');
+  showStake(); show('target-screen');
+}
+function clampT(v) { v = parseInt(v, 10); if (isNaN(v)) v = MIN_T; return Math.max(MIN_T, Math.min(MAX_T, v)); }
+function setTarget(n) { document.getElementById('target-input').value = n; showStake(); }
+function stepTarget(d) { setTarget(clampT(document.getElementById('target-input').value) + d); }
+function showStake() {
+  const raw = parseInt(document.getElementById('target-input').value, 10), el = document.getElementById('stake');
+  if (isNaN(raw) || raw < MIN_T || raw > MAX_T) { el.style.color = '#e94560'; el.textContent = 'Idir 5 agus 1,000, le do thoil'; return; }
+  el.style.color = '#2a9d47'; el.textContent = raw + ' as a chéile = ' + fmt(raw * raw) + ' pointe';
+}
+function targetDone() {
+  const t = clampT(document.getElementById('target-input').value);
+  if (mode === 'solo') { target = t; preload(rndKey()); startTurn(); return; }
+  targets[cur] = t; setIdx++;
+  if (setIdx < names.length) passForTarget(); else showReveal();
+}
+function showReveal() {
+  document.getElementById('reveal-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
+  document.getElementById('reveal-list').innerHTML = names.map((n, i) =>
+    '<div class="reveal-row"><span style="color:' + pc(i) + '">' + n + '</span><span>' + targets[i] + ' → ' + fmt(targets[i] * targets[i]) + '</span></div>').join('');
+  show('reveal-screen');
+}
+function beginTurns() { cur = 0; passForTurn(); }
+function passForTurn() {
+  document.getElementById('pass-round').textContent = numRounds > 1 ? 'Babhta ' + round + ' / ' + numRounds : '';
+  document.getElementById('pass-name').innerHTML = '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>';
+  document.getElementById('pass-msg').textContent = 'Do sheal! Sprioc: ' + targets[cur] + ' (' + fmt(targets[cur] * targets[cur]) + ' pointe)';
+  const b = document.getElementById('pass-btn'); b.textContent = 'Tosaigh'; b.onclick = () => { preload(rndKey()); target = targets[cur]; startTurn(); };
+  show('pass-screen');
+}
+
+// ── A turn: get every word right in a row ─────────────────────────────────────
+let correctIdx = 0;
+function startTurn() {
+  got = 0;
+  document.getElementById('who').innerHTML = mode === 'multi' ? '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>' : '';
+  document.getElementById('stakes').textContent = 'Ag imirt ar son ' + fmt(target * target) + ' pointe';
+  show('game-screen'); nextWord();
+}
+function drawChain(broken) {
+  const links = Math.min(target, 25), per = target / links;
+  const doneLinks = Math.floor(got / per + 1e-9);   // each link stands for target ÷ links words
+  let h = '';
+  for (let k = 0; k < links; k++) {
+    if (k) h += '<div class="ln' + (k - 1 < doneLinks ? ' done' : '') + '"></div>';
+    h += '<div class="lk' + (k < doneLinks ? ' done' : k === doneLinks ? (broken ? ' broke' : ' now') : '') + '"></div>';
+  }
+  document.getElementById('chain').innerHTML = h;
+  document.getElementById('progress').textContent = got + ' / ' + target;
+}
+function nextWord() {
+  const k = _preW && SHORT[_preW] ? _preW : rndKey();
+  word = k;
+  const right = SHORT[k]; let wrong; do { wrong = SHORT[rndKey(k)]; } while (wrong.toLowerCase() === right.toLowerCase());
+  correctIdx = Math.random() < .5 ? 0 : 1;
+  const opts = correctIdx === 0 ? [right, wrong] : [wrong, right];
+  document.getElementById('word').textContent = k;
+  document.getElementById('card').className = 'card';
+  [0, 1].forEach(i => { const b = document.getElementById('c' + i); b.textContent = opts[i]; b.className = 'choice'; b.disabled = false; });
+  drawChain(false);
+  speak(k); _preW = null;
+  deadline = performance.now() + WORD_MS; locked = false;
+  cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+}
+function tick(now) {
+  if (locked) return;
+  const rem = deadline - now, bar = document.getElementById('wbar');
+  bar.style.width = Math.max(0, rem / WORD_MS * 100) + '%'; bar.className = rem < 1300 ? 'urgent' : '';
+  if (rem <= 0) { fail(true); return; }
+  raf = requestAnimationFrame(tick);
+}
+function pick(i) {
+  if (locked || currentScreen !== 'game-screen') return;
+  locked = true; cancelAnimationFrame(raf);
+  [0, 1].forEach(j => document.getElementById('c' + j).disabled = true);
+  if (i !== correctIdx) { document.getElementById('c' + i).className = 'choice bad'; fail(false); return; }
+  got++; playOk();
+  document.getElementById('c' + i).className = 'choice ok'; document.getElementById('card').className = 'card ok';
+  if (got >= target) { drawChain(false); setTimeout(() => finish(true), 500); return; }
+  preload(rndKey(word));                     // keeps iPhone audio unlocked
+  setTimeout(nextWord, 380);
+}
+function fail(timeout) {
+  locked = true; cancelAnimationFrame(raf); playNo();
+  document.getElementById('c' + correctIdx).className = 'choice ok';
+  document.getElementById('card').className = 'card bad';
+  drawChain(true);
+  setTimeout(() => finish(false, timeout), 1100);
+}
+
+// ── Result of a turn ──────────────────────────────────────────────────────────
+function finish(success, timeout) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  const pts = success ? target * target : 0;
+  document.getElementById('res-title').textContent = success ? 'Slabhra iomlán! 🔗' : (timeout ? 'Am caite!' : 'Briseadh an slabhra!');
+  document.getElementById('res-title').style.color = success ? '#2a9d47' : '#e94560';
+  document.getElementById('res-name').innerHTML = mode === 'multi' ? '<span style="color:' + pc(cur) + '">' + names[cur] + '</span>' : '';
+  const sc = document.getElementById('res-score'); sc.textContent = fmt(pts); sc.style.color = success ? '#2a9d47' : '#aaa';
+  const det = document.getElementById('res-detail');
+  det.innerHTML = success ? target + ' as ' + target + ' ceart · ' + target + ' × ' + target
+    : got + ' as ' + target + ' ceart · <b>' + word + '</b> = ' + SHORT[word];
+  const act = document.getElementById('res-actions');
+  if (mode === 'solo') {
+    const nb = pts > best; if (nb) { best = pts; try { localStorage.setItem(LS_KEY, best); } catch (e) {} }
+    det.innerHTML += '<br>' + (nb ? '🏆 Taifead nua!' : 'Taifead: ' + fmt(best));
+    act.innerHTML = '<button class="big-btn" onclick="openTarget()">Arís</button><button class="ghost-btn" onclick="toStart()">Baile</button>';
+  } else {
+    rounds[cur].push(pts); totals[cur] += pts;
+    if (numRounds > 1) det.innerHTML += '<br>Scór iomlán: <b>' + fmt(totals[cur]) + '</b>';
+    const nxt = cur + 1;
+    act.innerHTML = nxt < names.length ? '<button class="big-btn" onclick="cur++;passForTurn()">Pas chuig ' + names[nxt] + ' →</button>'
+      : '<button class="big-btn" onclick="showBoard()">' + (round < numRounds ? 'Clár tar éis Babhta ' + round + ' →' : 'Clárbhord 🏆') + '</button>';
+  }
+  show('result-screen');
+}
+
+// ── Scoreboard between rounds (scores only count once each turn is finished) ──
+function showBoard() {
+  const fin = round >= numRounds;
+  const ranked = names.map((n, i) => ({ n, i, t: totals[i] })).sort((a, b) => b.t - a.t);
+  const top = ranked[0].t, medals = ['🥇','🥈','🥉']; let place = 0;
+  document.getElementById('board-list').innerHTML = ranked.map((p, pos) => {
+    if (pos === 0 || p.t < ranked[pos - 1].t) place = pos;
+    const sub = numRounds > 1 ? '<span class="lb-sub">' + rounds[p.i].map(fmt).join(' · ') + '</span>' : '';
+    return '<div class="lb-row' + (p.t === top && top > 0 ? ' win' : '') + '"><span class="lb-rank">' + (medals[place] || (place + 1) + '.') + '</span>' +
+      '<span class="lb-name" style="color:' + pc(p.i) + '">' + p.n + sub + '</span><span class="lb-score">' + fmt(p.t) + '</span></div>';
+  }).join('');
+  const tie = ranked.length > 1 && ranked[0].t === ranked[1].t;
+  document.getElementById('board-title').textContent = fin ? 'Clárbhord 🏆' : 'Tar éis Babhta ' + round + ' / ' + numRounds;
+  document.getElementById('board-sub').textContent = fin ? (top === 0 ? 'Níor chríochnaigh aon duine a slabhra!' : tie ? 'Comhscór! Roinneann siad an bua 🤝' : ranked[0].n + ' a bhuaigh!') : 'Is féidir sprioc nua a roghnú don chéad bhabhta eile';
+  document.getElementById('board-actions').innerHTML = fin
+    ? '<button class="big-btn" onclick="replayMatch()">Arís</button><button class="ghost-btn" onclick="toStart()">Baile</button>'
+    : '<button class="big-btn" onclick="round++;startTargets()">Babhta ' + (round + 1) + ' →</button>';
+  show('board-screen');
+}
+function replayMatch() { totals = names.map(() => 0); rounds = names.map(() => []); round = 1; startTargets(); }
+function toStart() { mode = 'solo'; document.getElementById('best-line').textContent = best ? 'Taifead: ' + fmt(best) : ''; show('start-screen'); }
+
+document.addEventListener('keydown', e => {
+  if (currentScreen === 'game-screen') { if (e.key === 'ArrowUp') { e.preventDefault(); pick(0); } if (e.key === 'ArrowDown') { e.preventDefault(); pick(1); } }
+  else if (currentScreen === 'target-screen' && e.key === 'Enter') { e.preventDefault(); targetDone(); }
+});
+toStart();
+
+// ── Sound feedback ───────────────────────────────────────────────────────────
+let _sfx=null;
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
+(function(){function w(){_gx();document.removeEventListener('touchstart',w);document.removeEventListener('mousedown',w);}document.addEventListener('touchstart',w,{passive:true});document.addEventListener('mousedown',w,{passive:true});})();
+function _pt(f,d,t,g,dl){try{const c=_gx(),b=c.state==='running'?0:0.06,s=c.currentTime+b+dl,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(g,s);gn.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d);}catch(e){}}
+function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
+function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
+</script>
+</body>
+</html>

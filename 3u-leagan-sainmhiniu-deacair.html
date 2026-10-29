@@ -4,6 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sainmhíniú Deacair</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -287,10 +315,44 @@ function nextWord() {
   inp.focus();
 }
 
+// Fair but not loose. After ignoring capitals, punctuation and a leading "a / an / the / to",
+// the answer must match one of: the full definition; the definition with its (bracketed) part removed;
+// any single meaning in a list ("to say, utter" accepts "say" or "utter").
+// One small typo is allowed for answers of 5 letters or more.
+function normAns(t) {
+  return t.toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9'\s-]/g, ' ').replace(/\s+/g, ' ').trim()
+          .replace(/^(a|an|the|to) /, '').trim();
+}
+function oneTypo(a, b) {
+  if (a.length === b.length) { const d = [...a].map((c, k) => c !== b[k] ? k : -1).filter(k => k >= 0);
+    if (d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]]) return true; }   // two letters swapped
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+function acceptedForms(validAnswers) {
+  const out = new Set();
+  validAnswers.forEach(def => {
+    const noBrackets = def.replace(/\([^)]*\)/g, ' ');
+    [def, noBrackets].forEach(d => {
+      out.add(normAns(d));
+      d.split(/[,;]/).forEach(part => { const n = normAns(part); if (n) out.add(n); });
+    });
+  });
+  out.delete('');
+  return [...out];
+}
 function checkAnswer(input, validAnswers) {
-  const clean = input.toLowerCase().trim().replace(/^(a |an |the |to )/, '').trim();
+  const clean = normAns(input);
   if (!clean) return false;
-  return validAnswers.some(ans => clean === ans.toLowerCase());
+  const forms = acceptedForms(validAnswers);
+  if (forms.includes(clean)) return true;
+  return clean.length >= 5 && forms.some(f => f.length >= 5 && oneTypo(clean, f));
 }
 
 function submitAnswer() {

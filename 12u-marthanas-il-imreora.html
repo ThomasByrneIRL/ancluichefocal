@@ -95,7 +95,11 @@
       transition: border-color 0.2s, background 0.2s, opacity 0.2s;
       text-align: left;
     }
-    .panel.dead { opacity: 0.3; }
+    .panel.dead > * { opacity: 0.35; }
+    /* highest score so far: bold outline, kept even after that player is knocked out */
+    .panel.lead { outline: 3px solid #1a1a2e; outline-offset: 2px; }
+    .panel.lead.pulse { animation: lvpulse .6s ease; }
+    @keyframes lvpulse { 0%{transform:scale(1)} 40%{transform:scale(1.05)} 100%{transform:scale(1)} }
     .p-name { font-size: 0.9rem; font-weight: bold; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .p-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .p-lives { font-size: 0.9rem; color: #c62828; letter-spacing: 1px; margin-top: 4px; min-height: 1.1em; }
@@ -155,7 +159,7 @@
       padding: 11px 14px; border-radius: 10px;
       background: #fff; text-align: left; font-size: 0.9rem;
     }
-    .player-result.winner { border: 2px solid #ffc107; }
+    .player-result.winner { border: 2.5px solid gold !important; background: #fffbea; }
     .player-result .pr-name { font-weight: bold; font-size: 1rem; }
     .player-result .pr-detail { color: #888; font-size: 0.82rem; margin-top: 3px; }
     .btn-row { display: flex; gap: 10px; }
@@ -284,7 +288,11 @@ function buildPanels() {
   ).join('');
 }
 
+let _leadKey = '';
 function updatePanels() {
+  const top = Math.max(...players.map(p => p.score));
+  const lead = top > 0 ? players.map((p, i) => p.score === top ? i : -1).filter(i => i >= 0) : [];
+  const key = lead.join(','), changed = key !== _leadKey && lead.length > 0; _leadKey = key;
   players.forEach((p, i) => {
     const panel = document.getElementById('panel-' + i);
     const c = PALETTE[i];
@@ -292,6 +300,8 @@ function updatePanels() {
     panel.style.borderColor = isActive ? c.aborder : c.border;
     panel.style.background  = isActive ? c.abg    : c.bg;
     panel.classList.toggle('dead', p.lives <= 0);
+    panel.classList.toggle('lead', lead.includes(i));
+    panel.classList.toggle('pulse', changed && lead.includes(i));
     document.getElementById('p-name-' + i).textContent = p.name.toUpperCase();
     const lh = p.lives <= 0 ? '💀' : '♥'.repeat(Math.min(p.lives, 6)) + (p.lives > 6 ? '×' + p.lives : '');
     document.getElementById('p-lives-' + i).textContent = lh;
@@ -550,9 +560,9 @@ function endGame(won = false) {
   const rg = document.getElementById('results-grid');
   rg.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
   rg.innerHTML = ranked.map((p, rank) =>
-    '<div class="player-result' + (rank === 0 ? ' winner' : '') + '" ' +
+    '<div class="player-result' + (p.score === topScore ? ' winner' : '') + '" ' +
     'style="border-color:' + PALETTE[p.idx].border + '">' +
-      '<div class="pr-name">' + p.name.toUpperCase() + (rank === 0 ? ' 🏆' : p.lives <= 0 ? ' 💀' : '') + '</div>' +
+      '<div class="pr-name">' + p.name.toUpperCase() + (p.score === topScore ? ' 🏆' : p.lives <= 0 ? ' 💀' : '') + '</div>' +
       '<div class="pr-detail">Scór: ' + p.score + ' · Saolta: ' + Math.max(0, p.lives) + '</div>' +
     '</div>'
   ).join('');

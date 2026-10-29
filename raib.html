@@ -162,9 +162,13 @@ const GAME_MS=60000;
 const WORD_MS=1250;
 
 
-// flat array of all defs for distractor picking
-const ALL_DEFS = Object.values(DICT).map(v=>v[0]);
-const DICT_KEYS = Object.keys(DICT);
+// Short answers only: there's no time to read long definitions.
+// First meaning only, bracketed parts removed; words still longer than 3 words / 25 letters are left out of Ráib.
+function shortGloss(g){return g.replace(/\([^)]*\)/g,' ').split(/[,;]/)[0].replace(/\s+/g,' ').trim();}
+const SHORT={};
+Object.keys(DICT).forEach(k=>{const g=shortGloss(DICT[k][0]);if(g&&g.split(' ').length<=3&&g.length<=25)SHORT[k]=g;});
+const DICT_KEYS=Object.keys(SHORT);
+const ALL_DEFS=DICT_KEYS.map(k=>SHORT[k]);
 
 // ── audio ────────────────────────────────────────────────────────────────────
 let _cx=null;
@@ -215,13 +219,13 @@ function nextWord(){
   // pick word + distractors
   const key=rndKey();
   currentWord=key;
-  currentCorrect=DICT[key][0];
+  currentCorrect=SHORT[key];
   const distractors=[];
   let attempts=0;
   while(distractors.length<1&&attempts<200){
     attempts++;
     const d=ALL_DEFS[Math.floor(Math.random()*ALL_DEFS.length)];
-    if(d!==currentCorrect&&!distractors.includes(d))distractors.push(d);
+    if(d.toLowerCase()!==currentCorrect.toLowerCase()&&!distractors.includes(d))distractors.push(d);
   }
   const options=[currentCorrect,...distractors].sort(()=>Math.random()-.5);
   document.getElementById('word-display').textContent=currentWord;
