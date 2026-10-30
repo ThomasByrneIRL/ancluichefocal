@@ -159,7 +159,11 @@
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem 1.2rem;
                  margin-bottom: 1.4rem; font-size: .88rem; color: #555; text-align: left; }
     .info-grid span { color: #1a1a2e; font-weight: bold; }
-  </style>
+      /* word list choice: common words or the full dictionary */
+    .list-row { display: flex; gap: 8px; justify-content: center; margin: .2rem 0 .4rem; }
+    .list-btn { padding: .45rem .9rem; border: 1.5px solid #ddd; border-radius: 999px; background: #fff; color: #666; font-size: .85rem; cursor: pointer; }
+    .list-btn.on { border-color: #1a1a2e; background: #1a1a2e; color: #fff; }
+</style>
 </head>
 <body>
 
@@ -171,6 +175,10 @@
     <div>Focal Eile! &rarr;</div><div><span>sc&oacute;r faoi dh&oacute;</span></div>
     <div>Stad Anseo! &rarr;</div><div><span>sc&oacute;r sl&aacute;n s&aacute;bh&aacute;ilte</span></div>
     <div>Freagra m&iacute;cheart &rarr;</div><div><span style="color:#e94560">sc&oacute;r = 0 &#128293;</span></div>
+  </div>
+  <div class="list-row">
+    <button class="list-btn" data-l="coit" onclick="setList('coit')">Focail choitianta</button>
+    <button class="list-btn" data-l="iomlan" onclick="setList('iomlan')">Foclóir iomlán</button>
   </div>
   <div class="mode-row">
     <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
@@ -250,9 +258,23 @@
 </div>
 
 <script src="focloir.js"></script>
+<script src="focail-choitianta.js"></script>
 <script>
 
-const WORDS   = Object.keys(DICT);
+// Word list: 'iomlan' = full dictionary (default), 'coit' = common words only.
+// Each list keeps its own best score so a common-words score never sits beside a full-dictionary one.
+const ALL_WORDS = Object.keys(DICT);
+const COMMON = (typeof FOCAIL_CHOITIANTA !== 'undefined') ? FOCAIL_CHOITIANTA.filter(w => DICT[w]) : [];
+let LIST = 'iomlan'; try { if (localStorage.getItem('misneach_liosta') === 'coit' && COMMON.length) LIST = 'coit'; } catch (e) {}
+let WORDS = LIST === 'coit' ? COMMON : ALL_WORDS;
+function bestKey() { return LIST === 'coit' ? 'misneach_best_coit' : 'misneach_best'; }
+function listName() { return LIST === 'coit' ? 'Focail choitianta' : 'Foclóir iomlán'; }
+function setList(l) {
+  if (l === 'coit' && !COMMON.length) l = 'iomlan';          // common list missing: fall back to the full dictionary
+  LIST = l; WORDS = l === 'coit' ? COMMON : ALL_WORDS;
+  try { localStorage.setItem('misneach_liosta', l); bestScore = parseInt(localStorage.getItem(bestKey()) || '0'); } catch (e) {}
+  document.querySelectorAll('.list-btn').forEach(b => b.classList.toggle('on', b.dataset.l === l));
+}
 const WORD_MS = 5000;
 const PCOLS   = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const CHAIN_SEQ = [1,2,4,8,16,32,64,128,256,512,
@@ -271,7 +293,7 @@ let wordDeadline, wordRAF, flashTimer;
 let _ca=null, _nextAudio=null, _nextWord=null;
 let currentScreen='start-screen';
 
-try{bestScore=parseInt(localStorage.getItem('misneach_best')||'0');}catch(e){}
+try{bestScore=parseInt(localStorage.getItem(bestKey())||'0');}catch(e){}
 
 const ALL_SCREENS=['start-screen','setup-screen','handoff-screen','game-screen','result-screen','final-screen'];
 function show(id){ALL_SCREENS.forEach(s=>document.getElementById(s).style.display=s===id?'block':'none');currentScreen=id;}
@@ -492,7 +514,7 @@ function endGame(reason){
   if(isBust)totalScore=0;
   if(mode==='multi'){roundScores[currentPlayerIdx].push(totalScore);playerScores[currentPlayerIdx]+=totalScore;updateLeader();}
   else{playerScores[currentPlayerIdx]=totalScore;}
-  try{if(totalScore>bestScore){bestScore=totalScore;localStorage.setItem('misneach_best',bestScore);}}catch(e){}
+  try{if(totalScore>bestScore){bestScore=totalScore;localStorage.setItem(bestKey(),bestScore);}}catch(e){}
   showResult(isBust);
 }
 
@@ -505,7 +527,7 @@ function showResult(isBust){
   document.getElementById('result-score').textContent=fmt(totalScore);
   document.getElementById('result-bust').textContent=isBust&&bustStake>1?'Bhí '+fmt(bustStake)+' pt i gcontúirt 🔥':'';
   document.getElementById('result-chain').textContent=maxChain>1?'Slabhra is airde: '+fmt(maxChain)+' pt':'';
-  document.getElementById('result-best').innerHTML=mode==='solo'?'🏆 Taifead: '+fmt(bestScore)+' pt':'Babhta '+curRound+' / '+numRounds+' · Scór iomlán: <strong>'+fmt(playerScores[i])+' pt</strong>';
+  document.getElementById('result-best').innerHTML=mode==='solo'?'🏆 Taifead · '+listName()+': '+fmt(bestScore)+' pt':listName()+' · '+'Babhta '+curRound+' / '+numRounds+' · Scór iomlán: <strong>'+fmt(playerScores[i])+' pt</strong>';
   const act=document.getElementById('result-action');
   if(mode==='solo'){
     act.innerHTML='<div class="result-btns"><button class="big-btn" onclick="restartSolo()">Arís</button><button class="ghost-btn" onclick="show(\'start-screen\')">Baile</button></div>';
@@ -576,6 +598,7 @@ document.addEventListener('keydown',e=>{
 });
 
 buildNameFields(2);
+setList(LIST);
 show('start-screen');
 </script>
 </body>
