@@ -160,8 +160,8 @@
                  margin-bottom: 1.4rem; font-size: .88rem; color: #555; text-align: left; }
     .info-grid span { color: #1a1a2e; font-weight: bold; }
       /* word list choice: common words or the full dictionary */
-    .list-row { display: flex; gap: .6rem; justify-content: center; margin: .2rem auto .6rem; max-width: 420px; }
-    .list-btn { flex: 1; padding: .7rem .5rem; border: 2px solid #e94560; border-radius: 12px; background: #fff; color: #e94560; font-size: 1rem; font-weight: bold; cursor: pointer; font-family: Georgia, 'Times New Roman', serif; transition: all .15s; }
+    .list-row { display: flex; gap: 12px; justify-content: center; margin: .2rem auto 1.6rem; }
+    .list-btn { flex: 1; max-width: 180px; padding: .6rem .45rem; border: 2px solid #e94560; border-radius: 12px; background: #fff; color: #e94560; font-size: .85rem; font-weight: bold; cursor: pointer; font-family: Georgia, 'Times New Roman', serif; transition: all .15s; }
     .list-btn:hover { background: #fff5f6; }
     .list-btn.on, .list-btn.on:hover { background: #e94560; color: #fff; }
 </style>
@@ -266,14 +266,14 @@
 // Each list keeps its own best score so a common-words score never sits beside a full-dictionary one.
 const ALL_WORDS = Object.keys(DICT);
 const COMMON = (typeof FOCAIL_CHOITIANTA !== 'undefined') ? FOCAIL_CHOITIANTA.filter(w => DICT[w]) : [];
-let LIST = 'iomlan'; try { if (localStorage.getItem('misneach_liosta') === 'coit' && COMMON.length) LIST = 'coit'; } catch (e) {}
+let LIST = 'iomlan';
 let WORDS = LIST === 'coit' ? COMMON : ALL_WORDS;
 function bestKey() { return LIST === 'coit' ? 'misneach_best_coit' : 'misneach_best'; }
 function listName() { return LIST === 'coit' ? 'Focail Choitianta' : 'Foclóir Iomlán'; }
 function setList(l) {
   if (l === 'coit' && !COMMON.length) l = 'iomlan';          // common list missing: fall back to the full dictionary
   LIST = l; WORDS = l === 'coit' ? COMMON : ALL_WORDS;
-  try { localStorage.setItem('misneach_liosta', l); bestScore = parseInt(localStorage.getItem(bestKey()) || '0'); } catch (e) {}
+  try { bestScore = parseInt(localStorage.getItem(bestKey()) || '0'); } catch (e) {}
   document.querySelectorAll('.list-btn').forEach(b => b.classList.toggle('on', b.dataset.l === l));
 }
 const WORD_MS = 5000;
