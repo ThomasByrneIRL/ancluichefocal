@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ciceanna Éirice</title>
+<script>
+// Fréamh dialect choice, set on the hub: C = Connacht (default), U = Ulaidh, M = Mumhain.
+// Swaps the teanglann.ie recording to the chosen dialect; falls back to Connacht if a word has no recording.
+(function(){
+  var d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  if(!/^[CUM]$/.test(d))d='C';
+  window.FREAMH_CANUINT=d;
+  if(d==='C')return;
+  var A=window.Audio;
+  var W=function(src){
+    var s=src==null?src:String(src), hit=s&&s.indexOf('/CanC/')>=0;
+    var a=new A(hit?s.replace('/CanC/','/Can'+d+'/'):src);
+    if(hit){
+      var want=false,p=a.play.bind(a);
+      a.play=function(){want=true;return p();};
+      a.addEventListener('error',function(){if(a._fb)return;a._fb=1;a.src=s;a.load();if(want)p().catch(function(){});});
+    }
+    return a;
+  };
+  W.prototype=A.prototype;window.Audio=W;
+  var L={U:'Fuaim Uladh',M:'Fuaim na Mumhan'};
+  document.addEventListener('DOMContentLoaded',function(){
+    var t=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n;
+    while((n=t.nextNode()))if(n.nodeValue.indexOf('Fuaim Chonnacht')>=0)n.nodeValue=n.nodeValue.replace(/Fuaim Chonnacht/g,L[d]);
+  });
+})();
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f5f0; color: #1a1a2e; min-height: 100vh;
+         display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .screen { display: none; text-align: center; padding: 1.6rem 1.2rem; max-width: 520px; width: 100%; }
+  h1 { font-size: 2rem; color: #2a9d47; margin-bottom: .4rem; }
+  h2 { font-size: 1.45rem; color: #1a1a2e; margin-bottom: .8rem; }
+  .subtitle { color: #888; margin-bottom: 1.2rem; font-size: .9rem; }
+  .rules { color: #555; font-size: .9rem; line-height: 1.75; margin-bottom: 1.3rem; text-align: left;
+           background: #fff; border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+  .rules b { color: #1a1a2e; }
+  .lbl { color: #888; font-size: .8rem; margin: .9rem 0 .4rem; text-transform: uppercase; letter-spacing: .06em; }
+  .opt-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .opt { min-width: 52px; padding: .5rem .8rem; border: 2px solid #e94560; border-radius: 10px; background: #fff;
+         color: #e94560; font-weight: bold; font-size: .95rem; cursor: pointer; font-family: Georgia, 'Times New Roman', serif; }
+  .opt.on { background: #e94560; color: #fff; }
+  #name-fields { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; }
+  .name-row { display: flex; align-items: center; gap: 8px; }
+  .name-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .name-input { flex: 1; padding: .55rem .8rem; border: 1.5px solid #ddd; border-radius: 10px; font-size: 1rem; font-family: inherit; }
+  .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.4rem; font-size: 1.1rem;
+             font-weight: bold; cursor: pointer; margin-top: 1.2rem; box-shadow: 0 2px 10px rgba(233,69,96,.3); }
+  .big-btn.green { background: #2a9d47; box-shadow: 0 2px 10px rgba(42,157,71,.3); }
+  .big-btn:active { transform: translateY(1px); }
+  .ghost-btn { background: none; border: none; color: #888; text-decoration: underline; font-size: .9rem; cursor: pointer; margin-top: .9rem; display: block; margin-left: auto; margin-right: auto; }
+
+  /* phase 1 */
+  .who { font-size: 1rem; font-weight: bold; margin-bottom: .3rem; }
+  #p1-score { font-size: 4.2rem; font-weight: bold; color: #e94560; line-height: 1; font-variant-numeric: tabular-nums; }
+  #p1-clock { font-size: 1rem; color: #888; margin: .3rem 0 .2rem; font-variant-numeric: tabular-nums; }
+  #p1-clock.low { color: #e94560; font-weight: bold; }
+  #pts-flash { font-size: 1.3rem; font-weight: bold; color: #2a9d47; height: 1.7rem; transition: opacity .3s; }
+  .bar-wrap { margin-bottom: 1rem; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
+  .bar { height: 6px; border-radius: 3px; background: #2a9d47; width: 100%; }
+  .bar.urgent { background: #e94560; }
+  .card { background: #fff; border-radius: 16px; padding: 2.2rem 1.6rem; margin-bottom: 1rem; min-height: 110px; display: flex;
+          align-items: center; justify-content: center; box-shadow: 0 2px 16px rgba(0,0,0,.10); transition: background .15s; }
+  .card.ok { background: #d4edda; } .card.bad { background: #f8d7da; }
+  .word { font-size: 2.4rem; font-weight: bold; letter-spacing: .03em; }
+  .choices { display: flex; flex-direction: column; gap: .7rem; }
+  .choice-btn { width: 100%; padding: .95rem 1.1rem; border: 2px solid #ddd; border-radius: 12px; background: #fff; color: #1a1a2e;
+                font-size: 1.02rem; cursor: pointer; text-align: left; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .choice-btn.ok { border-color: #2a9d47; background: #d4edda; color: #1a5c2e; font-weight: bold; }
+  .choice-btn.bad { border-color: #e94560; background: #f8d7da; color: #7b1a28; }
+  .choice-btn.reveal { border-color: #2a9d47; background: #d4edda; color: #1a5c2e; }
+  .choice-btn:disabled { cursor: default; }
+  .hint { color: #aaa; font-size: .75rem; margin-top: .4rem; }
+
+  /* tables / board */
+  .tbl { display: flex; flex-direction: column; gap: 8px; margin: .6rem 0; }
+  .trow { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 12px; padding: .7rem 1rem;
+          box-shadow: 0 1px 6px rgba(0,0,0,.06); border: 2px solid transparent; text-align: left; }
+  .trow .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .trow .nm { flex: 1; font-weight: bold; }
+  .trow .tag { font-size: .8rem; color: #888; }
+  .trow .sc { font-weight: bold; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+  .trow.out { opacity: .4; }
+  .trow.win { border-color: #d4a017; box-shadow: 0 0 0 3px rgba(212,160,23,.25); }
+  button.trow { width: 100%; cursor: pointer; font-size: 1rem; font-family: inherit; color: inherit; }
+  button.trow:active { transform: translateY(1px); }
+  .note { color: #888; font-size: .85rem; line-height: 1.6; margin-top: .4rem; }
+
+  #board { display: none; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 1rem auto 0; max-width: 520px; padding: 0 1rem; }
+  #board.on { display: flex; }
+  .lv { display: flex; align-items: center; gap: 5px; padding: 3px 10px; border: 1.5px solid #e3e3dc; border-radius: 999px;
+        background: #fff; font-size: .82rem; }
+  .lv .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .lv .sc { font-weight: bold; font-variant-numeric: tabular-nums; }
+  .lv.out { opacity: .35; text-decoration: line-through; }
+
+  /* shootout */
+  .vs { font-size: .85rem; color: #888; margin-bottom: .5rem; }
+  .stake { font-size: .95rem; color: #1a1a2e; margin-bottom: .8rem; }
+  .stake b { color: #2a9d47; }
+  .shoot { background: #fff; border-radius: 14px; padding: .8rem 1rem; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-bottom: 1rem; }
+  .srow { display: flex; align-items: center; gap: 8px; padding: .3rem 0; }
+  .srow .nm { width: 34%; text-align: left; font-weight: bold; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srow .kicks { flex: 1; display: flex; gap: 5px; flex-wrap: wrap; }
+  .srow .tot { font-weight: bold; font-size: 1.2rem; width: 1.6rem; text-align: right; }
+  .k { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center;
+       font-size: .75rem; font-weight: bold; color: #fff; }
+  .k.g { background: #2a9d47; border-color: #2a9d47; }
+  .k.m { background: #e94560; border-color: #e94560; }
+  .k.next { border-color: #1a1a2e; }
+  .sd { font-size: .78rem; color: #e07b00; font-weight: bold; margin-top: .3rem; }
+  .kicker { font-size: 1.15rem; margin: .4rem 0; }
+  #kick-fb { font-size: 1.6rem; font-weight: bold; height: 2.2rem; }
+  .final-tag { display: inline-block; background: #d4a017; color: #fff; font-weight: bold; font-size: .8rem; letter-spacing: .08em;
+               padding: 3px 10px; border-radius: 999px; margin-bottom: .5rem; }
+  .big-num { font-size: 3.4rem; font-weight: bold; color: #2a9d47; line-height: 1.1; }
+</style>
+</head>
+<body>
+
+<div id="board"></div>
+
+<!-- START -->
+<div id="start-screen" class="screen">
+  <h1>⚽ Ciceanna Éirice</h1>
+  <p class="subtitle">Cluiche Il-imreora | 🔊 Fuaim Chonnacht</p>
+  <div class="rules">
+    <b>1. Ina aonar:</b> bailigh pointí. 4 soicind an focal, 4 → 1 pt de réir luais. Freagra mícheart = 0 pt, ach leanann tú ar aghaidh go dtí deireadh an ama.<br>
+    <b>2. Ciceanna éirice:</b> faigheann gach imreoir dúshlán amháin, an scór is airde ar dtús. Roghnaigh duine ar bith. Faigheann an buaiteoir pointí uile an chaillteora.<br>
+    <b>3. Amuigh:</b> má chailleann tú tar éis do dhúshláin féin, tá tú amuigh. 🛡️ = dúshlán fós le tabhairt, ní féidir é a chur amach.<br>
+    <b>4. Cluiche ceannais:</b> an bheirt dheireanacha, ar na pointí uile.
+  </div>
+  <div class="lbl">Imreoirí</div>
+  <div class="opt-row" id="cnt-row"></div>
+  <div style="height:.8rem"></div>
+  <div id="name-fields"></div>
+  <div class="lbl">Am ina aonar</div>
+  <div class="opt-row" id="time-row"></div>
+  <button class="big-btn" onclick="startGame()">Tosaigh</button>
+</div>
+
+<!-- PASS -->
+<div id="pass-screen" class="screen">
+  <p class="vs" id="pass-phase"></p>
+  <h2 id="pass-title"></h2>
+  <p class="note" id="pass-note"></p>
+  <button class="big-btn" id="pass-btn" onclick="passGo()">Tosaigh</button>
+</div>
+
+<!-- PHASE 1 PLAY -->
+<div id="p1-screen" class="screen">
+  <div class="who" id="p1-who"></div>
+  <div id="p1-score">0</div>
+  <div id="p1-clock"></div>
+  <div id="pts-flash"></div>
+  <div class="bar-wrap"><div class="bar" id="p1-bar"></div></div>
+  <div class="card" id="p1-card"><div class="word" id="p1-word"></div></div>
+  <div class="choices">
+    <button class="choice-btn" id="p1-a" onclick="p1Pick(0)"></button>
+    <button class="choice-btn" id="p1-b" onclick="p1Pick(1)"></button>
+  </div>
+  <p class="hint">↑ barr · ↓ bun</p>
+</div>
+
+<!-- PHASE 1 RESULT -->
+<div id="p1res-screen" class="screen">
+  <p class="vs" id="p1res-reason"></p>
+  <h2 id="p1res-name"></h2>
+  <div class="big-num" id="p1res-pts"></div>
+  <p class="note">pointí</p>
+  <button class="big-btn" id="p1res-btn" onclick="afterP1()"></button>
+</div>
+
+<!-- TABLE -->
+<div id="table-screen" class="screen">
+  <h2>Tábla</h2>
+  <div class="tbl" id="table-list"></div>
+  <p class="note" id="table-note"></p>
+  <button class="big-btn green" onclick="nextChallenge()">Ar aghaidh chuig na ciceanna ⚽</button>
+</div>
+
+<!-- PICK -->
+<div id="pick-screen" class="screen">
+  <p class="vs" id="pick-phase"></p>
+  <h2 id="pick-title"></h2>
+  <p class="note" style="margin-bottom:.6rem">Faigheann an buaiteoir pointí uile an chaillteora.</p>
+  <div class="tbl" id="pick-list"></div>
+  <p class="note" id="pick-warn"></p>
+</div>
+
+<!-- KICK READY -->
+<div id="ready-screen" class="screen">
+  <div id="ready-final"></div>
+  <p class="stake" id="ready-stake"></p>
+  <div class="shoot" id="ready-shoot"></div>
+  <p class="kicker" id="ready-kicker"></p>
+  <button class="big-btn green" id="ready-btn" onclick="takeKick()">Réidh ⚽</button>
+</div>
+
+<!-- KICK -->
+<div id="kick-screen" class="screen">
+  <div class="shoot" id="kick-shoot"></div>
+  <p class="kicker" id="kick-kicker"></p>
+  <div class="bar-wrap"><div class="bar" id="kick-bar"></div></div>
+  <div class="card" id="kick-card"><div class="word" id="kick-word"></div></div>
+  <div class="choices">
+    <button class="choice-btn" id="kick-a" onclick="kickPick(0)"></button>
+    <button class="choice-btn" id="kick-b" onclick="kickPick(1)"></button>
+  </div>
+  <div id="kick-fb"></div>
+</div>
+
+<!-- SHOOTOUT RESULT -->
+<div id="sres-screen" class="screen">
+  <div class="shoot" id="sres-shoot"></div>
+  <h2 id="sres-title"></h2>
+  <div class="big-num" id="sres-pts"></div>
+  <p class="note" id="sres-note"></p>
+  <button class="big-btn green" id="sres-btn" onclick="nextChallenge()">Ar aghaidh</button>
+</div>
+
+<!-- END -->
+<div id="end-screen" class="screen">
+  <h1>🏆 <span id="end-name"></span></h1>
+  <p class="subtitle" id="end-sub"></p>
+  <div class="tbl" id="end-list"></div>
+  <button class="big-btn" onclick="replay()">Arís</button>
+  <button class="ghost-btn" onclick="toSetup()">Socrú nua</button>
+</div>
+
+<script src="focloir.js"></script>
+<script>
+const WORDS = Object.keys(DICT);
+const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
+const WORD_MS = 4000;          // per word, as in 2ú
+const KICKS = 5;               // penalties each before sudden death
+const TIMES = [20, 30, 45, 60];
+
+let N = 4, SECS = 30;
+let names = [], pts = [], alive = [], hadTurn = [], order = [], qi = 0;
+let deck = [], deckPos = 0;
+let _ca = null;
+
+// ── helpers ────────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const SCREENS = ['start-screen','pass-screen','p1-screen','p1res-screen','table-screen','pick-screen','ready-screen','kick-screen','sres-screen','end-screen'];
+function show(id, board) {
+  SCREENS.forEach(s => $(s).style.display = s === id ? 'block' : 'none');
+  $('board').classList.toggle('on', !!board);
+  if (board) renderBoard();
+  window.scrollTo(0, 0);
+}
+function sh(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function nextDeckWord() { if (deckPos >= deck.length) { deck = sh(WORDS.slice()); deckPos = 0; } return deck[deckPos++]; }
+function wrongFor(word) {
+  const right = DICT[word][0];
+  for (let t = 0; t < 50; t++) { const w = WORDS[Math.floor(Math.random() * WORDS.length)]; if (w !== word && DICT[w][0] !== right) return DICT[w][0]; }
+  return DICT[WORDS[0]][0];
+}
+function playPron(word) {
+  if (_ca) { _ca.pause(); _ca = null; }
+  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
+  a.onerror = function(){}; a.play().catch(function(){}); _ca = a;
+}
+function nm(i) { return '<span style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span>'; }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function totalPts() { return pts.reduce((a, b) => a + b, 0); }
+function aliveList() { const r = []; for (let i = 0; i < N; i++) if (alive[i]) r.push(i); return r; }
+function pointsFor(rem) { const s = rem / 1000; return s >= 3 ? 4 : s >= 2 ? 3 : s >= 1 ? 2 : 1; }
+
+// ── setup ──────────────────────────────────────────────────────────────────
+function buildSetup() {
+  const cr = $('cnt-row'); cr.innerHTML = '';
+  for (let n = 3; n <= 6; n++) { const b = document.createElement('button'); b.className = 'opt' + (n === N ? ' on' : ''); b.textContent = n; b.onclick = () => { N = n; buildSetup(); }; cr.appendChild(b); }
+  const tr = $('time-row'); tr.innerHTML = '';
+  TIMES.forEach(t => { const b = document.createElement('button'); b.className = 'opt' + (t === SECS ? ' on' : ''); b.textContent = t + 's'; b.onclick = () => { SECS = t; buildSetup(); }; tr.appendChild(b); });
+  buildNameFields(N);
+}
+function buildNameFields(n) {
+  const prev = []; for (let i = 0; i < 6; i++) { const e = $('pname-' + i); prev.push(e ? e.value : (names[i] && names[i] !== 'Imreoir ' + (i + 1) ? names[i] : '')); }
+  const el = $('name-fields'); el.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement('div'); row.className = 'name-row';
+    const dot = document.createElement('div'); dot.className = 'name-dot'; dot.style.background = PCOLS[i];
+    const inp = document.createElement('input'); inp.className = 'name-input'; inp.type = 'text'; inp.id = 'pname-' + i;
+    inp.placeholder = 'Imreoir ' + (i + 1); inp.maxLength = 16; if (prev[i]) inp.value = prev[i];
+    row.appendChild(dot); row.appendChild(inp); el.appendChild(row);
+  }
+}
+function toSetup() { buildSetup(); show('start-screen'); }
+
+function startGame() {
+  _gx();
+  names = []; for (let i = 0; i < N; i++) { const v = ($('pname-' + i).value || '').trim(); names.push(v || 'Imreoir ' + (i + 1)); }
+  replay();
+}
+function replay() {
+  pts = Array(N).fill(0); alive = Array(N).fill(true); hadTurn = Array(N).fill(false); order = []; qi = 0;
+  deck = sh(WORDS.slice()); deckPos = 0;
+  p1i = 0; passTo(0);
+}
+
+// ── phase 1: solo round ───────────────────────────────────────────────────
+let p1Right = 0, p1Wrong = 0;
+let p1i = 0, p1Score = 0, p1End = 0, p1WordEnd = 0, p1Raf = 0, p1Locked = true, p1Correct = 0, p1Word = '', flashT = 0;
+let passAction = null;
+function passTo(i) {
+  $('pass-phase').textContent = 'Babhta 1 · Ina aonar · ' + (i + 1) + ' / ' + N;
+  $('pass-title').innerHTML = 'Pas chuig ' + nm(i);
+  $('pass-note').textContent = SECS + ' soicind. Freagra mícheart = 0 pt, ach lean ort!';
+  $('pass-btn').textContent = 'Tosaigh';
+  passAction = () => beginP1(i);
+  show('pass-screen');
+}
+function passGo() { _gx(); if (passAction) passAction(); }
+function beginP1(i) {
+  p1i = i; p1Score = 0; p1Right = 0; p1Wrong = 0; p1Locked = false;
+  $('p1-who').innerHTML = nm(i);
+  $('p1-score').textContent = '0'; $('pts-flash').style.opacity = '0';
+  show('p1-screen');
+  p1End = Date.now() + SECS * 1000;
+  p1Next();
+  cancelAnimationFrame(p1Raf); p1Tick();
+}
+function p1Next() {
+  p1Word = nextDeckWord();
+  const right = DICT[p1Word][0], opts = sh([right, wrongFor(p1Word)]);
+  p1Correct = opts.indexOf(right);
+  $('p1-word').textContent = p1Word; $('p1-card').className = 'card';
+  [$('p1-a'), $('p1-b')].forEach((b, k) => { b.textContent = opts[k]; b.className = 'choice-btn'; b.disabled = false; });
+  playPron(p1Word);
+  p1WordEnd = Date.now() + WORD_MS; p1Locked = false;
+}
+function p1Tick() {
+  const now = Date.now(), left = Math.max(0, p1End - now), rem = p1WordEnd - now;
+  $('p1-clock').textContent = '⏱ ' + (left / 1000).toFixed(1) + 's';
+  $('p1-clock').className = left <= 5000 ? 'low' : '';
+  if (!p1Locked) {
+    $('p1-bar').style.width = Math.max(0, rem / WORD_MS * 100) + '%';
+    $('p1-bar').className = 'bar' + (rem <= 1200 ? ' urgent' : '');
+  }
+  if (left <= 0) { p1Finish('Am istigh! · ' + p1Right + ' ceart · ' + p1Wrong + ' mícheart'); return; }
+  if (!p1Locked && rem <= 0) {
+    p1Locked = true; $('p1-card').className = 'card bad'; [$('p1-a'), $('p1-b')].forEach(b => b.disabled = true);
+    $('p1-' + (p1Correct ? 'b' : 'a')).className = 'choice-btn reveal'; playNo();
+    p1Wrong++; p1After(700);
+  }
+  p1Raf = requestAnimationFrame(p1Tick);
+}
+function p1After(ms) { setTimeout(() => { if (Date.now() < p1End && $('p1-screen').style.display === 'block') p1Next(); }, ms); }
+function p1Pick(k) {
+  if (p1Locked) return; p1Locked = true;
+  const rem = p1WordEnd - Date.now(), btns = [$('p1-a'), $('p1-b')];
+  btns.forEach(b => b.disabled = true);
+  if (k === p1Correct) {
+    const p = pointsFor(rem); p1Score += p; $('p1-score').textContent = p1Score;
+    const fl = $('pts-flash'); fl.textContent = '+' + p; fl.style.opacity = '1'; clearTimeout(flashT); flashT = setTimeout(() => fl.style.opacity = '0', 650);
+    btns[k].className = 'choice-btn ok'; $('p1-card').className = 'card ok'; playOk();
+    p1Right++; p1After(350);
+  } else {
+    btns[k].className = 'choice-btn bad'; btns[p1Correct].className = 'choice-btn reveal'; $('p1-card').className = 'card bad'; playNo();
+    p1Wrong++; p1After(700);
+  }
+}
+function p1Finish(reason) {
+  if ($('p1-screen').style.display !== 'block') return;
+  cancelAnimationFrame(p1Raf); p1Locked = true; if (_ca) { _ca.pause(); _ca = null; }
+  pts[p1i] = p1Score;
+  $('p1res-reason').textContent = reason;
+  $('p1res-name').innerHTML = nm(p1i);
+  $('p1res-pts').textContent = p1Score;
+  $('p1res-btn').textContent = p1i + 1 < N ? 'Ar aghaidh →' : 'Tábla';
+  show('p1res-screen');
+}
+function afterP1() { if (p1i + 1 < N) passTo(p1i + 1); else showTable(); }
+
+function showTable() {
+  order = [...Array(N).keys()].sort((a, b) => pts[b] - pts[a] || a - b); qi = 0;
+  $('table-list').innerHTML = order.map((i, r) =>
+    '<div class="trow"><span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + (r + 1) + '. ' + esc(names[i]) + '</span><span class="sc">' + pts[i] + '</span></div>').join('');
+  $('table-note').innerHTML = 'Ord na ndúshlán: an scór is airde ar dtús.<br>Pointí uile sa chluiche: <b>' + totalPts() + '</b>';
+  show('table-screen');
+}
+
+// ── phase 2: challenges ───────────────────────────────────────────────────
+let S = null; // current shootout
+function renderBoard() {
+  if (!order.length) { $('board').innerHTML = ''; return; }
+  $('board').innerHTML = order.map(i =>
+    '<span class="lv' + (alive[i] ? '' : ' out') + '"><span class="dot" style="background:' + PCOLS[i] + '"></span>' + esc(names[i]) +
+    ' <span class="sc">' + pts[i] + '</span>' + (alive[i] && !hadTurn[i] ? ' 🛡️' : '') + '</span>').join('');
+}
+function nextChallenge() {
+  const al = aliveList();
+  if (al.length <= 1) { showEnd(al[0]); return; }
+  let c = -1;
+  while (qi < order.length) { const x = order[qi++]; if (alive[x]) { c = x; break; } }
+  if (c >= 0) {
+    hadTurn[c] = true;
+    const phase = 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N;
+    const others = al.filter(i => i !== c);
+    if (others.length === 1 && isFinalWith(c, others[0])) { startShootout(c, others[0]); return; }
+    showPick(c, phase);
+    return;
+  }
+  // everyone has had their turn: highest scorer challenges, two left = final
+  if (al.length === 2) { const [x, y] = al.slice().sort((a, b) => pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b)); startShootout(x, y); return; }
+  const top = al.slice().sort((a, b) => pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b))[0];
+  showPick(top, 'An scór is airde a roghnaíonn · an caillteoir amuigh');
+}
+function isFinalWith(a, b) { return aliveList().length === 2 && hadTurn[a] && hadTurn[b]; }
+function showPick(c, phase) {
+  $('pick-phase').textContent = phase;
+  $('pick-title').innerHTML = nm(c) + ', roghnaigh do chéile comhraic';
+  const list = $('pick-list'); list.innerHTML = '';
+  aliveList().filter(i => i !== c).forEach(i => {
+    const b = document.createElement('button'); b.className = 'trow';
+    b.innerHTML = '<span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + esc(names[i]) + '</span>' +
+      (hadTurn[i] ? '' : '<span class="tag">🛡️</span>') + '<span class="sc">' + pts[i] + '</span>';
+    b.onclick = () => { _gx(); startShootout(c, i); };
+    list.appendChild(b);
+  });
+  $('pick-warn').textContent = 'Má chailleann tú, tá tú amuigh.';
+  show('pick-screen', true);
+}
+
+function startShootout(a, b) {
+  S = { a, b, k: { [a]: [], [b]: [] }, turn: a, final: isFinalWith(a, b), word: '', correct: 0, end: 0, raf: 0, locked: true, used: new Set() };
+  readyKick();
+}
+function shootHTML() {
+  const sd = S.k[S.a].length > KICKS || S.k[S.b].length > KICKS || (S.k[S.a].length === KICKS && S.k[S.b].length === KICKS);
+  const row = i => {
+    const ks = S.k[i], n = Math.max(KICKS, ks.length + (S.turn === i ? 1 : 0), S.k[S.a].length, S.k[S.b].length);
+    let h = '';
+    for (let j = 0; j < n; j++) {
+      if (j < ks.length) h += '<span class="k ' + (ks[j] ? 'g' : 'm') + '">' + (ks[j] ? '✓' : '✗') + '</span>';
+      else h += '<span class="k' + (S.turn === i && j === ks.length && !S.done ? ' next' : '') + '"></span>';
+    }
+    return '<div class="srow"><span class="nm" style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span><span class="kicks">' + h + '</span><span class="tot">' + goals(i) + '</span></div>';
+  };
+  return row(S.a) + row(S.b) + (sd && !S.done ? '<div class="sd">Bás tobann</div>' : '');
+}
+function goals(i) { return S.k[i].filter(Boolean).length; }
+function readyKick() {
+  const pot = pts[S.a] + pts[S.b];
+  $('ready-final').innerHTML = S.final ? '<span class="final-tag">CLUICHE CEANNAIS</span>' : '';
+  $('ready-stake').innerHTML = nm(S.a) + ' v ' + nm(S.b) + '<br>Ar son <b>' + pot + ' pt</b>';
+  $('ready-shoot').innerHTML = shootHTML();
+  $('ready-kicker').innerHTML = '⚽ Pas an fón chuig ' + nm(S.turn);
+  show('ready-screen', true);
+}
+function takeKick() {
+  _gx();
+  let w, t = 0; do { w = nextDeckWord(); } while (S.used.has(w) && t++ < 20); S.used.add(w);
+  const right = DICT[w][0], opts = sh([right, wrongFor(w)]);
+  S.word = w; S.correct = opts.indexOf(right); S.locked = false;
+  $('kick-shoot').innerHTML = shootHTML();
+  $('kick-kicker').innerHTML = '⚽ ' + nm(S.turn);
+  $('kick-word').textContent = w; $('kick-card').className = 'card'; $('kick-fb').textContent = '';
+  [$('kick-a'), $('kick-b')].forEach((b, k) => { b.textContent = opts[k]; b.className = 'choice-btn'; b.disabled = false; });
+  show('kick-screen', false);
+  playPron(w);
+  S.end = Date.now() + WORD_MS; cancelAnimationFrame(S.raf); kickTick();
+}
+function kickTick() {
+  if (S.locked) return;
+  const rem = S.end - Date.now();
+  $('kick-bar').style.width = Math.max(0, rem / WORD_MS * 100) + '%';
+  $('kick-bar').className = 'bar' + (rem <= 1200 ? ' urgent' : '');
+  if (rem <= 0) { kickResult(false, -1); return; }
+  S.raf = requestAnimationFrame(kickTick);
+}
+function kickPick(k) { if (S.locked) return; kickResult(k === S.correct, k); }
+function kickResult(goal, k) {
+  S.locked = true; cancelAnimationFrame(S.raf);
+  const btns = [$('kick-a'), $('kick-b')]; btns.forEach(b => b.disabled = true);
+  if (k >= 0) btns[k].className = 'choice-btn ' + (goal ? 'ok' : 'bad');
+  if (!goal) btns[S.correct].className = 'choice-btn reveal';
+  $('kick-card').className = 'card ' + (goal ? 'ok' : 'bad');
+  $('kick-fb').innerHTML = goal ? '<span style="color:#2a9d47">Cúl! ⚽</span>' : '<span style="color:#e94560">Amú! ✗</span>';
+  goal ? playOk() : playNo();
+  S.k[S.turn].push(goal);
+  S.turn = S.turn === S.a ? S.b : S.a;
+  $('kick-shoot').innerHTML = shootHTML();
+  const w = decided();
+  setTimeout(() => { if (w >= 0) finishShootout(w); else readyKick(); }, 1300);
+}
+function decided() {
+  const ka = S.k[S.a].length, kb = S.k[S.b].length, ga = goals(S.a), gb = goals(S.b);
+  if (ka <= KICKS && kb <= KICKS) {
+    if (ga + (KICKS - ka) < gb) return S.b;
+    if (gb + (KICKS - kb) < ga) return S.a;
+    return -1;
+  }
+  if (ka === kb && ga !== gb) return ga > gb ? S.a : S.b;
+  return -1;
+}
+function finishShootout(w) {
+  const l = w === S.a ? S.b : S.a, won = pts[l];
+  S.done = true;
+  pts[w] += won; pts[l] = 0;
+  const out = hadTurn[l]; if (out) alive[l] = false;
+  $('sres-shoot').innerHTML = shootHTML();
+  $('sres-title').innerHTML = nm(w) + ' a bhuaigh!';
+  $('sres-pts').textContent = '+' + won;
+  $('sres-note').innerHTML = out ? esc(names[l]) + ' amuigh.' : esc(names[l]) + ' ar 0 ach fós istigh 🛡️ (dúshlán fós le tabhairt).';
+  const left = aliveList().length;
+  $('sres-btn').textContent = left <= 1 ? 'Torthaí 🏆' : 'Ar aghaidh';
+  show('sres-screen', true);
+}
+function showEnd(w) {
+  $('end-name').innerHTML = esc(names[w]);
+  $('end-sub').textContent = 'Buaiteoir · ' + pts[w] + ' pt';
+  $('end-list').innerHTML = order.map(i =>
+    '<div class="trow' + (i === w ? ' win' : ' out') + '"><span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + esc(names[i]) + '</span><span class="sc">' + pts[i] + '</span></div>').join('');
+  show('end-screen', false);
+}
+
+// ── keys ───────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const vis = SCREENS.find(s => $(s).style.display === 'block');
+  if (vis === 'p1-screen') { if (e.key === 'ArrowUp') { e.preventDefault(); p1Pick(0); } if (e.key === 'ArrowDown') { e.preventDefault(); p1Pick(1); } }
+  if (vis === 'kick-screen') { if (e.key === 'ArrowUp') { e.preventDefault(); kickPick(0); } if (e.key === 'ArrowDown') { e.preventDefault(); kickPick(1); } }
+  if (e.key === 'Enter') {
+    const btn = { 'pass-screen': 'pass-btn', 'p1res-screen': 'p1res-btn', 'ready-screen': 'ready-btn', 'sres-screen': 'sres-btn' }[vis];
+    if (btn) { e.preventDefault(); $(btn).click(); }
+  }
+});
+
+// ── sound ──────────────────────────────────────────────────────────────────
+let _sfx = null;
+function _gx() { if (!_sfx) _sfx = new (window.AudioContext || window.webkitAudioContext)(); if (_sfx.state === 'suspended') _sfx.resume(); return _sfx; }
+function _pt(f, d, t, g, dl) { try { const c = _gx(), o = c.createOscillator(), gn = c.createGain(); o.connect(gn); gn.connect(c.destination); o.type = t; const t0 = c.currentTime + 0.06 + dl; o.frequency.setValueAtTime(f, t0); gn.gain.setValueAtTime(g, t0); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.start(t0); o.stop(t0 + d); } catch (e) {} }
+function playOk() { _pt(523, .5, 'sine', .22, 0); _pt(659, .6, 'sine', .2, .12); }
+function playNo() { _pt(220, .4, 'sawtooth', .18, 0); _pt(150, .45, 'sawtooth', .14, .08); }
+(function () { const w = () => { _gx(); try { const a = new Audio(); a.muted = true; a.play().catch(() => {}); } catch (e) {} document.removeEventListener('touchstart', w); document.removeEventListener('mousedown', w); };
+  document.addEventListener('touchstart', w, { passive: true }); document.addEventListener('mousedown', w); })();
+
+buildSetup();
+show('start-screen');
+</script>
+</body>
+</html>
