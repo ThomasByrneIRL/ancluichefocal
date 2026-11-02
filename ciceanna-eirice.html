@@ -135,9 +135,10 @@
   <p class="subtitle">Cluiche Il-imreora | 🔊 Fuaim Chonnacht</p>
   <div class="rules">
     <b>1. Ina aonar:</b> bailigh pointí. 4 soicind an focal: 5 pt laistigh de leathshoicind, ansin 4 → 1 de réir luais. Freagra mícheart = 0 pt, ach leanann tú ar aghaidh go dtí deireadh an ama.<br>
-    <b>2. Ciceanna éirice:</b> faigheann gach imreoir dúshlán amháin, an scór is airde ar dtús. Roghnaigh duine ar bith a bhfuil pointí aige. Faigheann an buaiteoir pointí uile an chaillteora.<br>
-    <b>3. Amuigh:</b> má chailleann tú tar éis do dhúshláin féin, tá tú amuigh. 🛡️ = dúshlán fós le tabhairt, ní féidir é a chur amach.<br>
-    <b>4. Cluiche ceannais:</b> an bheirt dheireanacha, ar na pointí uile.
+    <b>2. Ciceanna éirice:</b> tugann an scór is airde an chéad dúshlán. Faigheann an buaiteoir pointí uile an chaillteora, agus tá an caillteoir amuigh.<br>
+    <b>3. Buaigh agus lean ort:</b> tugann an buaiteoir an chéad dúshlán eile.<br>
+    <b>4. Cluiche ceannais:</b> an bheirt dheireanacha, ar na pointí uile.<br>
+    Imreoir ar 0 pt tar éis an bhabhta aonair: amuigh.
   </div>
   <div class="lbl">Ceathrar imreoirí</div>
   <div id="name-fields"></div>
@@ -301,7 +302,7 @@ function startGame() {
   replay();
 }
 function replay() {
-  pts = Array(N).fill(0); alive = Array(N).fill(true); hadTurn = Array(N).fill(false); order = []; qi = 0;
+  pts = Array(N).fill(0); alive = Array(N).fill(true); hadTurn = Array(N).fill(false); order = []; qi = 0; champ = -1;
   deck = sh(WORDS.slice()); deckPos = 0;
   p1i = 0; passTo(0);
 }
@@ -384,7 +385,7 @@ function showTable() {
   order = [...Array(N).keys()].sort((a, b) => pts[b] - pts[a] || a - b); qi = 0;
   $('table-list').innerHTML = order.map((i, r) =>
     '<div class="trow"><span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + (r + 1) + '. ' + esc(names[i]) + '</span><span class="sc">' + pts[i] + '</span></div>').join('');
-  $('table-note').innerHTML = 'Ord na ndúshlán: an scór is airde ar dtús.<br>Pointí uile sa chluiche: <b>' + totalPts() + '</b>';
+  $('table-note').innerHTML = (pts.some(p => p === 0) ? 'Imreoir ar 0 pt: amuigh.<br>' : '') + 'Tugann ' + esc(names[order[0]]) + ' an chéad dúshlán.<br>Pointí uile sa chluiche: <b>' + totalPts() + '</b>';
   show('table-screen');
 }
 
@@ -394,28 +395,20 @@ function renderBoard() {
   if (!order.length) { $('board').innerHTML = ''; return; }
   $('board').innerHTML = order.map(i =>
     '<span class="lv' + (alive[i] ? '' : ' out') + '"><span class="dot" style="background:' + PCOLS[i] + '"></span>' + esc(names[i]) +
-    ' <span class="sc">' + pts[i] + '</span>' + (alive[i] && !hadTurn[i] ? ' 🛡️' : '') + '</span>').join('');
+    ' <span class="sc">' + pts[i] + '</span>' + '</span>').join('');
 }
 function targets(c) { return aliveList().filter(i => i !== c && pts[i] > 0); }
 function byPts(a, b) { return pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b); }
+let champ = -1, nShoot = 0, nTotal = 0;
 function nextChallenge() {
-  const al = aliveList();
-  if (al.length <= 1) { showEnd(al[0]); return; }
-  let c = -1;
-  while (qi < order.length) { const x = order[qi++]; if (alive[x]) { c = x; break; } }
-  if (c >= 0) {
-    hadTurn[c] = true;
-    const t = targets(c);
-    if (!t.length) { showSkip(c); return; }
-    if (t.length === 1 && al.length === 2 && isFinalWith(c, t[0])) { startShootout(c, t[0]); return; }
-    showPick(c, 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N);
-    return;
+  if (champ < 0) {                       // first call, straight from the table
+    for (let i = 0; i < N; i++) if (pts[i] <= 0) alive[i] = false;
+    champ = order[0]; nShoot = 0; nTotal = aliveList().length - 1;
   }
-  // everyone has had their turn: highest scorer challenges; two left = final
-  const top = al.slice().sort(byPts)[0], t = targets(top);
-  if (!t.length) { showEnd(top); return; }
-  if (al.length === 2) { startShootout(top, t[0]); return; }
-  showPick(top, 'An scór is airde a roghnaíonn · an caillteoir amuigh');
+  const al = aliveList();
+  if (al.length <= 1 || !targets(champ).length) { showEnd(al.length ? al.slice().sort(byPts)[0] : champ); return; }
+  if (al.length === 2) { startShootout(champ, targets(champ)[0]); return; }
+  showPick(champ, 'Dúshlán ' + (nShoot + 1) + ' / ' + nTotal);
 }
 function showSkip(c) {
   $('pick-phase').textContent = 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N;
@@ -425,7 +418,7 @@ function showSkip(c) {
   $('pick-warn').textContent = '';
   show('pick-screen', true);
 }
-function isFinalWith(a, b) { return aliveList().length === 2 && hadTurn[a] && hadTurn[b]; }
+function isFinalWith(a, b) { return aliveList().length === 2; }
 function showPick(c, phase) {
   $('pick-phase').textContent = phase;
   $('pick-title').innerHTML = nm(c) + ', roghnaigh do chéile comhraic';
@@ -434,7 +427,7 @@ function showPick(c, phase) {
   targets(c).forEach(i => {
     const b = document.createElement('button'); b.className = 'trow';
     b.innerHTML = '<span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + esc(names[i]) + '</span>' +
-      (hadTurn[i] ? '' : '<span class="tag">🛡️</span>') + '<span class="sc">' + pts[i] + '</span>';
+      '<span class="sc">' + pts[i] + '</span>';
     b.onclick = () => { _gx(); startShootout(c, i); };
     list.appendChild(b);
   });
@@ -521,11 +514,11 @@ function finishShootout(w) {
   const l = w === S.a ? S.b : S.a, won = pts[l];
   S.done = true;
   pts[w] += won; pts[l] = 0;
-  const out = hadTurn[l]; if (out) alive[l] = false;
+  const out = true; alive[l] = false; champ = w; nShoot++;
   $('sres-shoot').innerHTML = shootHTML();
   $('sres-title').innerHTML = nm(w) + ' a bhuaigh!';
   $('sres-pts').textContent = '+' + won;
-  $('sres-note').innerHTML = out ? esc(names[l]) + ' amuigh.' : esc(names[l]) + ' ar 0 ach fós istigh 🛡️ (dúshlán fós le tabhairt).';
+  $('sres-note').innerHTML = out ? esc(names[l]) + ' amuigh.' : '';
   const left = aliveList().length;
   $('sres-btn').textContent = left <= 1 ? 'Torthaí 🏆' : 'Ar aghaidh';
   show('sres-screen', true);
