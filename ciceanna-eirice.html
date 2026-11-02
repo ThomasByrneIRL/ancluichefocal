@@ -115,6 +115,8 @@
   .k.g { background: #2a9d47; border-color: #2a9d47; }
   .k.m { background: #e94560; border-color: #e94560; }
   .k.next { border-color: #1a1a2e; }
+  .srow .kicks { flex-wrap: nowrap; }
+  .sd-sep { width: 2px; height: 22px; background: #e07b00; margin: 0 4px; border-radius: 1px; }
   .sd { font-size: .78rem; color: #e07b00; font-weight: bold; margin-top: .3rem; }
   .kicker { font-size: 1.15rem; margin: .4rem 0; }
   #kick-fb { font-size: 1.6rem; font-weight: bold; height: 2.2rem; }
@@ -132,14 +134,12 @@
   <h1>⚽ Ciceanna Éirice</h1>
   <p class="subtitle">Cluiche Il-imreora | 🔊 Fuaim Chonnacht</p>
   <div class="rules">
-    <b>1. Ina aonar:</b> bailigh pointí. 4 soicind an focal, 4 → 1 pt de réir luais. Freagra mícheart = 0 pt, ach leanann tú ar aghaidh go dtí deireadh an ama.<br>
-    <b>2. Ciceanna éirice:</b> faigheann gach imreoir dúshlán amháin, an scór is airde ar dtús. Roghnaigh duine ar bith. Faigheann an buaiteoir pointí uile an chaillteora.<br>
+    <b>1. Ina aonar:</b> bailigh pointí. 4 soicind an focal: 5 pt laistigh de leathshoicind, ansin 4 → 1 de réir luais. Freagra mícheart = 0 pt, ach leanann tú ar aghaidh go dtí deireadh an ama.<br>
+    <b>2. Ciceanna éirice:</b> faigheann gach imreoir dúshlán amháin, an scór is airde ar dtús. Roghnaigh duine ar bith a bhfuil pointí aige. Faigheann an buaiteoir pointí uile an chaillteora.<br>
     <b>3. Amuigh:</b> má chailleann tú tar éis do dhúshláin féin, tá tú amuigh. 🛡️ = dúshlán fós le tabhairt, ní féidir é a chur amach.<br>
     <b>4. Cluiche ceannais:</b> an bheirt dheireanacha, ar na pointí uile.
   </div>
-  <div class="lbl">Imreoirí</div>
-  <div class="opt-row" id="cnt-row"></div>
-  <div style="height:.8rem"></div>
+  <div class="lbl">Ceathrar imreoirí</div>
   <div id="name-fields"></div>
   <div class="lbl">Am ina aonar</div>
   <div class="opt-row" id="time-row"></div>
@@ -190,7 +190,7 @@
 <div id="pick-screen" class="screen">
   <p class="vs" id="pick-phase"></p>
   <h2 id="pick-title"></h2>
-  <p class="note" style="margin-bottom:.6rem">Faigheann an buaiteoir pointí uile an chaillteora.</p>
+  <p class="note" id="pick-note" style="margin-bottom:.6rem"></p>
   <div class="tbl" id="pick-list"></div>
   <p class="note" id="pick-warn"></p>
 </div>
@@ -240,6 +240,7 @@
 const WORDS = Object.keys(DICT);
 const PCOLS = ['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
 const WORD_MS = 4000;          // per word, as in 2ú
+const KICK_MS = 3000, SD_MS = 2500; // penalty timer, sudden-death timer
 const KICKS = 5;               // penalties each before sudden death
 const TIMES = [20, 30, 45, 60];
 
@@ -273,12 +274,10 @@ function nm(i) { return '<span style="color:' + PCOLS[i] + '">' + esc(names[i]) 
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function totalPts() { return pts.reduce((a, b) => a + b, 0); }
 function aliveList() { const r = []; for (let i = 0; i < N; i++) if (alive[i]) r.push(i); return r; }
-function pointsFor(rem) { const s = rem / 1000; return s >= 3 ? 4 : s >= 2 ? 3 : s >= 1 ? 2 : 1; }
+function pointsFor(rem) { const s = rem / 1000; return s >= 3.5 ? 5 : s >= 3 ? 4 : s >= 2 ? 3 : s >= 1 ? 2 : 1; }
 
 // ── setup ──────────────────────────────────────────────────────────────────
 function buildSetup() {
-  const cr = $('cnt-row'); cr.innerHTML = '';
-  for (let n = 3; n <= 6; n++) { const b = document.createElement('button'); b.className = 'opt' + (n === N ? ' on' : ''); b.textContent = n; b.onclick = () => { N = n; buildSetup(); }; cr.appendChild(b); }
   const tr = $('time-row'); tr.innerHTML = '';
   TIMES.forEach(t => { const b = document.createElement('button'); b.className = 'opt' + (t === SECS ? ' on' : ''); b.textContent = t + 's'; b.onclick = () => { SECS = t; buildSetup(); }; tr.appendChild(b); });
   buildNameFields(N);
@@ -397,6 +396,8 @@ function renderBoard() {
     '<span class="lv' + (alive[i] ? '' : ' out') + '"><span class="dot" style="background:' + PCOLS[i] + '"></span>' + esc(names[i]) +
     ' <span class="sc">' + pts[i] + '</span>' + (alive[i] && !hadTurn[i] ? ' 🛡️' : '') + '</span>').join('');
 }
+function targets(c) { return aliveList().filter(i => i !== c && pts[i] > 0); }
+function byPts(a, b) { return pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b); }
 function nextChallenge() {
   const al = aliveList();
   if (al.length <= 1) { showEnd(al[0]); return; }
@@ -404,23 +405,33 @@ function nextChallenge() {
   while (qi < order.length) { const x = order[qi++]; if (alive[x]) { c = x; break; } }
   if (c >= 0) {
     hadTurn[c] = true;
-    const phase = 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N;
-    const others = al.filter(i => i !== c);
-    if (others.length === 1 && isFinalWith(c, others[0])) { startShootout(c, others[0]); return; }
-    showPick(c, phase);
+    const t = targets(c);
+    if (!t.length) { showSkip(c); return; }
+    if (t.length === 1 && al.length === 2 && isFinalWith(c, t[0])) { startShootout(c, t[0]); return; }
+    showPick(c, 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N);
     return;
   }
-  // everyone has had their turn: highest scorer challenges, two left = final
-  if (al.length === 2) { const [x, y] = al.slice().sort((a, b) => pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b)); startShootout(x, y); return; }
-  const top = al.slice().sort((a, b) => pts[b] - pts[a] || order.indexOf(a) - order.indexOf(b))[0];
+  // everyone has had their turn: highest scorer challenges; two left = final
+  const top = al.slice().sort(byPts)[0], t = targets(top);
+  if (!t.length) { showEnd(top); return; }
+  if (al.length === 2) { startShootout(top, t[0]); return; }
   showPick(top, 'An scór is airde a roghnaíonn · an caillteoir amuigh');
+}
+function showSkip(c) {
+  $('pick-phase').textContent = 'Dúshlán ' + (order.indexOf(c) + 1) + ' / ' + N;
+  $('pick-title').innerHTML = nm(c);
+  $('pick-note').textContent = '';
+  $('pick-list').innerHTML = '<p class="note">Níl pointí ag aon duine eile, mar sin níl dúshlán le tabhairt.</p><button class="big-btn green" onclick="nextChallenge()">Ar aghaidh</button>';
+  $('pick-warn').textContent = '';
+  show('pick-screen', true);
 }
 function isFinalWith(a, b) { return aliveList().length === 2 && hadTurn[a] && hadTurn[b]; }
 function showPick(c, phase) {
   $('pick-phase').textContent = phase;
   $('pick-title').innerHTML = nm(c) + ', roghnaigh do chéile comhraic';
+  $('pick-note').textContent = 'Faigheann an buaiteoir pointí uile an chaillteora.';
   const list = $('pick-list'); list.innerHTML = '';
-  aliveList().filter(i => i !== c).forEach(i => {
+  targets(c).forEach(i => {
     const b = document.createElement('button'); b.className = 'trow';
     b.innerHTML = '<span class="dot" style="background:' + PCOLS[i] + '"></span><span class="nm">' + esc(names[i]) + '</span>' +
       (hadTurn[i] ? '' : '<span class="tag">🛡️</span>') + '<span class="sc">' + pts[i] + '</span>';
@@ -436,17 +447,21 @@ function startShootout(a, b) {
   readyKick();
 }
 function shootHTML() {
-  const sd = S.k[S.a].length > KICKS || S.k[S.b].length > KICKS || (S.k[S.a].length === KICKS && S.k[S.b].length === KICKS);
-  const row = i => {
-    const ks = S.k[i], n = Math.max(KICKS, ks.length + (S.turn === i ? 1 : 0), S.k[S.a].length, S.k[S.b].length);
-    let h = '';
-    for (let j = 0; j < n; j++) {
-      if (j < ks.length) h += '<span class="k ' + (ks[j] ? 'g' : 'm') + '">' + (ks[j] ? '✓' : '✗') + '</span>';
-      else h += '<span class="k' + (S.turn === i && j === ks.length && !S.done ? ' next' : '') + '"></span>';
-    }
-    return '<div class="srow"><span class="nm" style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span><span class="kicks">' + h + '</span><span class="tot">' + goals(i) + '</span></div>';
+  const ka = S.k[S.a].length, kb = S.k[S.b].length;
+  const sd = ka >= KICKS && kb >= KICKS && !(S.done && ka === KICKS && kb === KICKS);
+  const idx = S.done ? Math.max(ka, kb) - 1 : Math.min(ka, kb);      // kick index of the sudden-death round on show
+  const dot = (i, j) => {
+    const ks = S.k[i];
+    if (j < ks.length) return '<span class="k ' + (ks[j] ? 'g' : 'm') + '">' + (ks[j] ? '✓' : '✗') + '</span>';
+    return '<span class="k' + (S.turn === i && j === ks.length && !S.done ? ' next' : '') + '"></span>';
   };
-  return row(S.a) + row(S.b) + (sd && !S.done ? '<div class="sd">Bás tobann</div>' : '');
+  const reg = i => S.k[i].slice(0, KICKS).filter(Boolean).length;
+  const row = i => {
+    let h = ''; for (let j = 0; j < KICKS; j++) h += dot(i, j);
+    if (sd) h += '<span class="sd-sep"></span>' + dot(i, idx);
+    return '<div class="srow"><span class="nm" style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span><span class="kicks">' + h + '</span><span class="tot">' + reg(i) + '</span></div>';
+  };
+  return row(S.a) + row(S.b) + (sd ? '<div class="sd">Bás tobann · babhta ' + (idx - KICKS + 1) + '</div>' : '');
 }
 function goals(i) { return S.k[i].filter(Boolean).length; }
 function readyKick() {
@@ -468,13 +483,13 @@ function takeKick() {
   [$('kick-a'), $('kick-b')].forEach((b, k) => { b.textContent = opts[k]; b.className = 'choice-btn'; b.disabled = false; });
   show('kick-screen', false);
   playPron(w);
-  S.end = Date.now() + WORD_MS; cancelAnimationFrame(S.raf); kickTick();
+  S.ms = S.k[S.turn].length >= KICKS ? SD_MS : KICK_MS; S.end = Date.now() + S.ms; cancelAnimationFrame(S.raf); kickTick();
 }
 function kickTick() {
   if (S.locked) return;
   const rem = S.end - Date.now();
-  $('kick-bar').style.width = Math.max(0, rem / WORD_MS * 100) + '%';
-  $('kick-bar').className = 'bar' + (rem <= 1200 ? ' urgent' : '');
+  $('kick-bar').style.width = Math.max(0, rem / S.ms * 100) + '%';
+  $('kick-bar').className = 'bar' + (rem <= 1000 ? ' urgent' : '');
   if (rem <= 0) { kickResult(false, -1); return; }
   S.raf = requestAnimationFrame(kickTick);
 }
