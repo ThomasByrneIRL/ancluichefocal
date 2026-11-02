@@ -455,11 +455,10 @@ function shootHTML() {
     if (j < ks.length) return '<span class="k ' + (ks[j] ? 'g' : 'm') + '">' + (ks[j] ? '✓' : '✗') + '</span>';
     return '<span class="k' + (S.turn === i && j === ks.length && !S.done ? ' next' : '') + '"></span>';
   };
-  const reg = i => S.k[i].slice(0, KICKS).filter(Boolean).length;
   const row = i => {
     let h = ''; for (let j = 0; j < KICKS; j++) h += dot(i, j);
     if (sd) h += '<span class="sd-sep"></span>' + dot(i, idx);
-    return '<div class="srow"><span class="nm" style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span><span class="kicks">' + h + '</span><span class="tot">' + reg(i) + '</span></div>';
+    return '<div class="srow"><span class="nm" style="color:' + PCOLS[i] + '">' + esc(names[i]) + '</span><span class="kicks">' + h + '</span><span class="tot">' + goals(i) + '</span></div>';
   };
   return row(S.a) + row(S.b) + (sd ? '<div class="sd">Bás tobann · babhta ' + (idx - KICKS + 1) + '</div>' : '');
 }
