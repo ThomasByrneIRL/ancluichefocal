@@ -31,6 +31,7 @@
   });
 })();
 </script>
+<script src="arcade.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -499,6 +500,18 @@ function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)
 function _pt(f,d,t,g,dl){try{const c=_gx(),b=c.state==='running'?0:0.06,s=c.currentTime+b+dl,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,s);gn.gain.setValueAtTime(g,s);gn.gain.exponentialRampToValueAtTime(0.0001,s+d);o.start(s);o.stop(s+d);}catch(e){}}
 function playOk(){_pt(523,.15,'sine',.22,0);_pt(659,.2,'sine',.2,.12);}
 function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);}
+</script>
+<script>
+// Arcade cabinet (arcade.js): only the player whose clock is running can answer.
+window.ARCADE_GAME = {
+  active: function () { return document.getElementById('game-screen').classList.contains('active') ? currentPlayer : -1; },
+  ok: function () {
+    if (document.getElementById('start-screen').classList.contains('active')) { startGame(); return; }
+    if (document.getElementById('over-screen').classList.contains('active')) {
+      var b = document.querySelector('#over-screen button.start-btn, #over-screen button.btn-secondary'); if (b) b.click(); return;
+    }
+  }
+};
 </script>
 </body>
 </html>

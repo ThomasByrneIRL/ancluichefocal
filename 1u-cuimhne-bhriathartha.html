@@ -31,6 +31,7 @@
   });
 })();
 </script>
+<script src="arcade.js"></script>
 
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1941,6 +1942,20 @@ function showFinal(){const fin=curRound>=numRounds,multi=numRounds>1;const sorte
 function nextRound(){curRound++;currentPlayerIdx=0;showHandoff();}
 function replayMulti(){resetMulti();showHandoff();}
 function goStart(){mode='solo';show('start-screen');}
+</script>
+<script>
+// Arcade cabinet (arcade.js): in multiplayer, only the player whose turn it is can answer.
+window.ARCADE_GAME = {
+  active: function () { return (mode === 'multi' && (currentScreen === 'game-screen' || currentScreen === 'handoff-screen')) ? currentPlayerIdx : -1; },
+  ok: function () {
+    if (currentScreen === 'handoff-screen') { handoffStart(); return; }
+    if (currentScreen === 'result-screen') { document.getElementById('result-next-btn').click(); return; }
+    if (currentScreen === 'setup-screen') { setupDone(); return; }
+    if (currentScreen === 'over-screen') { initGame(); return; }
+    if (currentScreen === 'final-screen') { var b = document.querySelector('#final-actions button'); if (b) b.click(); return; }
+    return false;
+  }
+};
 </script>
 </body>
 </html>
