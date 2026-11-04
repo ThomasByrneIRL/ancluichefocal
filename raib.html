@@ -35,17 +35,20 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
 .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;}
 #score-display{font-size:1.8rem;font-weight:bold;color:#2a9d47;min-width:3rem;text-align:left;}
 #score-display.negative{color:#e94560;}
-#time-display{font-size:1.8rem;font-weight:bold;color:#1a1a2e;min-width:3rem;text-align:right;}
-.game-bar-wrap{height:8px;background:#ddd;border-radius:4px;overflow:hidden;margin-bottom:1rem;}
-#game-bar{height:8px;border-radius:4px;background:#2a9d47;width:100%;transition:background .5s;}
-#game-bar.urgent{background:#e94560;}
+#level-display{font-size:1.8rem;font-weight:bold;color:#1a1a2e;min-width:3rem;text-align:right;transition:color .2s;}
+#level-display.drop{color:#e94560;}
+/* Segmented countdown (as in Dhá Theanga): one cell per second, left = last second, right = first */
+#timer-wrap{width:100%;height:10px;display:flex;gap:4px;margin-bottom:1rem;}
+#timer-wrap .seg{flex:1;background:#e3e3dc;border-radius:3px;overflow:hidden;transition:opacity .25s;}
+#timer-wrap .seg>i{display:block;height:100%;width:100%;}
+#timer-wrap .seg.lost{background:transparent;border:1.5px dashed #d6d6cf;}
+#level-flash{font-size:.95rem;font-weight:bold;height:1.3rem;margin-top:.2rem;color:#e94560;}
+#over-reason{color:#888;font-size:.95rem;margin-bottom:.4rem;}
 .word-card{background:#fff;border-radius:16px;padding:2rem 1.5rem 1.5rem;margin-bottom:.6rem;
   box-shadow:0 2px 16px rgba(0,0,0,.10);transition:background .15s;}
 .word-card.flash-correct{background:#d4edda;}
 .word-card.flash-wrong{background:#f8d7da;}
 #word-display{font-size:2.2rem;font-weight:bold;letter-spacing:.04em;margin-bottom:.8rem;}
-.word-bar-wrap{height:4px;background:#eee;border-radius:2px;overflow:hidden;}
-#word-bar{height:4px;border-radius:2px;background:#e94560;width:100%;}
 /* choices */
 .choices{display:grid;grid-template-columns:1fr;gap:.6rem;margin-top:.8rem;}
 .choice-btn{padding:.75rem .5rem;border:2px solid #ccc;border-radius:12px;background:#fff;
@@ -78,8 +81,8 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
 <!-- START -->
 <div id="start-screen" class="screen">
   <h1>⚡ Ráib</h1>
-  <p class="subtitle">60 soicind · 2 rogha · +1 ceart · −2 mícheart</p>
-  <p style="color:#888;margin-bottom:1.6rem;line-height:1.7">Feicfidh tú focal Gaeilge.<br>Roghnaigh an mhíniú ceart i mBéarla.<br>Tá 1.25 soicind agat do gach focal.<br>Is féidir scór diúltach a fháil!</p>
+  <p class="subtitle">5 soicind · 2 rogha · +1 ceart</p>
+  <p style="color:#888;margin-bottom:1.6rem;line-height:1.8">Roghnaigh an míniú ceart i mBéarla.<br>Tosaíonn tú le <b style="color:#1b6e33">5 soicind</b> an focal.<br>Ceart: tosaíonn an chéad fhocal eile ón soicind ina raibh tú.<br>Mícheart: <span style="color:#e94560">soicind amháin níos lú</span>.<br>Am caite nó gan soicind fágtha: <span style="color:#e94560">thart!</span></p>
   <div class="mode-wrap">
     <button class="mode-btn" onclick="startSolo()">Aonair</button>
     <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
@@ -116,14 +119,14 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
       <div id="score-display">0</div>
     </div>
     <div style="text-align:right">
-      <div style="font-size:.7rem;color:#888;margin-bottom:2px">AM</div>
-      <div id="time-display">60</div>
+      <div style="font-size:.7rem;color:#888;margin-bottom:2px">SOICINDÍ</div>
+      <div id="level-display">5</div>
     </div>
   </div>
-  <div class="game-bar-wrap"><div id="game-bar"></div></div>
+  <div id="timer-wrap"></div>
   <div class="word-card" id="word-card">
     <div id="word-display"></div>
-    <div class="word-bar-wrap"><div id="word-bar"></div></div>
+    <div id="level-flash"></div>
   </div>
   <div class="choices" id="choices"></div>
   <p class="hint-small">↑ Suas = Rogha 1 &nbsp;|&nbsp; ↓ Síos = Rogha 2</p>
@@ -131,8 +134,9 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
 
 <!-- RESULT (multiplayer per-player) -->
 <div id="result-screen" class="screen">
-  <h1>Críochnaithe!</h1>
+  <h1>Thart!</h1>
   <div id="result-player"></div>
+  <div id="result-reason" style="color:#888;font-size:.95rem;margin-bottom:.3rem"></div>
   <div id="result-score"></div>
   <p style="color:#888;margin-bottom:1.8rem">pointe</p>
   <button class="big-btn" id="result-next-btn"></button>
@@ -140,7 +144,8 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
 
 <!-- OVER (solo) -->
 <div id="over-screen" class="screen">
-  <h1>Am Caite!</h1>
+  <h1>Thart!</h1>
+  <div id="over-reason"></div>
   <div id="final-score"></div>
   <p style="color:#888;margin-bottom:.5rem">pointe</p>
   <div id="high-score" style="font-size:1rem;color:#53d8fb;margin-bottom:2rem;min-height:1.4em;"></div>
@@ -158,8 +163,8 @@ h1{font-size:2rem;color:#e94560;margin-bottom:.4rem;}
 <script src="focloir.js"></script>
 <script>
 const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
-const GAME_MS=60000;
-const WORD_MS=1250;
+const START_LEVEL=5;   // seconds for the first word; each second is a level you can only keep or lose
+const SEG_COLS=['#e94560','#e8622c','#e07b00','#2a9d47','#1b6e33'];
 
 
 // Short answers only: there's no time to read long definitions.
@@ -178,7 +183,7 @@ function playOk(){pt(523,.25,'sine',.22,0);pt(659,.3,'sine',.2,.10);}
 function playNo(){pt(220,.22,'sawtooth',.144,0);pt(150,.25,'sawtooth',.112,.07);}
 
 // ── state ────────────────────────────────────────────────────────────────────
-let score,gameDeadline,wordDeadline,gameTimerRAF,wordTimerRAF;
+let score,level,wordDeadline,wordTimerRAF,endReason='';
 let currentWord,currentCorrect,choiceBtns=[],locked;
 let mode='solo',numPlayers=1,playerNames=[],playerScores=[],currentPlayerIdx=0,leaderIdx=-1,leaderScore=-Infinity;
 let selectedCount=2,currentScreen='start-screen';
@@ -188,46 +193,43 @@ function rndKey(){return DICT_KEYS[Math.floor(Math.random()*DICT_KEYS.length)];}
 function show(id){['start-screen','setup-screen','handoff-screen','game-screen','result-screen','over-screen','final-screen'].forEach(s=>{const el=document.getElementById(s);if(el)el.style.display=s===id?'block':'none';});currentScreen=id;}
 
 // ── game logic ────────────────────────────────────────────────────────────────
+function buildSeg(){document.getElementById('timer-wrap').innerHTML=SEG_COLS.map(c=>'<div class="seg"><i style="background:'+c+'"></i></div>').join('');}
+function drawSeg(rem){
+  document.querySelectorAll('#timer-wrap .seg').forEach((seg,i)=>{
+    seg.classList.toggle('lost',i>=level);
+    const v=i>=level?0:Math.max(0,Math.min(1,(rem-i*1000)/1000));
+    seg.firstChild.style.width=(v*100)+'%';
+  });
+}
+function setLevel(n){
+  const el=document.getElementById('level-display');
+  el.textContent=n;
+  if(n<level){el.classList.add('drop');setTimeout(()=>el.classList.remove('drop'),600);}
+  level=n;
+}
+
 function initGame(){
-  score=0;locked=false;
-  // player hud
+  score=0;level=START_LEVEL;locked=false;endReason='';
   const hud=document.getElementById('player-hud');
   if(mode==='multi'){const col=PCOLS[currentPlayerIdx%PCOLS.length];hud.innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';}else{hud.innerHTML='';}
   gx();
-  document.getElementById('game-bar').className='';
+  buildSeg();
+  document.getElementById('level-display').textContent=level;
+  updScore();
   show('game-screen');
-  gameDeadline=Date.now()+GAME_MS;
-  cancelAnimationFrame(gameTimerRAF);
-  tickGame();
   nextWord();
 }
 
-function tickGame(){
-  const rem=gameDeadline-Date.now();
-  if(rem<=0){endGame();return;}
-  const secs=Math.ceil(rem/1000);
-  document.getElementById('time-display').textContent=secs;
-  document.getElementById('game-bar').style.width=(rem/GAME_MS*100)+'%';
-  if(rem<10000)document.getElementById('game-bar').classList.add('urgent');
-  gameTimerRAF=requestAnimationFrame(tickGame);
-}
-
 function nextWord(){
-  if(locked&&gameDeadline-Date.now()<=0)return;
   locked=false;
   document.getElementById('word-card').className='word-card';
-  // pick word + distractors
+  document.getElementById('level-flash').textContent='';
   const key=rndKey();
   currentWord=key;
   currentCorrect=SHORT[key];
-  const distractors=[];
-  let attempts=0;
-  while(distractors.length<1&&attempts<200){
-    attempts++;
-    const d=ALL_DEFS[Math.floor(Math.random()*ALL_DEFS.length)];
-    if(d.toLowerCase()!==currentCorrect.toLowerCase()&&!distractors.includes(d))distractors.push(d);
-  }
-  const options=[currentCorrect,...distractors].sort(()=>Math.random()-.5);
+  let d='',attempts=0;
+  while(attempts++<200){d=ALL_DEFS[Math.floor(Math.random()*ALL_DEFS.length)];if(d.toLowerCase()!==currentCorrect.toLowerCase())break;}
+  const options=[currentCorrect,d].sort(()=>Math.random()-.5);
   document.getElementById('word-display').textContent=currentWord;
   const ch=document.getElementById('choices');
   ch.innerHTML='';
@@ -240,72 +242,83 @@ function nextWord(){
     ch.appendChild(b);
     choiceBtns.push(b);
   });
-  // word timer
-  wordDeadline=Date.now()+WORD_MS;
+  wordDeadline=Date.now()+level*1000;
   cancelAnimationFrame(wordTimerRAF);
   tickWord();
 }
 
 function tickWord(){
   const rem=wordDeadline-Date.now();
-  if(rem<=0){onTimeout();return;}
-  document.getElementById('word-bar').style.width=(rem/WORD_MS*100)+'%';
+  if(rem<=0){drawSeg(0);onTimeout();return;}
+  drawSeg(rem);
   wordTimerRAF=requestAnimationFrame(tickWord);
 }
+
+// the second you answered in: 5th second = between 5 and 4 left, and so on
+function secondOf(rem){return Math.max(1,Math.min(level,Math.ceil(rem/1000)));}
 
 function answerQ(chosen,btn){
   if(locked)return;
   locked=true;
   gx();
   cancelAnimationFrame(wordTimerRAF);
-  document.getElementById('word-bar').style.width='0%';
+  const rem=wordDeadline-Date.now(),sec=secondOf(rem);
   choiceBtns.forEach(b=>b.disabled=true);
   if(chosen===currentCorrect){
     score++;
     playOk();
     btn.classList.add('correct');
     document.getElementById('word-card').className='word-card flash-correct';
+    const lost=level-sec;
+    setLevel(sec);
+    drawSeg(level*1000);
+    document.getElementById('level-flash').textContent=lost>0?'−'+lost+' s':'';
+    updScore();
+    setTimeout(nextWord,lost>0?550:280);
   }else{
-    score-=2;
     playNo();
     btn.classList.add('wrong');
     choiceBtns.forEach(b=>{if(b.textContent===currentCorrect)b.classList.add('reveal');});
     document.getElementById('word-card').className='word-card flash-wrong';
+    const next=sec-1,lost=level-next;
+    setLevel(Math.max(0,next));
+    drawSeg(level*1000);
+    if(next<=0){endReason='Gan soicind fágtha: '+currentWord+' = '+currentCorrect;setTimeout(endGame,900);return;}
+    document.getElementById('level-flash').textContent='−'+lost+' s';
+    setTimeout(nextWord,800);
   }
-  updScore();
-  setTimeout(()=>{if(gameDeadline-Date.now()>0)nextWord();},280);
 }
 
 function onTimeout(){
   if(locked)return;
   locked=true;
   cancelAnimationFrame(wordTimerRAF);
-  score-=2;
   playNo();
-  choiceBtns.forEach(b=>b.disabled=true);
-  updScore();
-  setTimeout(()=>{if(gameDeadline-Date.now()>0)nextWord();},200);
+  choiceBtns.forEach(b=>{b.disabled=true;if(b.textContent===currentCorrect)b.classList.add('reveal');});
+  document.getElementById('word-card').className='word-card flash-wrong';
+  endReason='Am caite: '+currentWord+' = '+currentCorrect;
+  setTimeout(endGame,900);
 }
 
 function updScore(){
   const el=document.getElementById('score-display');
   el.textContent=score;
-  el.className=score<0?'negative':'';
+  el.className='';
 }
 
 function endGame(){
   locked=true;
-  cancelAnimationFrame(gameTimerRAF);
   cancelAnimationFrame(wordTimerRAF);
   if(mode==='multi'){
     playerScores[currentPlayerIdx]=score;
     if(score>leaderScore){leaderScore=score;leaderIdx=currentPlayerIdx;}
     showResult();
   }else{
+    document.getElementById('over-reason').textContent=endReason;
     document.getElementById('final-score').textContent=score;
     document.getElementById('final-score').style.color=score<0?'#e94560':'#2a9d47';
     try{
-      const key='raib_taifead';
+      const key='raib_taifead_soicind';   // new rules, new record
       const prev=parseInt(localStorage.getItem(key)||'-9999',10);
       const hsEl=document.getElementById('high-score');
       if(score>prev){localStorage.setItem(key,score);hsEl.textContent='🏆 Taifead Nua: '+score;}
@@ -325,7 +338,7 @@ function buildSetup(){const _prev=[];for(let i=0;i<6;i++){const e=document.getEl
 function setupDone(){numPlayers=selectedCount;playerNames=[];for(let i=0;i<numPlayers;i++){const v=(document.getElementById('pname-'+i).value.trim()||('Imreoir '+(i+1))).toUpperCase();playerNames.push(v);}playerScores=new Array(numPlayers).fill(0);leaderIdx=-1;leaderScore=-Infinity;currentPlayerIdx=0;showHandoff();}
 function showHandoff(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('handoff-name').innerHTML='<span style="color:'+col+'">'+playerNames[currentPlayerIdx]+'</span>';let lnote='';if(leaderIdx>=0){const lc=PCOLS[leaderIdx%PCOLS.length];lnote='Ceannaire: <strong style="color:'+lc+'">'+playerNames[leaderIdx]+'</strong> — '+leaderScore+' pointe';}document.getElementById('handoff-leader').innerHTML=lnote;show('handoff-screen');}
 function handoffStart(){initGame();}
-function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';const rs=document.getElementById('result-score');rs.textContent=score;rs.style.color=score<0?'#e94560':'#2a9d47';const nextIdx=currentPlayerIdx+1;const btn=document.getElementById('result-next-btn');if(nextIdx<numPlayers){btn.textContent='Pas chuig '+playerNames[nextIdx];btn.onclick=function(){currentPlayerIdx=nextIdx;showHandoff();};}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
+function showResult(){const col=PCOLS[currentPlayerIdx%PCOLS.length];document.getElementById('result-player').innerHTML='<span style="color:'+col+';font-weight:bold">'+playerNames[currentPlayerIdx]+'</span>';const rs=document.getElementById('result-score');rs.textContent=score;document.getElementById('result-reason').textContent=endReason;rs.style.color=score<0?'#e94560':'#2a9d47';const nextIdx=currentPlayerIdx+1;const btn=document.getElementById('result-next-btn');if(nextIdx<numPlayers){btn.textContent='Pas chuig '+playerNames[nextIdx];btn.onclick=function(){currentPlayerIdx=nextIdx;showHandoff();};}else{btn.textContent='Clárbhord';btn.onclick=showFinal;}show('result-screen');}
 function showFinal(){const sorted=[...playerNames.map((n,i)=>({n,s:playerScores[i],i}))].sort((a,b)=>b.s-a.s);const lb=document.getElementById('leaderboard');lb.innerHTML='';sorted.forEach((p,rank)=>{const col=PCOLS[p.i%PCOLS.length];const winner=rank===0;lb.innerHTML+='<div class="lb-row'+(winner?' lb-winner':'')+'"><span class="lb-rank">'+(winner?'🏆':(rank+1)+'.')+' </span><div class="lb-dot" style="background:'+col+'"></div><span class="lb-name">'+p.n+'</span><span class="lb-score" style="color:'+(p.s<0?'#e94560':'#2a9d47')+'">'+p.s+'</span></div>';});show('final-screen');}
 function goStart(){mode='solo';show('start-screen');}
 
