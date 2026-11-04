@@ -274,7 +274,7 @@ function answerQ(chosen,btn){
     drawSeg(level*1000);
     document.getElementById('level-flash').textContent=lost>0?'−'+lost+' s':'';
     updScore();
-    setTimeout(nextWord,lost>0?550:280);
+    setTimeout(nextWord,500);
   }else{
     playNo();
     btn.classList.add('wrong');
@@ -285,7 +285,7 @@ function answerQ(chosen,btn){
     drawSeg(level*1000);
     if(next<=0){endReason='Gan soicind fágtha: '+currentWord+' = '+currentCorrect;setTimeout(endGame,900);return;}
     document.getElementById('level-flash').textContent='−'+lost+' s';
-    setTimeout(nextWord,800);
+    setTimeout(nextWord,500);
   }
 }
 
