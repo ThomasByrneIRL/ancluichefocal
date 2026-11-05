@@ -250,7 +250,11 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
   <div id="final-actions"><button class="big-btn" onclick="goStart()">Arís</button></div>
 </div>
 
-<script src="focloir.js"></script>
+<script>
+// Beginner versions (4ú Leaganacha Do Thosaitheoirí): ?liosta=tosaitheoiri uses the beginner dictionary instead of the full one.
+var FREAMH_TOSAI=/[?&]liosta=tosaitheoiri(&|$)/.test(location.search);
+document.write('<script src="'+(FREAMH_TOSAI?'focloir-tosaitheoiri.js':'focloir.js')+'"><\/script>');
+</script>
 <script>
 
 const WORDS = Object.keys(DICT);
@@ -708,6 +712,19 @@ document.addEventListener('keydown', e => {
 });
 
 show('start-screen');
+</script>
+<script>
+// Beginner version: label the game and link back to the 4ú mini hub.
+if(FREAMH_TOSAI){(function(){
+  document.title+=' · Tosaitheoirí';
+  var st=document.getElementById('start-screen');if(!st)return;
+  var a=document.createElement('a');a.href='4u-leaganacha-tosaitheoiri.html';a.textContent='‹ Leaganacha Do Thosaitheoirí';
+  a.style.cssText='display:inline-block;color:#2a9d47;font-size:.85rem;text-decoration:none;margin-bottom:.8rem;font-weight:bold';
+  var b=document.createElement('div');b.textContent='🌱 Leagan do thosaitheoirí';
+  b.style.cssText='display:inline-block;background:#e6f4ea;color:#2a9d47;font-size:.8rem;font-weight:bold;padding:3px 12px;border-radius:999px;margin:.2rem 0 .8rem';
+  var h=st.querySelector('h1');st.insertBefore(a,st.firstChild);if(h&&h.nextSibling)h.parentNode.insertBefore(b,h.nextSibling);
+  st.insertBefore(document.createElement('br'),a.nextSibling);
+})();}
 </script>
 </body>
 </html>

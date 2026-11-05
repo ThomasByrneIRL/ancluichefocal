@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Leaganacha Do Thosaitheoirí</title>
+<script src="bearla.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f0;color:#1a1a2e;min-height:100vh;display:flex;justify-content:center}
+a{text-decoration:none;color:inherit}
+.wrap{width:100%;max-width:520px;padding:2rem 1.4rem 3rem}
+.back{display:inline-block;color:#2a9d47;font-size:.9rem;font-weight:bold;margin-bottom:1.4rem}
+.panel{background:#fff;border-radius:18px;padding:1.4rem 1.4rem 1.6rem;box-shadow:0 2px 16px rgba(0,0,0,.07)}
+.head{display:flex;align-items:center;gap:.75rem;padding-bottom:.9rem;margin-bottom:1rem;border-bottom:2px solid #2a9d47}
+.head .ic{font-size:1.6rem;line-height:1}
+.head h1{font-size:1.15rem;color:#2a9d47;letter-spacing:.01em}
+.head .sub{font-size:.8rem;color:#999;margin-top:.15rem}
+.en{display:none;font-size:.78rem;color:#999;font-style:italic;margin-top:.1rem}
+html.bearla .en{display:block}
+.games{display:flex;flex-direction:column;gap:.6rem}
+.game-card{display:flex;align-items:center;gap:.8rem;padding:.8rem .9rem;border-radius:12px;background:#f9f9f7;border:1.5px solid #ebebeb;transition:all .15s}
+@media (hover:hover){.game-card:hover{background:#fff;border-color:#2a9d47;transform:translateX(3px)}}
+.game-num{font-size:1.2rem;min-width:2.2rem;text-align:center;flex-shrink:0}
+.game-info{flex:1;min-width:0}
+.game-name{font-size:1rem;font-weight:bold}
+.game-desc{font-size:.8rem;color:#999;margin-top:.1rem}
+.game-arrow{color:#ccc;font-size:1.1rem}
+.note{color:#999;font-size:.8rem;line-height:1.6;margin-top:1.1rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">‹ Gaeilge Go Deo</a>
+  <div class="panel">
+    <div class="head">
+      <span class="ic">🌱</span>
+      <div>
+        <h1>Leaganacha Do Thosaitheoirí</h1>
+        <div class="en">Beginner Versions</div>
+        <div class="sub">Na cluichí céanna, le focail do thosaitheoirí</div>
+        <div class="en">The Same Games, With Beginner Words</div>
+      </div>
+    </div>
+    <div class="games">
+      <a href="misneach.html?liosta=tosaitheoiri" class="game-card">
+        <span class="game-num">🔥</span>
+        <div class="game-info">
+          <div class="game-name">Misneach</div>
+          <div class="game-desc">Dhá oiread nó faic</div>
+          <div class="en">Double Or Nothing</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+      <a href="an-dushlan.html?liosta=tosaitheoiri" class="game-card">
+        <span class="game-num">∞</span>
+        <div class="game-info">
+          <div class="game-name">An Dúshlán</div>
+          <div class="game-desc">32 focal as a chéile, gan teorainn ama</div>
+          <div class="en">32 Words In A Row, No Time Limit</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+      <a href="2u-marthanas.html?liosta=tosaitheoiri" class="game-card">
+        <span class="game-num">⚔️</span>
+        <div class="game-info">
+          <div class="game-name">Marthanas</div>
+          <div class="game-desc">Fan beo chomh fada agus is féidir</div>
+          <div class="en">Solo Survival</div>
+        </div>
+        <span class="game-arrow">›</span>
+      </a>
+    </div>
+  </div>
+  <p class="note">1,587 focal coitianta, fuaim ag gach ceann.<br>Taifead ar leith do gach leagan.</p>
+  <p class="note en" style="margin-top:.3rem">1,587 common words, all with audio. Separate high scores for each version.</p>
+</div>
+</body>
+</html>

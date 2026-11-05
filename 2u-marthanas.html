@@ -130,7 +130,11 @@ var FUAIM=(function(){
   <button class="big-btn" onclick="initGame()">Arís</button>
 </div>
 
-<script src="focloir.js"></script>
+<script>
+// Beginner versions (4ú Leaganacha Do Thosaitheoirí): ?liosta=tosaitheoiri uses the beginner dictionary instead of the full one.
+var FREAMH_TOSAI=/[?&]liosta=tosaitheoiri(&|$)/.test(location.search);
+document.write('<script src="'+(FREAMH_TOSAI?'focloir-tosaitheoiri.js':'focloir.js')+'"><\/script>');
+</script>
 <script>
 
 const WORDS      = Object.keys(DICT);
@@ -143,7 +147,7 @@ let correctIdx = 0, locked = false, currentWord = '';
 let flashTimer;
 let _ca = null;
 
-try { bestScore = parseInt(localStorage.getItem('2u_best_pts') || '0'); } catch(e){}
+try { bestScore = parseInt(localStorage.getItem((FREAMH_TOSAI?'2u_best_pts_tosai':'2u_best_pts')) || '0'); } catch(e){}
 
 function show(id) {
   document.getElementById('start-screen').style.display = id === 'start-screen' ? 'block' : 'none';
@@ -274,7 +278,7 @@ function endGame(reason) {
   if (_ca) { _ca.pause(); _ca = null; }
   if (totalScore > bestScore) {
     bestScore = totalScore;
-    try { localStorage.setItem('2u_best_pts', bestScore); } catch(e){}
+    try { localStorage.setItem((FREAMH_TOSAI?'2u_best_pts_tosai':'2u_best_pts'), bestScore); } catch(e){}
   }
   document.getElementById('over-score').textContent = totalScore;
   document.getElementById('over-time-line').textContent = '⏱ ' + formatTime(survivalElapsed);
@@ -296,6 +300,19 @@ function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)
 function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+dl);gn.gain.setValueAtTime(g,c.currentTime+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+dl+d);o.start(c.currentTime+dl);o.stop(c.currentTime+dl+d);}catch(e){}}
 function playOk(){_pt(523,.55,'sine',.22,0);_pt(659,.65,'sine',.2,.12);}
 function playNo(){_pt(220,.45,'sawtooth',.18,0);_pt(150,.5,'sawtooth',.14,.08);}
+</script>
+<script>
+// Beginner version: label the game and link back to the 4ú mini hub.
+if(FREAMH_TOSAI){(function(){
+  document.title+=' · Tosaitheoirí';
+  var st=document.getElementById('start-screen');if(!st)return;
+  var a=document.createElement('a');a.href='4u-leaganacha-tosaitheoiri.html';a.textContent='‹ Leaganacha Do Thosaitheoirí';
+  a.style.cssText='display:inline-block;color:#2a9d47;font-size:.85rem;text-decoration:none;margin-bottom:.8rem;font-weight:bold';
+  var b=document.createElement('div');b.textContent='🌱 Leagan do thosaitheoirí';
+  b.style.cssText='display:inline-block;background:#e6f4ea;color:#2a9d47;font-size:.8rem;font-weight:bold;padding:3px 12px;border-radius:999px;margin:.2rem 0 .8rem';
+  var h=st.querySelector('h1');st.insertBefore(a,st.firstChild);if(h&&h.nextSibling)h.parentNode.insertBefore(b,h.nextSibling);
+  st.insertBefore(document.createElement('br'),a.nextSibling);
+})();}
 </script>
 </body>
 </html>
