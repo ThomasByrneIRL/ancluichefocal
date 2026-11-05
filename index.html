@@ -59,7 +59,13 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
 .can-btn:hover{background:#fff5f6}
 .can-btn.on,.can-btn.on:hover{background:#e94560;color:#fff}
 .can-note{color:#999;font-size:.82rem;margin-top:.5rem}
+.en-row{display:flex;justify-content:center;margin:.6rem auto 0;max-width:420px}
+.en-btn{flex:1;padding:.6rem .5rem;border:2px solid #e94560;border-radius:12px;background:#fff;color:#e94560;
+  font-size:.92rem;font-weight:bold;cursor:pointer;font-family:Georgia,'Times New Roman',serif;transition:all .15s}
+@media (hover:hover){.en-btn:hover{background:#fff5f6}}
+.en-btn.on,.en-btn.on:hover{background:#e94560;color:#fff}
 </style>
+<script src="bearla.js"></script>
 </head>
 <body>
 
@@ -71,6 +77,7 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
     <button class="can-btn" data-c="U" onclick="setCanuint('U')">Ulaidh</button>
     <button class="can-btn" data-c="M" onclick="setCanuint('M')">Mumhain</button>
   </div>
+  <div class="en-row" id="en-row"><button class="en-btn" id="en-btn" onclick="toggleBearla()">English Instructions Please! 🙂🙏</button></div>
 </header>
 
 <main>
@@ -256,7 +263,7 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
         <span class="game-num">⚡</span>
         <div class="game-info">
           <div class="game-name">Ráib</div>
-          <div class="game-desc">Spriont 60 soicind</div>
+          <div class="game-desc">5 soicind: coinnigh iad nó caill iad</div>
         </div>
         <span class="game-arrow">›</span>
       </a>
@@ -315,6 +322,12 @@ main{max-width:920px;margin:0 auto;padding:1.5rem 1.5rem 3rem;display:grid;grid-
 function setCanuint(c){try{localStorage.setItem('freamh_canuint',c);}catch(e){}
   document.querySelectorAll('.can-btn').forEach(function(b){b.classList.toggle('on',b.dataset.c===c);});}
 (function(){var c='C';try{c=localStorage.getItem('freamh_canuint')||'C';}catch(e){}setCanuint(/^[CUM]$/.test(c)?c:'C');})();
+// English instructions for the games' rules (not Ardleibhéal). Master switch lives in bearla.js.
+function setBearla(on){try{if(on)localStorage.setItem('freamh_bearla','1');else localStorage.removeItem('freamh_bearla');}catch(e){}
+  document.getElementById('en-btn').classList.toggle('on',on);}
+function toggleBearla(){setBearla(!document.getElementById('en-btn').classList.contains('on'));}
+(function(){if(typeof FREAMH_BEARLA_ENABLED!=='undefined'&&!FREAMH_BEARLA_ENABLED){document.getElementById('en-row').style.display='none';return;}
+  var on=false;try{on=localStorage.getItem('freamh_bearla')==='1';}catch(e){}setBearla(on);})();
 </script>
 </body>
 </html>

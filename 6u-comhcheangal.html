@@ -123,6 +123,8 @@
     #live-board .brk { display:none; }
   }
 </style>
+<script src="bearla.js"></script>
+<style>.en-help{display:none;color:#888;font-size:.85rem;line-height:1.6;margin:.4rem auto 1rem;max-width:440px;font-style:italic;}html.bearla .en-help{display:block;}.en-help b{font-style:normal;}</style>
 </head>
 <body>
 
@@ -130,6 +132,7 @@
   <h1>🔗 Comhcheangal</h1>
   <p class="sub">Roghnaigh do sprioc: cé mhéad focal as a chéile?</p>
   <p class="rules">Gach focal ceart = nasc nua sa slabhra agus +1 pointe.<br>Críochnaigh an slabhra: bónas de sprioc × sprioc.<br>20 focal = 20 + 400 · 100 focal = 100 + 10,000<br>Focal mícheart nó am caite = <span style="color:#e94560">slabhra briste, gan bhónas!</span><br>4 soicind an focal · sprioc idir 5 agus 1,000</p>
+  <p class="en-help">🇬🇧 Choose your target: how many words in a row? Every correct word adds a link to the chain and 1 point. Complete the chain for a bonus of target × target (20 words = 20 + 400). A wrong word or running out of time breaks the chain: no bonus! 4 seconds per word, targets from 5 to 1,000.</p>
   <div class="mode-row">
     <button class="mode-btn" onclick="pickMode(this,'solo')">Aonair</button>
     <button class="mode-btn" onclick="pickMode(this,'multi')">Il-imreoir</button>

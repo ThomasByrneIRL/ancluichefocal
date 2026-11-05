@@ -127,12 +127,15 @@
     #live-board .brk { display:none; }
   }
 </style>
+<script src="bearla.js"></script>
+<style>.en-help{display:none;color:#888;font-size:.85rem;line-height:1.6;margin:.4rem auto 1rem;max-width:440px;font-style:italic;}html.bearla .en-help{display:block;}.en-help b{font-style:normal;}</style>
 </head>
 <body>
 <div id="start-screen" class="screen">
   <h1>🧠 Cuimhne</h1>
   <p class="subtitle">An bhfaca tú an focal seo cheana? &nbsp;| 🔊 Fuaim Chonnacht</p>
   <p style="color:#888;margin-bottom:2rem;line-height:1.7">Feicfidh tú focal amáin ag an am.<br>Cliceáil <strong style="color:#53d8fb">NUA</strong> nó <strong style="color:#ff6b9d">FEICTHE</strong>.<br>Cloisfidh tú an focal go huathoibríoch.<br>60 soicind agat. Saol amháin.</p>
+  <p class="en-help">🇬🇧 You'll see one word at a time. Tap <b>NUA</b> (new) if it's the first time you've seen it, or <b>FEICTHE</b> (seen) if it has come up before. You'll hear each word automatically. You have 60 seconds and one life.</p>
   <div class="mode-wrap">
     <button class="mode-btn" onclick="startSolo()">Aonair</button>
     <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
