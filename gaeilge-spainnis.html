@@ -61,7 +61,7 @@
 
   .choices { display: flex; flex-direction: column; gap: .75rem; margin-bottom: .6rem; }
   .choice-btn { width: 100%; padding: 1rem 1.2rem; border: 2px solid #ddd; border-radius: 12px; background: #fff; color: #1a1a2e; font-size: 1.05rem; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; line-height: 1.4; }
-  .choice-btn:hover:not(:disabled) { border-color: #53d8fb; background: #fff5f6; }
+  @media (hover:hover){.choice-btn:hover:not(:disabled) { border-color: #53d8fb; background: #fff5f6; }}  /* phones keep :hover after a tap, so only real mice get it */
   .choice-btn.selected-correct { border-color: #4caf50; background: #d4edda; color: #4caf50; font-weight: bold; }
   .choice-btn.selected-wrong { border-color: #e94560; background: #f8d7da; color: #e94560; }
   .choice-btn.reveal-correct { border-color: #4caf50; background: #d4edda; color: #4caf50; }

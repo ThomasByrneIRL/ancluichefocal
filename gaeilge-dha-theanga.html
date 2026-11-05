@@ -88,7 +88,7 @@
       border: 2px solid #ddd; background: #fff; color: #1a1a2e; font-size: 0.93rem;
       cursor: pointer; text-align: left; transition: background 0.1s, border-color 0.1s;
       min-height: 54px; display: flex; align-items: center; gap: 8px; }
-    .choice-btn:hover:not(:disabled) { background: #f8f8f8; border-color: #aaa; }
+    @media (hover:hover){.choice-btn:hover:not(:disabled) { background: #f8f8f8; border-color: #aaa; }}  /* phones keep :hover after a tap, so only real mice get it */
     .key-hint { font-size: 0.75rem; opacity: 0.4; flex-shrink: 0; min-width: 1.1em; }
     .choice-btn.selected  { border-color: #1a6fb5; background: #eff4fb; }
     .choice-btn.correct   { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
