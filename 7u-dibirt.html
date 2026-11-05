@@ -142,7 +142,7 @@
     }
     .key-hint { font-size: 1rem; opacity: 0.45; flex-shrink: 0; width: 1.2em; text-align: center; }
     .btn-text  { flex: 1; text-align: left; }
-    .choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }
+    @media (hover:hover){.choice-btn:hover:not(:disabled) { background: #fff5f6; border-color: #53d8fb; }}  /* phones keep :hover after a tap, so only real mice get it */
     .choice-btn.selected-correct { background: #d4edda; border-color: #2a9d47; color: #1a5c2e; }
     .choice-btn.selected-wrong   { background: #f8d7da; border-color: #e94560; color: #e94560; }
     .choice-btn.reveal-correct   { background: #d4edda; border-color: #4caf50; color: #4caf50; }

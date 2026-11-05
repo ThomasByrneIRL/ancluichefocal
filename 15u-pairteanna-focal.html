@@ -76,7 +76,7 @@ h1{font-size:2.8rem;color:#e94560;margin-bottom:.2rem;}
 .choice-btn{width:100%;padding:14px 16px;border-radius:10px;border:2px solid #ddd;background:#fff;color:#1a1a2e;font-size:1.1rem;cursor:pointer;transition:background .1s,border-color .1s;display:flex;align-items:center;gap:10px;}
 .key-hint{font-size:.95rem;opacity:.35;flex-shrink:0;width:1.1em;text-align:center;}
 .btn-text{flex:1;text-align:left;}
-.choice-btn:hover:not(:disabled){background:#fff5f6;border-color:#e94560;}
+@media (hover:hover){.choice-btn:hover:not(:disabled){background:#fff5f6;border-color:#e94560;}}  /* phones keep :hover after a tap, so only real mice get it */
 .choice-btn.ok{background:#d4edda;border-color:#2a9d47;color:#1a5c2e;}
 .choice-btn.ng{background:#f8d7da;border-color:#e94560;color:#c0392b;}
 .choice-btn.rv{background:#d4edda;border-color:#4caf50;color:#2a7a2a;}
