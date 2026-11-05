@@ -82,6 +82,21 @@
 
   .big-btn { background: #e94560; color: #fff; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 1rem; }
 </style>
+<script>
+// iPhone-safe pronunciation: one audio player, unlocked by the first tap, then reused for every word.
+// (iPhones only let a page play sound from a player that was started by a tap; a brand-new player
+//  created a moment after the tap, e.g. for the next word, can be silently blocked.)
+var FUAIM=(function(){
+  var el=null,unlocked=false,SILENT='data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+  function get(){if(!el){el=document.createElement('audio');el.preload='auto';el.setAttribute('playsinline','');}return el;}
+  function unlock(){if(unlocked)return;var a=get();a.muted=true;a.src=SILENT;try{var p=a.play();if(p&&p.then)p.then(function(){unlocked=true;}).catch(function(){});else unlocked=true;}catch(e){}}
+  ['touchend','click','mousedown','keydown'].forEach(function(t){document.addEventListener(t,unlock,true);});
+  function url(w,d){return 'https://www.teanglann.ie/Can'+d+'/'+encodeURIComponent(w)+'.mp3';}
+  return{play:function(w){var a=get(),d=window.FREAMH_CANUINT||'C';a.onerror=null;try{a.pause();}catch(e){}a.muted=false;a.src=url(w,d);
+    if(d!=='C')a.onerror=function(){a.onerror=null;a.src=url(w,'C');a.play().catch(function(){});};
+    a.play().catch(function(){});return a;}};
+})();
+</script>
 </head>
 <body>
 
@@ -141,13 +156,7 @@ let missedR1 = [];
 let locked, correctIdx, currentWord;
 let _ca = null;
 
-function playPron(word) {
-  if (_ca) { _ca.pause(); _ca = null; }
-  const a = new Audio('https://www.teanglann.ie/CanC/' + encodeURIComponent(word) + '.mp3');
-  a.onerror = function(){};
-  a.play().catch(function(){});
-  _ca = a;
-}
+function playPron(word){if(!word)return;if(_ca&&_ca!==FUAIM)try{_ca.pause();}catch(e){}_ca=FUAIM.play(word);}
 
 function sh(arr) {
   const a = arr.slice();

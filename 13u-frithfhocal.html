@@ -120,6 +120,21 @@ h1{font-size:2.8rem;color:#e94560;margin-bottom:.2rem;}
 .hint{font-size:.75rem;color:#aaa;margin-top:.4rem;}
 .attr{font-size:.65rem;color:#ccc;margin-top:1rem;}
 </style>
+<script>
+// iPhone-safe pronunciation: one audio player, unlocked by the first tap, then reused for every word.
+// (iPhones only let a page play sound from a player that was started by a tap; a brand-new player
+//  created a moment after the tap, e.g. for the next word, can be silently blocked.)
+var FUAIM=(function(){
+  var el=null,unlocked=false,SILENT='data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
+  function get(){if(!el){el=document.createElement('audio');el.preload='auto';el.setAttribute('playsinline','');}return el;}
+  function unlock(){if(unlocked)return;var a=get();a.muted=true;a.src=SILENT;try{var p=a.play();if(p&&p.then)p.then(function(){unlocked=true;}).catch(function(){});else unlocked=true;}catch(e){}}
+  ['touchend','click','mousedown','keydown'].forEach(function(t){document.addEventListener(t,unlock,true);});
+  function url(w,d){return 'https://www.teanglann.ie/Can'+d+'/'+encodeURIComponent(w)+'.mp3';}
+  return{play:function(w){var a=get(),d=window.FREAMH_CANUINT||'C';a.onerror=null;try{a.pause();}catch(e){}a.muted=false;a.src=url(w,d);
+    if(d!=='C')a.onerror=function(){a.onerror=null;a.src=url(w,'C');a.play().catch(function(){});};
+    a.play().catch(function(){});return a;}};
+})();
+</script>
 </head>
 <body>
 
@@ -323,7 +338,7 @@ function gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)(
 function pt(f,d,t,g,dl){try{const c=gx(),buf=c.state==='running'?0:0.06,o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,c.currentTime+buf+dl);gn.gain.setValueAtTime(g,c.currentTime+buf+dl);gn.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+buf+dl+d);o.start(c.currentTime+buf+dl);o.stop(c.currentTime+buf+dl+d);}catch(e){}}
 function playOk(){pt(523,.25,'sine',.22,0);pt(659,.3,'sine',.2,.10);}
 function playNo(){pt(220,.22,'sawtooth',.144,0);pt(150,.25,'sawtooth',.112,.07);}
-function playPron(w){if(!w||w.includes(' '))return;if(_ca){_ca.pause();_ca=null;}const a=new Audio('https://www.teanglann.ie/CanC/'+encodeURIComponent(w)+'.mp3');a.onerror=function(){};a.play().catch(function(){});_ca=a;}
+function playPron(w){if(!w||w.includes(' '))return;if(_ca&&_ca!==FUAIM)try{_ca.pause();}catch(e){}_ca=FUAIM.play(w);}
 function replayPron(){if(_clue)playPron(_clue);}
 function pointsFor(remMs){const s=remMs/1000;if(s>=3)return 4;if(s>=2)return 3;if(s>=1)return 2;return 1;}
 // iOS pre-warm
