@@ -112,8 +112,10 @@
     }
 
     /* ── Word timer ── */
-    #word-timer-wrap { width: 100%; height: 5px; background: #ddd; border-radius: 3px; overflow: hidden; }
-    #word-timer-bar  { height: 100%; border-radius: 3px; width: 100%; transition: none; }
+    /* Segmented countdown (as in Gaeilge-Spáinnis): one cell per second, left = last second, right = first */
+    #timer-wrap { width: 100%; height: 8px; display: flex; gap: 3px; }
+    #timer-wrap .seg { flex: 1; background: #e3e3dc; border-radius: 2px; overflow: hidden; }
+    #timer-wrap .seg > i { display: block; height: 100%; width: 100%; }
 
     /* ── Word card ── */
     .card {
@@ -199,7 +201,7 @@
 <div id="game-screen" class="screen">
   <div id="panels"></div>
   <div id="turn-indicator">—</div>
-  <div id="word-timer-wrap"><div id="word-timer-bar"></div></div>
+  <div id="timer-wrap"></div>
   <div id="word-card" class="card">—</div>
   <div id="sound-btn" onclick="replayPron()">🔊 arís</div>
   <div class="choices">
@@ -225,6 +227,17 @@
 
 const WORDS       = Object.keys(DICT);
 const WORD_MS     = 4000;
+const SEG_COLS = ['#e94560', '#e07b00', '#2a9d47', '#1b6e33'];   // +1 (last second) … +4 (first second)
+function buildSeg() {
+  document.getElementById('timer-wrap').innerHTML =
+    SEG_COLS.map(c => '<div class="seg"><i style="background:' + c + '"></i></div>').join('');
+}
+function drawSeg(rem) {
+  document.querySelectorAll('#timer-wrap .seg > i').forEach((f, i) => {
+    const v = Math.max(0, Math.min(1, (rem - i * 1000) / 1000));
+    f.style.width = (v * 100) + '%';
+  });
+}
 function pointsFor(rem) { const s = rem/1000; if (s >= 3.0) return 4; if (s >= 2.0) return 3; if (s >= 1.0) return 2; return 1; }
 const LIVES_START = 3;
 
@@ -412,8 +425,7 @@ function beginTurn() {
     : players[currentPlayer].name.toUpperCase() + '!';
   document.getElementById('word-card').textContent = fcMsg;
   document.getElementById('word-card').className = 'card turn-card';
-  document.getElementById('word-timer-bar').style.width = '100%';
-  document.getElementById('word-timer-bar').style.background = PALETTE[currentPlayer].border;
+  drawSeg(WORD_MS);
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => { b.querySelector('.btn-text').textContent = ''; b.disabled = true; });
   document.getElementById('pts-flash').style.opacity = '0';
@@ -460,8 +472,7 @@ function nextWord() {
 function tickWord() {
   const rem = wordEnd - Date.now();
   if (rem <= 0) {
-    document.getElementById('word-timer-bar').style.width = '0%';
-    document.getElementById('word-timer-bar').className = 'urgent';
+    drawSeg(0);
     playNo();
     document.getElementById('word-card').className = 'card flash-timeout';
     const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
@@ -475,10 +486,7 @@ function tickWord() {
     setTimeout(() => { currentPlayer = nextAlive(currentPlayer); beginTurn(); }, 950);
     return;
   }
-  const pct = (rem / WORD_MS) * 100;
-  const bar = document.getElementById('word-timer-bar');
-  bar.style.width = pct + '%';
-  bar.style.background = PALETTE[currentPlayer].border;
+  drawSeg(rem);
   wordRAF = requestAnimationFrame(tickWord);
 }
 
@@ -582,6 +590,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+buildSeg();
 setN(4);
 show('start-screen');
 

@@ -16,6 +16,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#1a1a2e;dis
 .scr.on{display:flex}
 /* English: bold, same colour as the text around it, so it reads on every background */
 .en{display:none;font-weight:700;font-style:normal;color:inherit;opacity:.9}
+body:not(.bearla) .en{display:none!important}
 body.bearla .en{display:block}
 body.bearla span.en{display:inline}
 body.bearla h2 span.en{display:block;font-size:2.2cqh}
@@ -105,6 +106,12 @@ h2{font-size:4cqh;text-align:center;line-height:1.15}
 .mem-ans{width:100%;display:flex;gap:3cqw;margin-top:3cqh}
 .mem-ans .ans{flex:1;height:20cqh;font-size:3.6cqh;font-weight:bold}
 .mem-ans .new{border-color:#1565c0;color:#1565c0}.mem-ans .seen{border-color:#8b5cf6;color:#8b5cf6}
+.tug{display:none;position:relative;width:100%;height:4.4cqh;border-radius:2.2cqh;background:#1565c0;overflow:hidden;margin-top:1.6cqh;box-shadow:inset 0 0 0 .3cqh rgba(0,0,0,.08)}
+.tug.on{display:block}
+.tug-r{position:absolute;left:0;top:0;bottom:0;width:50%;background:#e94560;transition:width .35s ease}
+.tug::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(5% - 2px),rgba(255,255,255,.55) calc(5% - 2px),rgba(255,255,255,.55) 5%)}
+.tug-mid{position:absolute;left:calc(50% - .3cqw);top:-.4cqh;bottom:-.4cqh;width:.6cqw;background:#1a1a2e;z-index:2;opacity:.6}
+.stars{font-size:2cqh;color:#d4a017;letter-spacing:.1em;min-height:2.4cqh}
 .sd{font-size:2cqh;font-weight:bold;color:#e07b00;letter-spacing:.06em}
 
 /* end screens */
@@ -144,10 +151,10 @@ h2{font-size:4cqh;text-align:center;line-height:1.15}
       <button class="lvl on" data-l="easca" onpointerdown="setLevel('easca')">Éasca<small class="en">Easy</small></button>
       <button class="lvl" data-l="deacair" onpointerdown="setLevel('deacair')">Deacair<small class="en">Hard</small></button>
     </div>
-    <button class="btn mode" onpointerdown="askNames('comhrac')"><span class="ic">⚔️</span><span class="tx">Comhrac<small class="en">Two Player Duel</small><small>Beirt · 25 go 100 pointe</small></span></button>
-    <button class="btn blue mode" onpointerdown="K=null;askNames('fanann')"><span class="ic">👑</span><span class="tx">Fanann an Buaiteoir<small class="en">Winner Stays On</small><small>Beirt · céad duine go 7</small></span></button>
-    <button class="btn dark mode" onpointerdown="askNames('scor')"><span class="ic">⏱️</span><span class="tx">Scór Mór<small class="en">Solo · 60 Seconds · Faster = More Points</small><small>Ina aonar · 60 soicind · tapa = níos mó pointí</small><small id="scor-best" style="color:#ffd36b"></small></span></button>
-    <button class="btn purple mode" onpointerdown="askNames('cuimhne')"><span class="ic">🧠</span><span class="tx">Cuimhne 60 Soicind<small class="en">60-Second Memory Sprint, Solo</small><small>Ina aonar · Nua nó Feicthe? · saol amháin</small></span></button>
+    <button class="btn mode" onpointerdown="askNames('comhrac')"><span class="ic">⚔️</span><span class="tx">Comhrac<small class="en">Two Player Duel</small></span></button>
+    <button class="btn blue mode" onpointerdown="K=null;askNames('fanann')"><span class="ic">👑</span><span class="tx">Fanann an Buaiteoir<small class="en">Winner Stays On</small></span></button>
+    <button class="btn dark mode" onpointerdown="askNames('scor')"><span class="ic">⏱️</span><span class="tx">Scór Mór<small class="en">Solo · 60 Seconds · Faster = More Points</small><small id="scor-best" style="color:#ffd36b"></small></span></button>
+    <button class="btn purple mode" onpointerdown="askNames('cuimhne')"><span class="ic">🧠</span><span class="tx">Cuimhne 60 Soicind<small class="en">60-Second Memory Sprint, Solo</small></span></button>
     <button class="btn grey" style="font-size:2.2cqh;padding:1.4cqh 6cqw" onpointerdown="go('attract')">‹ Siar<span class="en"> · Back</span></button>
   </section>
 
@@ -157,6 +164,7 @@ h2{font-size:4cqh;text-align:center;line-height:1.15}
     <div class="slots" id="n-slots"></div>
     <div class="kb" id="kb"></div>
     <div class="targets" id="n-targets"></div>
+    <div class="targets" id="n-format"></div>
     <div class="row2" style="margin-top:.6cqh">
       <button class="btn grey" style="flex:0 0 28cqw;font-size:2.4cqh" onpointerdown="go('menu')">‹ Siar<small class="en">Back</small></button>
       <button class="btn green" onpointerdown="namesDone()">Tosaigh<small class="en">Start</small></button>
@@ -170,6 +178,7 @@ h2{font-size:4cqh;text-align:center;line-height:1.15}
       <div style="text-align:center"><div class="lab" id="d-target" style="color:#555"></div><div class="sd" id="d-sd"></div></div>
       <div style="text-align:right"><div class="lab" id="d-n1" style="color:#1565c0"></div><div class="big" id="d-s1" style="color:#1565c0">0</div></div>
     </div>
+    <div class="tug" id="d-tug"><div class="tug-r" id="d-tug-r"></div><div class="tug-mid"></div></div>
     <div class="card" id="d-card" onpointerdown="sayAgain(event)"><div class="again">🔊</div><div class="word" id="d-word"></div><div class="bar" id="d-bar"></div></div>
     <div class="fb" id="d-fb"></div>
     <div class="cols">
@@ -244,7 +253,7 @@ const LISTS = { easca: {"cat": "cat", "madra": "dog", "capall": "horse", "bó": 
 
 // ── settings ─────────────────────────────────────────────────────────────────
 const WORD_MS = 5000;                 // Comhrac, Fanann, Scór Mór: 5 seconds a word, 5 → 1 points (as in Dhá Theanga)
-const FANANN_TARGET = 7;              // Fanann an Buaiteoir: first to 7 points (6–6 = sudden death: next point wins)
+const TUG_UNITS = 20;                 // Fanann an Buaiteoir: tug-of-war bar of 20 units, 10 each; each point moves it 1 unit (5%)
 const SOLO_MS = 60000, MEM_MS = 60000, MEM_WORD_MS = 3000;
 const IDLE_MS = 30000;                // no touches for this long: back to the attract screen, defaults restored
 // Pronunciation: local 'fuaim/C|U|M/' folders next to this file first (kiosk, offline), then teanglann.ie online.
@@ -347,7 +356,7 @@ const MODE_INFO={
   scor:{ga:'⏱️ Scór Mór',en:'Big Score',players:1},
   cuimhne:{ga:'🧠 Cuimhne 60 Soicind',en:'60-Second Memory Sprint',players:1}
 };
-let pendingMode='',names=['',''],activeSlot=0,target=25,K=null;   // K = winner-stays-on state
+let pendingMode='',names=['',''],activeSlot=0,target=25,raceTo=1,K=null,W=null;   // W = Comhrac match wins   // K = winner-stays-on state
 const KEYS=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM','ÁÉÍÓÚ'];
 function buildKB(){
   let h=KEYS.map(r=>'<div class="r">'+[...r].map(c=>'<button onpointerdown="kbPress(\''+c+'\',event)">'+c+'</button>').join('')+'</div>').join('');
@@ -361,9 +370,11 @@ function askNames(mode){
     $('n-title').innerHTML='⚔️ Dúshlánóir nua!<span class="en" style="font-size:2.2cqh">New challenger!</span>';}
   else{names=['',''];activeSlot=0;}
   $('n-targets').innerHTML=mode==='comhrac'?[25,50,75,100].map(t=>'<button class="tg'+(t===target?' on':'')+'" onpointerdown="setTarget('+t+',event)">'+t+'<small>pointe</small></button>').join(''):'';
+  $('n-format').innerHTML=mode==='comhrac'?[[1,'Cluiche amháin','One game'],[3,'Rás go 3','First to 3'],[5,'Rás go 5','First to 5']].map(f=>'<button class="tg fm'+(f[0]===raceTo?' on':'')+'" data-f="'+f[0]+'" onpointerdown="setRace('+f[0]+',event)" style="font-size:2.1cqh">'+f[1]+'<small class="en">'+f[2]+'</small></button>').join(''):'';
   go('names');renderSlots();
 }
-function setTarget(t,e){if(e)e.stopPropagation();target=t;document.querySelectorAll('.tg').forEach(b=>b.classList.toggle('on',+b.textContent.replace(/\D/g,'')===t));}
+function setTarget(t,e){if(e)e.stopPropagation();target=t;document.querySelectorAll('#n-targets .tg').forEach(b=>b.classList.toggle('on',+b.textContent.replace(/\D/g,'')===t));}
+function setRace(n,e){if(e)e.stopPropagation();raceTo=n;document.querySelectorAll('#n-format .tg').forEach(b=>b.classList.toggle('on',+b.dataset.f===n));}
 function renderSlots(){
   const n=MODE_INFO[pendingMode].players,cols=['#e94560','#1565c0'];
   let h='';
@@ -384,7 +395,7 @@ function kbPress(c,e){if(e)e.stopPropagation();let s=names[activeSlot]||'';
 function nameOf(i){return (names[i]||'').trim()||(MODE_INFO[pendingMode].players===1?'Imreoir':'Imreoir '+(i+1));}
 function namesDone(){
   const nm=[nameOf(0),nameOf(1)];
-  if(pendingMode==='comhrac')startDuel('comhrac',nm);
+  if(pendingMode==='comhrac'){W={wins:[0,0],game:1};startDuel('comhrac',nm);}
   else if(pendingMode==='fanann')startDuel('fanann',nm);
   else if(pendingMode==='scor')startSolo(nm[0]);
   else startMem(nm[0]);
@@ -396,7 +407,7 @@ function namesDone(){
 let D=null;
 function startDuel(type,nm){
   if(type==='fanann'){if(!K)K={champ:null,champName:'',streak:0};if(K.champ!==null)nm[K.champ]=K.champName;}
-  D={type,nm,s:[0,0],words:0,sd:false};
+  D={type,nm,s:[0,0],words:0,pos:TUG_UNITS/2};
   go('duel');segBar('d-bar');
   for(let p=0;p<2;p++){
     const crown=type==='fanann'&&K.champ===p?'👑 ':'';
@@ -404,13 +415,20 @@ function startDuel(type,nm){
   }
   $('d-rule').innerHTML=type==='comhrac'
     ?'Tapa = 5 → 1 pointe · mícheart = caill na pointí sin<span class="en blk">Fast = 5 → 1 points · wrong = lose those points</span>'
-    :'An chéad fhreagra ceart: +1 · mícheart: +1 don duine eile<span class="en blk">First right answer: +1 · wrong: +1 to the other player</span>';
+    :'Tarraing an barra go dtí do thaobh féin! Ceart = do dhath ag fás · mícheart = dath an duine eile ag fás<span class="en blk">Pull the bar to your side! Right = your colour grows · wrong = theirs grows</span>';
   duelHud();duelNext();
 }
+function stars(n,of){return of>1?'★'.repeat(n)+'☆'.repeat(of-n):'';}
 function duelHud(){
+  const tug=D.type==='fanann';
+  $('d-tug').classList.toggle('on',tug);
+  $('d-s0').style.display=$('d-s1').style.display=tug?'none':'block';
   $('d-s0').textContent=D.s[0];$('d-s1').textContent=D.s[1];
-  if(D.type==='comhrac'){$('d-target').innerHTML='GO '+target;$('d-sd').textContent='';}
-  else{const sd=D.s[0]===FANANN_TARGET-1&&D.s[1]===FANANN_TARGET-1;$('d-target').innerHTML='GO '+FANANN_TARGET;$('d-sd').textContent=sd?'BÁS TOBANN':'';}
+  if(tug){$('d-tug-r').style.width=(D.pos/TUG_UNITS*100)+'%';$('d-target').innerHTML='';$('d-sd').textContent='';}
+  else{
+    $('d-target').innerHTML='GO '+target+(raceTo>1?'<br><span style="font-size:1.6cqh">Cluiche '+W.game+' · rás go '+raceTo+'</span>':'');
+    $('d-sd').innerHTML=raceTo>1?'<span class="stars" style="color:#e94560">'+stars(W.wins[0],raceTo)+'</span> &nbsp; <span class="stars" style="color:#1565c0">'+stars(W.wins[1],raceTo)+'</span>':'';
+  }
 }
 function duelNext(){
   const q=question();D.q=q;D.done=false;
@@ -439,7 +457,7 @@ function duelPick(p,i,e){
     if(right){D.s[p]=Math.min(target,D.s[p]+v);}else{D.s[p]=Math.max(0,D.s[p]-v);}
     $('d-fb').innerHTML='<span style="color:'+col+'">'+esc(D.nm[p])+' '+(right?'+':'−')+v+'</span>';
   }else{
-    if(right)D.s[p]++;else D.s[other]++;
+    const g=right?p:other;D.s[g]++;D.pos+=g===0?1:-1;
     $('d-fb').innerHTML=right?'<span style="color:'+col+'">+1 '+esc(D.nm[p])+'</span>':'<span style="color:'+(other?'#1565c0':'#e94560')+'">Mícheart! +1 '+esc(D.nm[other])+'</span>';
   }
   if(right){okSnd();btn.classList.add('ok');$('d-card').className='card ok';}
@@ -451,15 +469,15 @@ function duelAfterWord(ms){
   D.words++;
   let winner=-1;
   if(D.type==='comhrac'){if(D.s[0]>=target)winner=0;else if(D.s[1]>=target)winner=1;}
-  else{
-    if(D.s[0]>=FANANN_TARGET)winner=0;else if(D.s[1]>=FANANN_TARGET)winner=1;
-  }
+  else{if(D.pos>=TUG_UNITS)winner=0;else if(D.pos<=0)winner=1;}
   duelHud();
   later(()=>{if(winner>=0)duelEnd(winner);else duelNext();},ms);
 }
 function duelEnd(w){
   winSnd();go('duel-end');
-  $('de-score').innerHTML='<span style="color:#e94560">'+D.s[0]+'</span> – <span style="color:#1565c0">'+D.s[1]+'</span>';
+  $('de-score').innerHTML=D.type==='fanann'
+    ?'<div class="tug on" style="height:4cqh;width:70cqw;margin:0 auto"><div class="tug-r" style="width:'+(w===0?100:0)+'%"></div></div>'
+    :'<span style="color:#e94560">'+D.s[0]+'</span> – <span style="color:#1565c0">'+D.s[1]+'</span>';
   if(D.type==='fanann'){
     const kept=K.champ===w;K.streak=kept?K.streak+1:1;K.champ=w;K.champName=D.nm[w];
     const best=store('king_'+today());if(!best||K.streak>best.s)store('king_'+today(),{s:K.streak,n:K.champName});
@@ -469,10 +487,19 @@ function duelEnd(w){
     $('de-sub').innerHTML='Sraith bua<span class="en"> (win streak)</span>: <b>'+K.streak+'</b> · Taifead an lae<span class="en"> (today)</span>: <b>'+b.s+'</b> ('+esc(b.n)+')';
     $('de-btns').innerHTML='<button class="btn blue" onpointerdown="askNames(\'fanann\')">Dúshlánóir nua<small class="en">Next challenger</small></button><button class="btn dark" onpointerdown="K=null;go(\'menu\')">Críochnaigh<small class="en">Finish</small></button>';
   }else{
-    $('de-ic').textContent='🏆';
-    $('de-title').innerHTML=esc(D.nm[w])+' a bhuaigh!<span class="en" style="font-size:2.2cqh">'+esc(D.nm[w])+' wins!</span>';
-    $('de-sub').innerHTML='Sprioc<span class="en"> (target)</span>: '+target+' pointe';
-    $('de-btns').innerHTML='<button class="btn green" onpointerdown="startDuel(\'comhrac\',D.nm.slice())">Arís<small class="en">Rematch</small></button><button class="btn dark" onpointerdown="go(\'menu\')">Roghchlár<small class="en">Menu</small></button>';
+    W.wins[w]++;
+    const matchOver=W.wins[w]>=raceTo;
+    $('de-ic').textContent=matchOver?'🏆':'⭐';
+    if(raceTo===1||matchOver){
+      $('de-title').innerHTML=esc(D.nm[w])+' a bhuaigh!<span class="en" style="font-size:2.2cqh">'+esc(D.nm[w])+' wins!</span>';
+    }else{
+      $('de-title').innerHTML='Cluiche '+W.game+' do '+esc(D.nm[w])+'!<span class="en" style="font-size:2.2cqh">Game '+W.game+' to '+esc(D.nm[w])+'!</span>';
+    }
+    $('de-sub').innerHTML=(raceTo>1?'<span style="color:#e94560;font-size:3cqh">'+esc(D.nm[0])+' '+stars(W.wins[0],raceTo)+'</span><br><span style="color:#1565c0;font-size:3cqh">'+esc(D.nm[1])+' '+stars(W.wins[1],raceTo)+'</span><br>':'')+
+      'Sprioc<span class="en"> (target)</span>: '+target+' pointe'+(raceTo>1?' · Rás go '+raceTo+'<span class="en"> (first to '+raceTo+')</span>':'');
+    $('de-btns').innerHTML=matchOver
+      ?'<button class="btn green" onpointerdown="W={wins:[0,0],game:1};startDuel(\'comhrac\',D.nm.slice())">Arís<small class="en">Rematch</small></button><button class="btn dark" onpointerdown="go(\'menu\')">Roghchlár<small class="en">Menu</small></button>'
+      :'<button class="btn green" onpointerdown="W.game++;startDuel(\'comhrac\',D.nm.slice())">Cluiche '+(W.game+1)+' →<small class="en">Game '+(W.game+1)+'</small></button><button class="btn dark" onpointerdown="go(\'menu\')">Roghchlár<small class="en">Menu</small></button>';
   }
 }
 
