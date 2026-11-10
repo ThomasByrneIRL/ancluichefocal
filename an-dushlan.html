@@ -387,11 +387,13 @@ function playWord(word) {
 
 /* ── Sound FX ── */
 let _sfx = null;
-function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
-function _pt(hz,g,type,dur,del){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain();o.type=type;o.frequency.value=hz;gn.gain.setValueAtTime(g,c.currentTime+del);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+del+dur);o.connect(gn);gn.connect(c.destination);o.start(c.currentTime+del);o.stop(c.currentTime+del+dur);}catch(e){}}
+function _gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state!=='running')_sfx.resume();return _sfx;}
+// Same as Dhá Theanga: (frequency, duration, wave type, volume, delay). The old version read volume and duration the wrong way round,
+// so the correct-answer chime played too loud and too short and could distort on iPhone speakers.
+function _pt(f,d,t,g,dl){try{const c=_gx(),o=c.createOscillator(),gn=c.createGain(),t0=c.currentTime+0.03+dl;o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,t0);gn.gain.setValueAtTime(g,t0);gn.gain.exponentialRampToValueAtTime(0.0001,t0+d);o.start(t0);o.stop(t0+d);}catch(e){}}
 function playOk(){_pt(523,.55,'sine',.22,0);_pt(659,.65,'sine',.2,.12);}
 function playNo(){_pt(220,.45,'sawtooth',.18,0);_pt(150,.5,'sawtooth',.14,.08);}
-function playVictory(){_pt(523,.55,'sine',.3,0);_pt(659,.55,'sine',.3,.18);_pt(784,.6,'sine',.5,.36);_pt(1047,.55,'sine',.6,.6);}
+function playVictory(){_pt(523,.55,'sine',.22,0);_pt(659,.55,'sine',.22,.18);_pt(784,.6,'sine',.22,.36);_pt(1047,.8,'sine',.22,.6);}
 
 /* ══════════ MODE SELECTION ══════════ */
 function goStart() { show('start-screen'); }
@@ -546,8 +548,6 @@ function nextWord(forcedWord) {
     b.textContent = opts[i]; b.className = 'choice-btn'; b.disabled = false;
   });
 
-  // Preload next word
-  if (wordNum < TOTAL_WORDS) preloadFor(rnd(word));
 
   wordDeadline = Date.now() + WORD_MS;
   tickWord();
@@ -574,6 +574,11 @@ function pick(idx) {
   const btns = [document.getElementById('choice-a'), document.getElementById('choice-b')];
   btns.forEach(b => b.disabled = true);
 
+  // iPhone: a word recording still playing (or starting) can block the chime, so stop it first,
+  // and load the next word now, inside the tap, as Dhá Theanga does.
+  if (_ca) { _ca.pause(); _ca = null; }
+  if (idx === correctIdx && wordNum < TOTAL_WORDS) preloadFor(rnd(currentWord));
+
   if (idx === correctIdx) {
     playOk();
     btns[idx].className = 'choice-btn selected-correct';
@@ -594,7 +599,7 @@ function pick(idx) {
     } else {
       wordNum++;
       locked = false;
-      setTimeout(() => nextWord(null), 450);
+      setTimeout(() => nextWord(_nextWord), 450);   // the word loaded during the tap
     }
   } else {
     playNo();
