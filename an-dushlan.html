@@ -173,6 +173,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 <div id="start-screen" class="screen">
   <h1>🏅 An Dúshlán</h1>
   <p class="subtitle">32 focal as a chéile. Contae amháin in aghaidh gach focail. Focal amháin mícheart agus tá tú thart.</p>
+  <div id="start-map" style="max-width:220px;margin:0 auto .6rem"></div>
   <p style="color:#666;margin-bottom:1.2rem;line-height:2">
     Roghnaigh an sainmhíniú ceart.<br>
     <span style="color:#1a6fb5">5 soicind</span> an focal.<br>
@@ -238,7 +239,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
   <h1>Thart!</h1>
   <div id="over-player"></div>
   <div id="over-reached"></div>
-  <div class="over-dots" id="over-dots"></div>
+  <div class="over-dots" id="over-dots" style="margin:.6rem auto"></div>
   <div id="over-score">0</div>
   <div id="over-wrong-word"></div>
   <div id="over-actions"></div>
@@ -252,7 +253,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
   <div id="victory-player"></div>
   <div id="victory-score">1,600,000,000</div>
   <p style="color:#aaa;font-size:.85rem;margin-bottom:.4rem">pt</p>
-  <div class="county-dots" id="victory-dots" style="justify-content:center;margin:.8rem 0"></div>
+  <div class="county-dots" id="victory-dots" style="margin:.8rem auto"></div>
   <div id="victory-actions"></div>
 </div>
 
@@ -466,7 +467,7 @@ function showHandoff() {
   const tgt = document.getElementById('handoff-target');
   if (leaderIdx >= 0 && leaderIdx !== pi) {
     const lc = pc(leaderIdx), ln = pn(leaderIdx), ls = playerScores[leaderIdx];
-    tgt.innerHTML = 'AN SCÓR IS AIRDE ANOIS — <span style="color:' + lc + ';font-weight:bold">' + ln + '</span> LE <span style="color:#f0c040;font-weight:bold">' + ls + '</span> pt';
+    tgt.innerHTML = 'AN SCÓR IS AIRDE ANOIS: <span style="color:' + lc + ';font-weight:bold">' + ln + '</span> LE <span style="color:#f0c040;font-weight:bold">' + ls + '</span> pt';
     tgt.style.display = 'block';
   } else {
     tgt.style.display = 'none';
@@ -493,7 +494,7 @@ function initGame(firstWord) {
     turnLive = 0; renderLive();
     if (false) {
       const lc = pc(leaderIdx), ln = pn(leaderIdx);
-      th.innerHTML = 'AN SCÓR IS AIRDE — <span style="color:' + lc + '">' + ln + '</span> LE <span style="color:#f0c040">' + fmt(playerScores[leaderIdx]) + '</span> pt';
+      th.innerHTML = 'AN SCÓR IS AIRDE: <span style="color:' + lc + '">' + ln + '</span> LE <span style="color:#f0c040">' + fmt(playerScores[leaderIdx]) + '</span> pt';
       th.style.display = 'block';
     } else { th.style.display = 'none'; }
   } else {
@@ -662,7 +663,7 @@ function bust(reason) {
   // Wrong word
   document.getElementById('over-wrong-word').textContent =
     (reason === 'Am caite!' ? 'Am caite' : 'Freagra mícheart') +
-    ' — ' + currentWord + ' = ' + DICT[currentWord][0];
+    ': ' + currentWord + ' = ' + DICT[currentWord][0];
 
   // Actions
   const act = document.getElementById('over-actions');
@@ -742,6 +743,7 @@ document.addEventListener('keydown', e => {
 });
 
 show('start-screen');
+if (HAS_MAP) buildDots('start-map', 0, 'none');   // grey map on the start screen
 </script>
 <script>
 // Beginner version: label the game and link back to the 4ú mini hub.
