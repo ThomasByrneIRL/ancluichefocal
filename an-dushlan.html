@@ -182,22 +182,23 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 <body>
 
 <!-- START -->
-<div id="start-screen" class="screen">
+<div id="start-screen" class="screen" style="padding-top:1rem;padding-bottom:1rem">
   <h1>🏅 An Dúshlán</h1>
-  <p class="subtitle">32 focal as a chéile. Contae amháin in aghaidh gach focail. Focal amháin mícheart agus tá tú thart.</p>
-  <div id="start-map" style="max-width:220px;margin:0 auto .6rem"></div>
-  <p style="color:#666;margin-bottom:1.2rem;line-height:2">
-    Roghnaigh an sainmhíniú ceart.<br>
-    <span style="color:#1a6fb5">5 soicind</span> an focal.<br>
-    Freagra mícheart nó am caite → <span style="color:#e94560">thart!</span><br>
-    32 focal ceart as a chéile → <span style="color:#e07b00">bua iomlán!</span><br>
-    <span style="color:#1a6fb5">↑ barr &nbsp;·&nbsp; ↓ bun</span> le roghnú
+  <p class="subtitle" style="margin-bottom:.6rem">32 focal as a chéile. Contae amháin in aghaidh gach focail. Focal amháin mícheart agus tá tú thart.</p>
+  <div id="start-map" style="max-width:min(210px, calc(30vh * 0.772));margin:0 auto .5rem"></div>
+  <div id="ord-row" style="display:none;margin:0 0 .5rem">
+    <label for="ord-sel" style="color:#888;font-size:.85rem">Ord na gcontaetha:</label>
+    <select id="ord-sel" onchange="pickOrd(this.value)" style="font-size:.95rem;padding:.35rem .6rem;border:2px solid #e94560;border-radius:10px;color:#e94560;background:#fff;font-weight:bold;font-family:Georgia,'Times New Roman',serif;margin-left:.3rem;max-width:100%"></select>
+  </div>
+  <p style="color:#666;margin-bottom:.4rem;line-height:1.55;font-size:.92rem">
+    Roghnaigh an sainmhíniú ceart · <span style="color:#1a6fb5">5 soicind</span> an focal<br>
+    Mícheart nó am caite → <span style="color:#e94560">thart!</span> · 32 as a chéile → <span style="color:#e07b00">bua iomlán!</span>
   </p>
   <div class="mode-wrap">
     <button class="mode-btn" onclick="startSolo()">Aonair</button>
     <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
   </div>
-  <p style="font-size:.62rem;color:#aaa;margin-top:1.2rem">Léarscáil: © OpenStreetMap</p>
+  <p style="font-size:.62rem;color:#aaa;margin-top:.8rem">Léarscáil: © OpenStreetMap</p>
 </div>
 
 <!-- SETUP -->
@@ -344,8 +345,12 @@ function buildDots(containerId, current, state) {
   const el = document.getElementById(containerId);
   if (HAS_MAP) {
     el.className = 'cmap' + (state === 'win' ? ' win' : '');
-    if (!el.firstChild || el.firstChild.tagName !== 'svg')
+    if (!el.firstChild || el.firstChild.tagName !== 'svg' || el.dataset.ord !== CONTAE_ORD.key) {
+      el.dataset.ord = CONTAE_ORD.key;
+      const keep = document.getElementById('cpop'); if (keep && el.contains(keep)) el.removeChild(keep);   // keep the ✓ pop-up when redrawing
       el.innerHTML = '<svg viewBox="0 0 610 790">' + CONTAE_ORD.map(([ga, en], i) => '<path data-i="' + i + '" d="' + CONTAE_PATHS[en] + '"><title>' + ga + '</title></path>').join('') + '</svg>';
+      if (keep) el.appendChild(keep);
+    }
     el.querySelectorAll('path').forEach(p => {
       const i = +p.dataset.i + 1;
       p.setAttribute('class', (state === 'win' || i < current) ? 'done' : i === current ? (state || 'now') : '');
@@ -528,7 +533,7 @@ function nextWord(forcedWord) {
 
   // Update UI for current word
   buildDots('county-dots', wordNum);
-  document.getElementById('word-num-label').innerHTML = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS + (HAS_MAP ? ' · <b>' + CONTAE_ORD[wordNum - 1][0] + '</b>' : '');
+  document.getElementById('word-num-label').innerHTML = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS + (HAS_MAP ? ' · <b>' + CONTAE_ORD[wordNum - 1][0] + '</b>' + (CONTAE_ORD.fact ? ' <span style="color:#888">(' + CONTAE_ORD.fact(CONTAE_ORD[wordNum - 1][0]) + ')</span>' : '') : '');
   document.getElementById('score-display').textContent = wordNum - 1;
   if (mode === 'multi') { turnLive = wordNum - 1; renderLive(); }
 
@@ -760,6 +765,19 @@ document.addEventListener('keydown', e => {
 });
 
 show('start-screen');
+// County order picker (alphabetical by default; remembered on this device)
+function pickOrd(key) {
+  setContaeOrd(key);
+  try { localStorage.setItem('dushlan_ord', CONTAE_ORD.key); } catch (e) {}
+  buildDots('start-map', 0, 'none');
+}
+if (HAS_MAP && typeof CONTAE_ORDUITHE !== 'undefined') {
+  const sel = document.getElementById('ord-sel');
+  sel.innerHTML = Object.entries(CONTAE_ORDUITHE).map(([k, o]) => '<option value="' + k + '">' + o.ga + '</option>').join('');
+  let saved = 'aibitreach'; try { saved = localStorage.getItem('dushlan_ord') || 'aibitreach'; } catch (e) {}
+  setContaeOrd(saved); sel.value = CONTAE_ORD.key;
+  document.getElementById('ord-row').style.display = 'block';
+}
 if (HAS_MAP) buildDots('start-map', 0, 'none');   // grey map on the start screen
 </script>
 <script>
