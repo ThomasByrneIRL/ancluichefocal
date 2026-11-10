@@ -65,6 +65,19 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 .cdot { width: 13px; height: 13px; border-radius: 50%; background: #ddd; transition: background .2s; flex-shrink: 0; }
 .cdot.done { background: #2a9d47; }
 .cdot.active { background: #e94560; }
+/* ── County map (léarscáil-náisiúnta.js): replaces the dots; each correct answer fills the next county in green ── */
+.cmap { position: relative; width: 100%; max-width: min(300px, calc(38vh * 0.772)); margin: 0 auto .4rem; }
+.cmap svg { width: 100%; height: auto; display: block; }
+.cmap path { fill: #e3e3dc; stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; transition: fill .4s; }
+.cmap path.done { fill: #2a9d47; }
+.cmap path.now { fill: #e94560; animation: cglow 1s ease-in-out infinite; }
+.cmap path.lost { fill: #e94560; }
+.cmap.win path { fill: #2a9d47; animation: cwin 1.2s ease-in-out 2; }
+@keyframes cglow { 0%,100% { fill: #e94560; } 50% { fill: #f6a5b2; } }
+@keyframes cwin { 0%,100% { fill: #2a9d47; } 50% { fill: #7fd69a; } }
+#cpop { position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%) scale(.6); background: #fff; color: #2a9d47; font-weight: bold; font-size: 1.15rem; padding: .35rem .85rem; border-radius: 999px; box-shadow: 0 2px 12px rgba(0,0,0,.18); opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; }
+#cpop.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+#word-num-label b { color: #1a1a2e; }
 
 /* ── Player HUD ── */
 #player-hud { font-size: 1.05rem; font-weight: bold; margin-bottom: .25rem; min-height: 1.4rem; }
@@ -171,6 +184,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
     <button class="mode-btn" onclick="startSolo()">Aonair</button>
     <button class="mode-btn" onclick="startMulti()">Il-imreoir</button>
   </div>
+  <p style="font-size:.62rem;color:#aaa;margin-top:1.2rem">Léarscáil: © OpenStreetMap</p>
 </div>
 
 <!-- SETUP -->
@@ -205,7 +219,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
   <div id="player-hud"></div>
   <div id="live-board"></div>
   <div id="target-hud"></div>
-  <div class="county-dots" id="county-dots"></div>
+  <div class="county-dots" id="county-dots"></div><div id="cpop"></div>
   <div id="word-num-label"></div>
   <div id="score-display">0</div>
   <div id="score-unit">/ 32</div>
@@ -255,6 +269,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 var FREAMH_TOSAI=/[?&]liosta=tosaitheoiri(&|$)/.test(location.search);
 document.write('<script src="'+(FREAMH_TOSAI?'focloir-tosaitheoiri.js':'focloir.js')+'"><\/script>');
 </script>
+<script src="léarscáil-náisiúnta.js"></script>
 <script>
 
 const WORDS = Object.keys(DICT);
@@ -309,8 +324,22 @@ function pc(i) { return PCOLS[i % PCOLS.length]; }
 function rnd(ex) { let w; do { w = WORDS[Math.floor(Math.random()*WORDS.length)]; } while(w===ex); return w; }
 function sh(a) { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
-function buildDots(containerId, current) {
+// Progress: the county map (léarscáil-náisiúnta.js) if it loaded, otherwise the old row of 32 dots.
+// current = the word being attempted (1–32); counties before it are green. state: 'now' (glowing), 'lost' (red), 'win' (all green)
+const HAS_MAP = typeof CONTAE_PATHS !== 'undefined';
+function buildDots(containerId, current, state) {
   const el = document.getElementById(containerId);
+  if (HAS_MAP) {
+    el.className = 'cmap' + (state === 'win' ? ' win' : '');
+    if (!el.firstChild || el.firstChild.tagName !== 'svg')
+      el.innerHTML = '<svg viewBox="0 0 610 790">' + CONTAE_ORD.map(([ga, en], i) => '<path data-i="' + i + '" d="' + CONTAE_PATHS[en] + '"><title>' + ga + '</title></path>').join('') + '</svg>';
+    el.querySelectorAll('path').forEach(p => {
+      const i = +p.dataset.i + 1;
+      p.setAttribute('class', (state === 'win' || i < current) ? 'done' : i === current ? (state || 'now') : '');
+    });
+    if (containerId === 'county-dots') { const pop = document.getElementById('cpop'); if (pop && pop.parentNode !== el) el.appendChild(pop); }
+    return;
+  }
   el.innerHTML = '';
   for (let i = 1; i <= TOTAL_WORDS; i++) {
     const d = document.createElement('div');
@@ -484,7 +513,7 @@ function nextWord(forcedWord) {
 
   // Update UI for current word
   buildDots('county-dots', wordNum);
-  document.getElementById('word-num-label').textContent = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS;
+  document.getElementById('word-num-label').innerHTML = 'Focal ' + wordNum + ' / ' + TOTAL_WORDS + (HAS_MAP ? ' · <b>' + CONTAE_ORD[wordNum - 1][0] + '</b>' : '');
   document.getElementById('score-display').textContent = wordNum - 1;
   if (mode === 'multi') { turnLive = wordNum - 1; renderLive(); }
 
@@ -540,6 +569,11 @@ function pick(idx) {
     fl.textContent = '+1'; fl.style.opacity = '1';
     clearTimeout(flashTimer);
     flashTimer = setTimeout(() => fl.style.opacity = '0', 600);
+    if (HAS_MAP) {   // fill this county in green, with its name
+      buildDots('county-dots', wordNum + 1, 'none');
+      const pop = document.getElementById('cpop'); pop.textContent = '✓ ' + CONTAE_ORD[wordNum - 1][0];
+      pop.classList.add('show'); setTimeout(() => pop.classList.remove('show'), 650);
+    }
 
     if (wordNum === TOTAL_WORDS) {
       // WIN!
@@ -566,11 +600,7 @@ function victory() {
   playVictory();
 
   // All dots green
-  const dotsEl = document.getElementById('victory-dots');
-  dotsEl.innerHTML = '';
-  for (let i = 0; i < TOTAL_WORDS; i++) {
-    const d = document.createElement('div'); d.className = 'cdot done'; dotsEl.appendChild(d);
-  }
+  buildDots('victory-dots', TOTAL_WORDS + 1, 'win');
 
   if (mode === 'multi') {
     const pi = currentPlayerIdx, c = pc(pi), n = pn(pi);
@@ -622,7 +652,7 @@ function bust(reason) {
     'Shroich tú focal ' + (wordNum-1) + ' / ' + TOTAL_WORDS;
 
   // Dots
-  buildDots('over-dots', wordNum);
+  buildDots('over-dots', wordNum, 'lost');
 
   // Score
   const scoreEl = document.getElementById('over-score');
