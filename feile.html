@@ -151,8 +151,8 @@ h2{font-size:4cqh;text-align:center;line-height:1.15}
       <button class="lvl on" data-l="easca" onpointerdown="setLevel('easca')">Éasca<small class="en">Easy</small></button>
       <button class="lvl" data-l="deacair" onpointerdown="setLevel('deacair')">Deacair<small class="en">Hard</small></button>
     </div>
-    <button class="btn mode" onpointerdown="askNames('comhrac')"><span class="ic">⚔️</span><span class="tx">Comhrac<small class="en">Two Player Duel</small></span></button>
-    <button class="btn blue mode" onpointerdown="K=null;askNames('fanann')"><span class="ic">👑</span><span class="tx">Fanann an Buaiteoir<small class="en">Winner Stays On</small></span></button>
+    <button class="btn mode" onpointerdown="raceTo=1;askNames('comhrac')"><span class="ic">⚔️</span><span class="tx">Comhrac<small class="en">Two Player Duel</small></span></button>
+    <button class="btn blue mode" onpointerdown="K=null;raceTo=1;askNames('fanann')"><span class="ic">👑</span><span class="tx">Fanann an Buaiteoir<small class="en">Winner Stays On</small></span></button>
     <button class="btn dark mode" onpointerdown="askNames('scor')"><span class="ic">⏱️</span><span class="tx">Scór Mór<small class="en">Solo · 60 Seconds · Faster = More Points</small><small id="scor-best" style="color:#ffd36b"></small></span></button>
     <button class="btn purple mode" onpointerdown="askNames('cuimhne')"><span class="ic">🧠</span><span class="tx">Cuimhne 60 Soicind<small class="en">60-Second Memory Sprint, Solo</small></span></button>
     <button class="btn grey" style="font-size:2.2cqh;padding:1.4cqh 6cqw" onpointerdown="go('attract')">‹ Siar<span class="en"> · Back</span></button>
@@ -370,7 +370,7 @@ function askNames(mode){
     $('n-title').innerHTML='⚔️ Dúshlánóir nua!<span class="en" style="font-size:2.2cqh">New challenger!</span>';}
   else{names=['',''];activeSlot=0;}
   $('n-targets').innerHTML=mode==='comhrac'?[25,50,75,100].map(t=>'<button class="tg'+(t===target?' on':'')+'" onpointerdown="setTarget('+t+',event)">'+t+'<small>pointe</small></button>').join(''):'';
-  $('n-format').innerHTML=mode==='comhrac'?[[1,'Cluiche amháin','One game'],[3,'Rás go 3','First to 3'],[5,'Rás go 5','First to 5']].map(f=>'<button class="tg fm'+(f[0]===raceTo?' on':'')+'" data-f="'+f[0]+'" onpointerdown="setRace('+f[0]+',event)" style="font-size:2.1cqh">'+f[1]+'<small class="en">'+f[2]+'</small></button>').join(''):'';
+  $('n-format').innerHTML=(mode==='comhrac'||mode==='fanann')?[[1,'Cluiche amháin','One game'],[3,'Rás go 3','First to 3']].map(f=>'<button class="tg fm'+(f[0]===raceTo?' on':'')+'" data-f="'+f[0]+'" onpointerdown="setRace('+f[0]+',event)" style="font-size:2.1cqh">'+f[1]+'<small class="en">'+f[2]+'</small></button>').join(''):'';
   go('names');renderSlots();
 }
 function setTarget(t,e){if(e)e.stopPropagation();target=t;document.querySelectorAll('#n-targets .tg').forEach(b=>b.classList.toggle('on',+b.textContent.replace(/\D/g,'')===t));}
@@ -396,7 +396,7 @@ function nameOf(i){return (names[i]||'').trim()||(MODE_INFO[pendingMode].players
 function namesDone(){
   const nm=[nameOf(0),nameOf(1)];
   if(pendingMode==='comhrac'){W={wins:[0,0],game:1};startDuel('comhrac',nm);}
-  else if(pendingMode==='fanann')startDuel('fanann',nm);
+  else if(pendingMode==='fanann'){W={wins:[0,0],game:1};startDuel('fanann',nm);}
   else if(pendingMode==='scor')startSolo(nm[0]);
   else startMem(nm[0]);
 }
@@ -424,7 +424,8 @@ function duelHud(){
   $('d-tug').classList.toggle('on',tug);
   $('d-s0').style.display=$('d-s1').style.display=tug?'none':'block';
   $('d-s0').textContent=D.s[0];$('d-s1').textContent=D.s[1];
-  if(tug){$('d-tug-r').style.width=(D.pos/TUG_UNITS*100)+'%';$('d-target').innerHTML='';$('d-sd').textContent='';}
+  if(tug){$('d-tug-r').style.width=(D.pos/TUG_UNITS*100)+'%';$('d-target').innerHTML=raceTo>1?'Cluiche '+W.game+' · rás go '+raceTo:'';
+    $('d-sd').innerHTML=raceTo>1?'<span class="stars" style="color:#e94560">'+stars(W.wins[0],raceTo)+'</span> &nbsp; <span class="stars" style="color:#1565c0">'+stars(W.wins[1],raceTo)+'</span>':'';}
   else{
     $('d-target').innerHTML='GO '+target+(raceTo>1?'<br><span style="font-size:1.6cqh">Cluiche '+W.game+' · rás go '+raceTo+'</span>':'');
     $('d-sd').innerHTML=raceTo>1?'<span class="stars" style="color:#e94560">'+stars(W.wins[0],raceTo)+'</span> &nbsp; <span class="stars" style="color:#1565c0">'+stars(W.wins[1],raceTo)+'</span>':'';
@@ -478,13 +479,20 @@ function duelEnd(w){
   $('de-score').innerHTML=D.type==='fanann'
     ?'<div class="tug on" style="height:4cqh;width:70cqw;margin:0 auto"><div class="tug-r" style="width:'+(w===0?100:0)+'%"></div></div>'
     :'<span style="color:#e94560">'+D.s[0]+'</span> – <span style="color:#1565c0">'+D.s[1]+'</span>';
-  if(D.type==='fanann'){
+  if(D.type==='fanann'&&raceTo>1&&W.wins[w]+1<raceTo){
+    W.wins[w]++;
+    $('de-ic').textContent='⭐';
+    $('de-title').innerHTML='Cluiche '+W.game+' do '+esc(D.nm[w])+'!<span class="en" style="font-size:2.2cqh">Game '+W.game+' to '+esc(D.nm[w])+'!</span>';
+    $('de-sub').innerHTML='<span style="color:#e94560;font-size:3cqh">'+esc(D.nm[0])+' '+stars(W.wins[0],raceTo)+'</span><br><span style="color:#1565c0;font-size:3cqh">'+esc(D.nm[1])+' '+stars(W.wins[1],raceTo)+'</span><br>Rás go '+raceTo+'<span class="en"> (first to '+raceTo+')</span>';
+    $('de-btns').innerHTML='<button class="btn blue" onpointerdown="W.game++;startDuel(\'fanann\',D.nm.slice())">Cluiche '+(W.game+1)+' →<small class="en">Game '+(W.game+1)+'</small></button><button class="btn dark" onpointerdown="K=null;go(\'menu\')">Críochnaigh<small class="en">Finish</small></button>';
+  }else if(D.type==='fanann'){
+    if(raceTo>1)W.wins[w]++;
     const kept=K.champ===w;K.streak=kept?K.streak+1:1;K.champ=w;K.champName=D.nm[w];
     const best=store('king_'+today());if(!best||K.streak>best.s)store('king_'+today(),{s:K.streak,n:K.champName});
     $('de-ic').textContent='👑';
     $('de-title').innerHTML=(kept?'Fanann '+esc(D.nm[w])+'!':'Curadh nua: '+esc(D.nm[w])+'!')+'<span class="en" style="font-size:2.2cqh">'+(kept?esc(D.nm[w])+' stays on!':'New champion: '+esc(D.nm[w])+'!')+'</span>';
     const b=store('king_'+today());
-    $('de-sub').innerHTML='Sraith bua<span class="en"> (win streak)</span>: <b>'+K.streak+'</b> · Taifead an lae<span class="en"> (today)</span>: <b>'+b.s+'</b> ('+esc(b.n)+')';
+    $('de-sub').innerHTML=(raceTo>1?'<span style="color:#e94560;font-size:3cqh">'+esc(D.nm[0])+' '+stars(W.wins[0],raceTo)+'</span><br><span style="color:#1565c0;font-size:3cqh">'+esc(D.nm[1])+' '+stars(W.wins[1],raceTo)+'</span><br>':'')+'Sraith bua<span class="en"> (win streak)</span>: <b>'+K.streak+'</b> · Taifead an lae<span class="en"> (today)</span>: <b>'+b.s+'</b> ('+esc(b.n)+')';
     $('de-btns').innerHTML='<button class="btn blue" onpointerdown="askNames(\'fanann\')">Dúshlánóir nua<small class="en">Next challenger</small></button><button class="btn dark" onpointerdown="K=null;go(\'menu\')">Críochnaigh<small class="en">Finish</small></button>';
   }else{
     W.wins[w]++;
