@@ -78,6 +78,18 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 #cpop { position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%) scale(.6); background: #fff; color: #2a9d47; font-weight: bold; font-size: 1.15rem; padding: .35rem .85rem; border-radius: 999px; box-shadow: 0 2px 12px rgba(0,0,0,.18); opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; }
 #cpop.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
 #word-num-label b { color: #1a1a2e; }
+/* Game screen tightened so the map, word and both answers fit without scrolling on laptops and phones */
+#game-screen { padding: .8rem 1.2rem 1rem; }
+#game-screen .cmap { max-width: min(250px, calc(30vh * 0.772)); margin-bottom: .2rem; }
+#game-screen #score-display { font-size: 2.4rem; margin-bottom: 0; }
+#game-screen #score-unit { display: none; }
+#game-screen #pts-flash { height: 1.2rem; font-size: 1.1rem; margin-bottom: .2rem; }
+#game-screen .word-timer-wrap { margin-bottom: .7rem; }
+#game-screen .card { padding: 1.1rem 1.2rem 1rem; min-height: 0; margin-bottom: .7rem; }
+#game-screen #word-display { font-size: 2.2rem; }
+#game-screen .choices { gap: .55rem; margin-bottom: .3rem; }
+#game-screen .choice-btn { padding: .8rem 1.1rem; }
+#game-screen .hint { margin-top: .1rem; }
 
 /* ── Player HUD ── */
 #player-hud { font-size: 1.05rem; font-weight: bold; margin-bottom: .25rem; min-height: 1.4rem; }
