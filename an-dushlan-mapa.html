@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ga">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>An Dúshlán · Mapa (tástáil)</title>
+<!-- Test version of An Dúshlán with a county map: each correct answer fills in the next county in green. Solo only. -->
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f0;color:#1a1a2e;min-height:100vh;display:flex;justify-content:center}
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:520px;padding:1rem 1rem 1.4rem;text-align:center}
+.screen.on{display:flex}
+h1{font-size:2rem;color:#1565c0;margin:.6rem 0 .3rem}
+.sub{color:#666;font-size:.92rem;line-height:1.6;margin-bottom:1rem}
+.big-btn{background:#1565c0;color:#fff;border:none;border-radius:12px;padding:1rem 2.6rem;font-size:1.1rem;font-weight:bold;cursor:pointer;margin-top:.8rem;box-shadow:0 2px 10px rgba(21,101,192,.3)}
+.big-btn.gold{background:#d4a017}
+#mapwrap{position:relative;width:100%;max-width:360px}
+#map{width:100%;height:auto;display:block}
+#s-game #mapwrap{max-width:min(340px,calc(44vh * 0.772))}   /* keeps the word and answers on screen on smaller phones */
+#map path{fill:#e3e3dc;stroke:#fff;stroke-width:1.4;stroke-linejoin:round;transition:fill .4s}
+#map path.done{fill:#2a9d47}
+#map path.now{fill:#e94560;animation:glow 1s ease-in-out infinite}
+#map path.lost{fill:#e94560}
+#map.win path{fill:#2a9d47;animation:winflash 1.2s ease-in-out 2}
+@keyframes glow{0%,100%{fill:#e94560}50%{fill:#f6a5b2}}
+@keyframes winflash{0%,100%{fill:#2a9d47}50%{fill:#7fd69a}}
+#pop{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);background:#fff;color:#2a9d47;font-weight:bold;font-size:1.25rem;padding:.4rem .9rem;border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.18);opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+#pop.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.county-line{font-size:1rem;font-weight:bold;margin:.3rem 0 .1rem}
+.county-line .n{color:#888;font-weight:normal}
+.card{background:#fff;border-radius:14px;width:100%;padding:1.1rem 1rem .9rem;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-top:.5rem;transition:background .15s}
+.card.ok{background:#d4edda}.card.bad{background:#f8d7da}
+.word{font-size:2.1rem;font-weight:bold}
+.bar{height:6px;display:flex;gap:3px;margin-top:.7rem}
+.bar .sg{flex:1;background:#e3e3dc;border-radius:3px;overflow:hidden}.bar .sg i{display:block;height:100%;width:100%}
+.choices{display:flex;flex-direction:column;gap:.6rem;width:100%;margin-top:.7rem}
+.choice{width:100%;padding:.85rem 1rem;border:2px solid #ddd;border-radius:12px;background:#fff;font-size:1.02rem;color:#1a1a2e;text-align:left;cursor:pointer;font-family:inherit}
+.choice.ok{border-color:#2a9d47;background:#d4edda;font-weight:bold}.choice.bad{border-color:#e94560;background:#f8d7da}.choice.rv{border-color:#2a9d47;background:#d4edda}
+.fb{min-height:1.4rem;font-weight:bold;margin-top:.4rem;font-size:.95rem}
+.score{font-size:3.4rem;font-weight:900;color:#1565c0;line-height:1;margin:.3rem 0}
+.credit{font-size:.62rem;color:#aaa;margin-top:.8rem;line-height:1.4}
+</style>
+</head>
+<body>
+
+<div id="s-start" class="screen on">
+  <h1>🏅 An Dúshlán</h1>
+  <p class="sub">32 focal as a chéile, contae amháin in aghaidh an fhocail.<br>Gach freagra ceart: contae eile glas.<br>Botún amháin agus tá tú thart. 5 soicind an focal.</p>
+  <div id="mapwrap" style="max-width:260px"><svg id="map0" viewBox="0 0 610 790"></svg></div>
+  <button class="big-btn" onclick="start()">Tosaigh</button>
+  <p class="credit">Teorainneacha contae: Tailte Éireann (CC BY 4.0) agus OSNI</p>
+</div>
+
+<div id="s-game" class="screen">
+  <div id="mapwrap"><svg id="map" viewBox="0 0 610 790"></svg><div id="pop"></div></div>
+  <div class="county-line" id="cline"></div>
+  <div class="card" id="card" onclick="sayAgain()"><div class="word" id="word"></div><div class="bar" id="bar"></div></div>
+  <div class="fb" id="fb"></div>
+  <div class="choices">
+    <button class="choice" onclick="pick(0)"></button>
+    <button class="choice" onclick="pick(1)"></button>
+  </div>
+</div>
+
+<div id="s-end" class="screen">
+  <div id="mapwrap" style="max-width:300px"><svg id="map2" viewBox="0 0 610 790"></svg></div>
+  <h1 id="e-title" style="margin-top:.4rem"></h1>
+  <div class="score" id="e-score"></div>
+  <p class="sub" id="e-sub"></p>
+  <button class="big-btn" id="e-btn" onclick="start()">Arís</button>
+</div>
+
+<script src="focloir.js"></script>
+<script src="contae-mapa.js"></script>
+<script>
+const WORD_MS=5000, TOTAL=32;
+const SEG=['#e94560','#e8622c','#e07b00','#2a9d47','#1b6e33'];
+const WORDS=Object.keys(DICT).filter(w=>DICT[w][0].length<=40);
+const $=id=>document.getElementById(id);
+let n=0,q=null,lock=true,start0=0,raf=0;
+
+// ── map ──
+function drawMap(id,cls){
+  $(id).innerHTML=CONTAE_ORD.map(([ga,en],i)=>'<path data-i="'+i+'" d="'+CONTAE_PATHS[en]+'"><title>'+ga+'</title></path>').join('');
+  if(cls)cls($(id));
+}
+function paint(svg,done,now){svg.querySelectorAll('path').forEach(p=>{const i=+p.dataset.i;p.setAttribute('class',i<done?'done':i===now?'now':'');});}
+
+// ── sound ──
+let _sfx=null;
+function gx(){if(!_sfx)_sfx=new(window.AudioContext||window.webkitAudioContext)();if(_sfx.state==='suspended')_sfx.resume();return _sfx;}
+function tone(f,d,t,g,dl){try{const c=gx(),o=c.createOscillator(),gn=c.createGain(),t0=c.currentTime+0.05+dl;o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.setValueAtTime(f,t0);gn.gain.setValueAtTime(g,t0);gn.gain.exponentialRampToValueAtTime(0.0001,t0+d);o.start(t0);o.stop(t0+d);}catch(e){}}
+const okSnd=()=>{tone(523,.3,'sine',.22,0);tone(659,.35,'sine',.2,.1);};
+const noSnd=()=>{tone(220,.3,'sawtooth',.15,0);tone(150,.3,'sawtooth',.12,.07);};
+const winSnd=()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.4,'sine',.2,i*.12));
+const voice=document.createElement('audio');let voiceOK=false,lastSaid='';
+document.addEventListener('click',()=>{gx();if(!voiceOK){voice.muted=true;voice.src='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAACAgICA';voice.play().then(()=>voiceOK=true).catch(()=>{});}},true);
+function say(w){if(!w||w.includes(' '))return;lastSaid=w;let d='C';try{d=localStorage.getItem('freamh_canuint')||'C';}catch(e){}
+  const f=encodeURIComponent(w)+'.mp3',tries=['https://www.teanglann.ie/Can'+d+'/'+f];if(d!=='C')tries.push('https://www.teanglann.ie/CanC/'+f);
+  let k=0;const next=()=>{if(lastSaid!==w||k>=tries.length)return;voice.src=tries[k++];voice.play().catch(()=>{});};voice.pause();voice.muted=false;voice.onerror=next;next();}
+function sayAgain(){if(lastSaid)say(lastSaid);}
+
+// ── game ──
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function start(){
+  n=0;show('s-game');$('map').classList.remove('win');drawMap('map');
+  $('bar').innerHTML=SEG.map(c=>'<div class="sg"><i style="background:'+c+'"></i></div>').join('');
+  next();
+}
+function next(){
+  paint($('map'),n,n);
+  $('cline').innerHTML='<span class="n">'+(n+1)+' / '+TOTAL+' · </span>'+CONTAE_ORD[n][0];
+  const w=WORDS[Math.floor(Math.random()*WORDS.length)],right=DICT[w][0];let wrong=right;
+  while(wrong===right)wrong=DICT[WORDS[Math.floor(Math.random()*WORDS.length)]][0];
+  const opts=[right,wrong].sort(()=>Math.random()-.5);q={w,opts,c:opts.indexOf(right)};
+  $('word').textContent=w;$('card').className='card';$('fb').textContent='';
+  document.querySelectorAll('.choice').forEach((b,i)=>{b.textContent=opts[i];b.className='choice';});
+  say(w);lock=false;start0=Date.now();cancelAnimationFrame(raf);tick();
+}
+function tick(){const r=WORD_MS-(Date.now()-start0),per=WORD_MS/SEG.length;
+  $('bar').querySelectorAll('i').forEach((f,i)=>f.style.width=Math.max(0,Math.min(1,(r-i*per)/per))*100+'%');
+  if(r<=0){out('Am caite!');return;}raf=requestAnimationFrame(tick);}
+function pick(i){
+  if(lock)return;lock=true;cancelAnimationFrame(raf);
+  const b=document.querySelectorAll('.choice')[i];
+  if(i===q.c){okSnd();b.classList.add('ok');$('card').className='card ok';
+    const ga=CONTAE_ORD[n][0];n++;paint($('map'),n,-1);
+    const pop=$('pop');pop.textContent='✓ '+ga;pop.classList.add('show');setTimeout(()=>pop.classList.remove('show'),650);
+    if(n>=TOTAL){setTimeout(win,700);}else setTimeout(next,750);}
+  else{b.classList.add('bad');document.querySelectorAll('.choice')[q.c].classList.add('rv');out('Mícheart!');}
+}
+function out(msg){
+  lock=true;cancelAnimationFrame(raf);noSnd();$('card').className='card bad';
+  $('fb').innerHTML='<span style="color:#e94560">'+msg+' '+q.w+' = '+DICT[q.w][0]+'</span>';
+  $('map').querySelectorAll('path')[n].setAttribute('class','lost');
+  setTimeout(()=>end(false),1700);
+}
+function win(){winSnd();end(true);}
+function end(all){
+  show('s-end');drawMap('map2');paint($('map2'),n,-1);
+  if(!all)$('map2').querySelectorAll('path')[n].setAttribute('class','lost');else $('map2').classList.add('win');
+  $('e-title').textContent=all?'An 32 ar fad! 🏆':'Thart!';
+  $('e-score').textContent=n+' / 32';
+  $('e-sub').innerHTML=all?'Éire ar fad glas!':'Stop tú ag <b>'+CONTAE_ORD[n][0]+'</b>';
+  $('e-btn').className='big-btn'+(all?' gold':'');
+}
+document.addEventListener('keydown',e=>{if($('s-game').classList.contains('on')){if(e.key==='ArrowUp')pick(0);if(e.key==='ArrowDown')pick(1);}});
+
+drawMap('map0');paint($('map0'),0,-1);
+</script>
+</body>
+</html>
