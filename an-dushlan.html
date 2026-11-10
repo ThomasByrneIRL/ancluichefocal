@@ -65,7 +65,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 .cdot { width: 13px; height: 13px; border-radius: 50%; background: #ddd; transition: background .2s; flex-shrink: 0; }
 .cdot.done { background: #2a9d47; }
 .cdot.active { background: #e94560; }
-/* ── County map (léarscáil-náisiúnta.js): replaces the dots; each correct answer fills the next county in green ── */
+/* ── County map (learscail-naisiunta.js): replaces the dots; each correct answer fills the next county in green ── */
 .cmap { position: relative; width: 100%; max-width: min(300px, calc(38vh * 0.772)); margin: 0 auto .4rem; }
 .cmap svg { width: 100%; height: auto; display: block; }
 .cmap path { fill: #e3e3dc; stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; transition: fill .4s; }
@@ -269,7 +269,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 var FREAMH_TOSAI=/[?&]liosta=tosaitheoiri(&|$)/.test(location.search);
 document.write('<script src="'+(FREAMH_TOSAI?'focloir-tosaitheoiri.js':'focloir.js')+'"><\/script>');
 </script>
-<script src="léarscáil-náisiúnta.js"></script>
+<script src="learscail-naisiunta.js"></script>
 <script>
 
 const WORDS = Object.keys(DICT);
@@ -324,7 +324,7 @@ function pc(i) { return PCOLS[i % PCOLS.length]; }
 function rnd(ex) { let w; do { w = WORDS[Math.floor(Math.random()*WORDS.length)]; } while(w===ex); return w; }
 function sh(a) { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
-// Progress: the county map (léarscáil-náisiúnta.js) if it loaded, otherwise the old row of 32 dots.
+// Progress: the county map (learscail-naisiunta.js) if it loaded, otherwise the old row of 32 dots.
 // current = the word being attempted (1–32); counties before it are green. state: 'now' (glowing), 'lost' (red), 'win' (all green)
 const HAS_MAP = typeof CONTAE_PATHS !== 'undefined';
 function buildDots(containerId, current, state) {
