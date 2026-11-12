@@ -283,7 +283,7 @@ h1 { font-size: 2rem; color: #e94560; margin-bottom: .4rem; }
 var FREAMH_TOSAI=/[?&]liosta=tosaitheoiri(&|$)/.test(location.search);
 document.write('<script src="'+(FREAMH_TOSAI?'focloir-tosaitheoiri.js':'focloir.js')+'"><\/script>');
 </script>
-<script src="learscail-naisiunta.js"></script>
+<script src="learscail-naisiunta.js?v=3"></script><!-- bump ?v= whenever the map file changes, so browsers fetch the new copy -->
 <script>
 
 const WORDS = Object.keys(DICT);
