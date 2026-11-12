@@ -52,6 +52,7 @@
   .btn { flex: 1; max-width: 160px; padding: 1rem 1.5rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: transform .1s; }
   .btn:active { transform: scale(.95); }
   #btn-new { background: #fff; color: #0d6ebd; border: 2px solid #53d8fb; transition: background .1s, color .1s; }
+  #btn-new, #btn-seen { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
   #btn-seen { background: #fff; color: #c0396e; border: 2px solid #e94560; transition: background .1s, color .1s; }
   #btn-new.selected { background: #53d8fb; color: #fff; }
   #btn-seen.selected { background: #e94560; color: #fff; }
@@ -191,8 +192,8 @@
     <div id="word-display"></div>
   </div>
   <div class="btns">
-    <button class="btn" id="btn-new" onclick="answer(true)">NUA</button>
-    <button class="btn" id="btn-seen" onclick="answer(false)">FEICTHE</button>
+    <button class="btn" id="btn-new" onpointerdown="event.preventDefault();answer(true)">NUA</button>
+    <button class="btn" id="btn-seen" onpointerdown="event.preventDefault();answer(false)">FEICTHE</button>
   </div>
 </div>
 <div id="over-screen" class="screen">
