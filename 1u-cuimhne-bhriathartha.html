@@ -1862,6 +1862,9 @@ const POOL=[...new Set(["Aibreán",
 "úsáid",
 "úsáideach"])];
 const PCOLS=['#e94560','#1565c0','#2a9d47','#e07b00','#8b5cf6','#0891b2'];
+// On the arcade cabinet, players take the colour of their button set (see arcade.js)
+const PCOLS0=PCOLS.slice();
+function arcadeColours(n){const c=window.Arcade&&Arcade.colours?Arcade.colours(n):null;PCOLS.forEach((x,i)=>{PCOLS[i]=c&&c[i]?c[i].border:PCOLS0[i];});}
 const WORD_MS = 3000;
 let score,lives,seen,queue,cw,locked;
 let wordDeadline, wordTimerRAF;
@@ -1930,7 +1933,7 @@ function startSolo(){mode='solo';numPlayers=1;playerNames=[''];playerScores=[];l
 function startMulti(){mode='multi';show('setup-screen');buildSetup();}
 function adjCount(d){const was=selectedCount;selectedCount=Math.max(2,Math.min(6,selectedCount+d));const keep=true;document.getElementById('cnt-val').textContent=selectedCount;buildSetup(keep);}
 // Changing the number of players keeps the names already typed (removing a player drops the last name only)
-function buildSetup(keep){const prev=[];if(keep){for(let i=0;i<6;i++){const el=document.getElementById('pname-'+i);prev.push(el?el.value:'');}}const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" value="'+(prev[i]||'').replace(/"/g,'&quot;')+'" /></div>';}}
+function buildSetup(keep){arcadeColours(selectedCount);const prev=[];if(keep){for(let i=0;i<6;i++){const el=document.getElementById('pname-'+i);prev.push(el?el.value:'');}}const flds=document.getElementById('player-fields');flds.innerHTML='';for(let i=0;i<selectedCount;i++){const col=PCOLS[i%PCOLS.length];flds.innerHTML+='<div class="player-row"><div class="pdot" style="background:'+col+'"></div><input type="text" maxlength="20" placeholder="Imreoir '+(i+1)+'" id="pname-'+i+'" value="'+(prev[i]||'').replace(/"/g,'&quot;')+'" /></div>';}}
 // ── Rounds: 1–5 (default 1); scores add up, highest total wins ──
 let numRounds=1,curRound=1,roundScores=[];
 function setRounds(n){numRounds=n;document.querySelectorAll('.rnd-btn').forEach(b=>b.classList.toggle('on',Number(b.textContent)===n));}
@@ -1949,6 +1952,7 @@ function goStart(){mode='solo';show('start-screen');}
 <script>
 // Arcade cabinet (arcade.js): in multiplayer, only the player whose turn it is can answer.
 window.ARCADE_GAME = {
+  players: function () { return (mode === 'multi' ? numPlayers : 1); },   // 2 players use button sets 2 and 3 (see arcade.js)
   active: function () { return (mode === 'multi' && (currentScreen === 'game-screen' || currentScreen === 'handoff-screen')) ? currentPlayerIdx : -1; },
   ok: function () {
     if (currentScreen === 'handoff-screen') { handoffStart(); return; }
@@ -1959,6 +1963,16 @@ window.ARCADE_GAME = {
     return false;
   }
 };
+</script>
+<script>
+// Arcade cabinet: players take the colour of their button set (2 players: blue, red · 3: green, blue, red · 4: + yellow)
+(function () {
+  if (!window.Arcade || !Arcade.enabled()) return;
+  const orig = PCOLS.slice();
+  const recolour = n => { orig.forEach((c, i) => PCOLS[i] = c); (Arcade.seatColours(n) || []).forEach((p, i) => PCOLS[i] = p.border); };
+  const _bs = buildSetup;
+  buildSetup = function (keep) { recolour(selectedCount); _bs(keep); };
+})();
 </script>
 </body>
 </html>

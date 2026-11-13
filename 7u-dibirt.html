@@ -247,6 +247,13 @@ const PALETTE = [
   { border: '#0891b2', bg: '#ecf9fc', abg: '#cff1f8', label: '#0e5f75' },
 ];
 
+// On the arcade cabinet, players take the colour of their button set (see arcade.js)
+const PALETTE0 = PALETTE.map(p => Object.assign({}, p));
+function arcadeColours(n) {
+  const c = window.Arcade && Arcade.colours ? Arcade.colours(n) : null;
+  PALETTE.forEach((p, i) => Object.assign(p, PALETTE0[i], c && c[i] ? c[i] : {}));
+}
+
 let N = 4;
 // Match format: 1 = one game; 3 = race to 3 (first player to win 3 games wins the match)
 let RACE = 1, wins = [], gameNo = 1;
@@ -260,6 +267,7 @@ let _ca = null, _currentWord = '', _nextW = null, _nextAudio = null;
 // ── Player count selector ─────────────────────────────────────────────────────
 function setN(n) {
   N = Math.max(2, Math.min(6, n));
+  arcadeColours(N);
   document.getElementById('n-display').textContent = N + ' Imreoir';
   document.getElementById('btn-minus').disabled = (N <= 2);
   document.getElementById('btn-plus').disabled  = (N >= 6);
@@ -507,6 +515,7 @@ function playNo(){_pt(220,.08,'sawtooth',.18,0);_pt(150,.18,'sawtooth',.14,.08);
 <script>
 // Arcade cabinet (arcade.js): only the player whose clock is running can answer.
 window.ARCADE_GAME = {
+  players: function () { return N; },   // 2 players use button sets 2 and 3 (see arcade.js)
   active: function () { return document.getElementById('game-screen').classList.contains('active') ? currentPlayer : -1; },
   ok: function () {
     if (document.getElementById('start-screen').classList.contains('active')) { startGame(); return; }
@@ -515,6 +524,17 @@ window.ARCADE_GAME = {
     }
   }
 };
+</script>
+<script>
+// Arcade cabinet: players take the colour of their button set (2 players: blue, red · 3: green, blue, red · 4: + yellow)
+(function () {
+  if (!window.Arcade || !Arcade.enabled()) return;
+  const orig = PALETTE.map(p => Object.assign({}, p));
+  const recolour = n => { orig.forEach((p, i) => PALETTE[i] = Object.assign({}, p)); (Arcade.seatColours(n) || []).forEach((p, i) => PALETTE[i] = p); };
+  const _setN = setN;
+  setN = function (n) { recolour(Math.max(2, Math.min(6, n))); _setN(n); };
+  recolour(N); setN(N);
+})();
 </script>
 </body>
 </html>

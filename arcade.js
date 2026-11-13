@@ -6,8 +6,8 @@
 //   Turn on:  add ?arcade=1 to any game's link once (remembered on that machine).
 //   Turn off: add ?arcade=0.
 //
-// When arcade mode is on, a game can say whose turn it is (window.ARCADE_GAME.active()),
-// and presses from every other station are ignored.
+// When arcade mode is on, a game can say whose turn it is (window.ARCADE_GAME.active()) and how many are playing
+// (window.ARCADE_GAME.players()); presses from every other station are ignored.
 (function () {
   // ── Button map: change these to match how the cabinet is wired ──────────
   // Keyboard encoders: the key each button sends (I-PAC style defaults).
@@ -54,11 +54,50 @@
     try { var v = g.active(); return typeof v === 'number' ? v : -1; } catch (e) { return -1; }
   }
 
+  // Which button set each player uses, so play stays centred on the panel:
+  //   2 players → sets 2 and 3 · 3 players → sets 1, 2, 3 · 4 players → all four.
+  var SEATS = { 2: [1, 2], 3: [0, 1, 2], 4: [0, 1, 2, 3] };
+  function playerCount() {
+    var g = window.ARCADE_GAME;
+    try { return g && typeof g.players === 'function' ? g.players() : 0; } catch (e) { return 0; }
+  }
+  function stationOf(player) { var s = SEATS[playerCount()]; return s && s[player] !== undefined ? s[player] : player; }
+  Arcade.stationOf = stationOf;
+
+  // Button-set colours on the cabinet: set 1 green, set 2 blue, set 3 red, set 4 yellow.
+  // In arcade mode each player's on-screen colour matches the buttons they're using.
+  var SET_COLOURS = [
+    { border: '#2a9d47', bg: '#edf7ed', abg: '#d4edda', label: '#1a5c2e' },
+    { border: '#1565c0', bg: '#eff4fb', abg: '#d0e4f7', label: '#0d3a7a' },
+    { border: '#e94560', bg: '#fdf0f2', abg: '#f8d7da', label: '#a8203a' },
+    { border: '#d9a400', bg: '#fffbea', abg: '#fdf0c2', label: '#6b5000' }
+  ];
+  Arcade.colours = function (n) {   // colours for players 1..n, or null when not on the cabinet
+    if (!on || !SEATS[n]) return null;
+    return SEATS[n].map(function (st) { return SET_COLOURS[st]; });
+  };
+
+  // Button colours on the cabinet: set 1 green, set 2 blue, set 3 red, set 4 yellow.
+  // In arcade mode each player's on-screen colour matches the buttons they're using.
+  var STATION_COLS = [
+    { border: '#2a9d47', bg: '#edf7ed', abg: '#d4edda', label: '#1a5c2e' },   // 1 glas
+    { border: '#1565c0', bg: '#eff4fb', abg: '#d0e4f7', label: '#0d3a7a' },   // 2 gorm
+    { border: '#e94560', bg: '#fdf0f2', abg: '#f8d7da', label: '#a8203a' },   // 3 dearg
+    { border: '#e0a800', bg: '#fffbea', abg: '#fff1bf', label: '#7a5a00' }    // 4 buí
+  ];
+  // Colour profiles for n players (null when arcade mode is off, so phones/laptops keep their usual colours)
+  Arcade.seatColours = function (n) {
+    if (!on) return null;
+    var s = SEATS[n] || [0, 1, 2, 3], out = [];
+    for (var i = 0; i < Math.min(n, 4); i++) out.push(STATION_COLS[s[i] !== undefined ? s[i] : i]);
+    return out;
+  };
+
   function fire(station, action, source) {
     listeners.forEach(function (fn) { try { fn(station, action, source); } catch (e) {} });
     if (on) {
-      var act = activeStation();
-      if (act >= 0 && station !== act) return;                 // not your turn
+      var act = activeStation();                                // the player whose turn it is
+      if (act >= 0 && station !== stationOf(act)) return;      // not your buttons
       var g = window.ARCADE_GAME;
       if (action === 'ok' && g && typeof g.ok === 'function') { try { if (g.ok(station) !== false) return; } catch (e) {} }
     }
